@@ -1,5 +1,5 @@
-#ifndef __KEYBOARD_KEYBOARD_HPP__
-#define __KEYBOARD_KEYBOARD_HPP__
+#ifndef __WINDOW_KEYBOARD_HPP__
+#define __WINDOW_KEYBOARD_HPP__
 
 #include "KeyEnum.hpp";
 

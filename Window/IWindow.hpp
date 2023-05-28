@@ -7,6 +7,7 @@
 */
 
 #include "WindowType.hpp"
+#include "Event.hpp"
 #include "../Utilize/GLMTypedef.hpp"
 
 #include <string>
@@ -24,6 +25,9 @@ namespace HJUIK
 			virtual bool isOpen() const = 0;
 			virtual Vector2u getSize() const = 0;
 			virtual void close() = 0;
+			virtual bool pollEvent(Event& e) = 0;
+			virtual void setKeyRepeatable(bool repeatable = true) = 0;
+			virtual void limitFrameRate(unsigned int FPS) = 0;
 		};
 	}
 }

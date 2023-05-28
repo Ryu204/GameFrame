@@ -21,16 +21,36 @@ struct Triple
 };
 
 #include "../Window/SFMLWindow.hpp"
+#include "../Window/GLFWWindow.hpp"
 #include "../Window/Keyboard.hpp"
+#include "../Window/Mouse.hpp"
 
 int main()
 {
 	using namespace HJUIK;
-	Window::SFMLWindow window(Vector2u(500, 500), "hello world", Window::WindowType::Default);
-
-	while (window.isOpen())
+	std::unique_ptr<Window::IWindow> window = std::make_unique<Window::SFMLWindow>(Vector2u(500, 500), "hello world", Window::WindowType::Default);
+	window->setKeyRepeatable(false);
+	window->limitFrameRate(60);
+	while (window->isOpen())
 	{
-		if (Keyboard::isPressed(Keyboard::Key::P))
-			std::cout << "P";
+		Event e;
+		while (window->pollEvent(e))
+		{
+			if (e.type == Event::Type::Closed)
+				window->close();
+			else if (e.type == Event::Type::Resized)
+				std::cout << e.size.x << ' ' << e.size.y << '\n';
+			else if (e.type == Event::KeyPressed)
+			{
+				std::cout << Keyboard::getName(e.key) << '\n';
+			}
+			else if (e.type == Event::MouseButtonPressed)
+				std::cout << Mouse::getName(e.button) << '\n';
+			else if (e.type == Event::MouseScrolled)
+				std::cout << e.mouseScrollDelta << '\n';
+		}
+
+		/*if (Keyboard::isPressed(Keyboard::Key::A))
+			std::cout << "YES";*/
 	}
 }

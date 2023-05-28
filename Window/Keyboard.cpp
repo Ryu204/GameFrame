@@ -6,7 +6,7 @@ namespace HJUIK
 	{
 		bool isPressed(Key key)
 		{
-			return sf::Keyboard::isKeyPressed(key);
+			return sf::Keyboard::isKeyPressed(toSFMLKey(key));
 		}
 	}
 }
