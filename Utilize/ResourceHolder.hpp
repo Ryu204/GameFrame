@@ -2,7 +2,7 @@
 #define __UTILIZE_RESOURCEHOLDER_HPP__
 
 /*
-	This class is used to manage many instanes 
+	This class is used to manage many instances 
 	of a heavy resource type. Each instance is 
 	identified by a key.
 */
@@ -24,6 +24,9 @@ namespace HJUIK
 
 			template <typename... Args>
 			void create(Key key, Args... params);
+			
+			void create(Key key);
+
 			Val& get(Key key);
 		private:
 

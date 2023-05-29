@@ -17,6 +17,12 @@ namespace HJUIK
 		}
 
 		template <typename Key, typename Val>
+		void ResourceHolder<Key, Val>::create(Key key)
+		{
+			mContainer[key] = std::make_unique<Val>();
+		}
+
+		template <typename Key, typename Val>
 		Val& ResourceHolder<Key, Val>::get(Key key)
 		{
 			return *mContainer[key];

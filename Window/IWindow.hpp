@@ -9,6 +9,7 @@
 #include "WindowType.hpp"
 #include "Event.hpp"
 #include "../Utilize/GLMTypedef.hpp"
+#include "../Graphics/Color.hpp"
 
 #include <string>
 
@@ -28,6 +29,9 @@ namespace HJUIK
 			virtual bool pollEvent(Event& e) = 0;
 			virtual void setKeyRepeatable(bool repeatable = true) = 0;
 			virtual void limitFrameRate(unsigned int FPS) = 0;
+
+			virtual void clear(Graphics::Color color = Graphics::Color(0, 0, 0)) = 0;
+			virtual void display() = 0;
 		};
 	}
 }

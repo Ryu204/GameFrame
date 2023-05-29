@@ -1,33 +1,38 @@
 #include "SFMLWindow.hpp"
+#include "glad/glad.h"
 #include <iostream>
 
 namespace HJUIK
 {
 	namespace Window
 	{
+		bool& SFMLWindow::mOpenGLLoaded() const
+		{
+			static bool loaded = false;
+			return loaded;
+		}
+
+		void SFMLWindow::loadOpenGL()
+		{
+			if (!mOpenGLLoaded())
+			{
+				gladLoadGL();
+				mOpenGLLoaded() = true;
+			}
+		}
+
+		SFMLWindow::SFMLWindow(SFMLWindow::Settings settings)
+		{
+			createWindow(settings);
+			loadOpenGL();
+		}
+
 		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style)
 			: mWindow()
 		{
-			auto windowStyle = sf::Style::Default;
-			auto videoMode = sf::VideoMode(size.x, size.y);
-			switch (style)
-			{
-			case WindowType::None:
-				windowStyle = sf::Style::None;
-				break;
-			case WindowType::FullScreen:
-				windowStyle = sf::Style::Fullscreen;
-				videoMode = sf::VideoMode::getDesktopMode();
-				break;
-			case WindowType::Resizable:
-				windowStyle = sf::Style::Default;
-				break;
-			case WindowType::Unresizable:
-				windowStyle = sf::Style::Close;
-				break;
-			}
-
-			mWindow = std::make_unique<sf::RenderWindow>(videoMode, title, windowStyle);
+			SFMLWindow::Settings settings{ size, title, style, 3, 3 };
+			createWindow(settings);
+			loadOpenGL();
 		}
 
 		bool SFMLWindow::isOpen() const
@@ -91,7 +96,7 @@ namespace HJUIK
 				e.mouseScrollDelta = event.mouseWheelScroll.delta;
 				break;
 			default:
-				e.type = Event::OTHER;
+				e.type = Event::Other;
 				break;
 			}
 
@@ -106,6 +111,51 @@ namespace HJUIK
 		void SFMLWindow::limitFrameRate(unsigned int FPS)
 		{
 			mWindow->setFramerateLimit(FPS);
+		}
+
+		void SFMLWindow::display()
+		{
+			mWindow->display();
+		}
+
+		void SFMLWindow::clear(Graphics::Color color)
+		{
+			auto normalized = color.getNormalizedColor();
+			glClearColor(normalized.r, normalized.g, normalized.b, normalized.a);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
+
+		void SFMLWindow::createWindow(SFMLWindow::Settings settings)
+		{
+			sf::ContextSettings csettings;
+			csettings.sRgbCapable = true;
+			csettings.majorVersion = settings.OpenGLMajorVersion;
+			csettings.minorVersion = settings.OpenGLMinorVersion;
+
+			auto size = settings.size;
+			auto title = settings.title;
+			auto style = settings.style;
+			
+			auto windowStyle = sf::Style::Default;
+			auto videoMode = sf::VideoMode(size.x, size.y);
+			switch (style)
+			{
+			case WindowType::None:
+				windowStyle = sf::Style::None;
+				break;
+			case WindowType::FullScreen:
+				windowStyle = sf::Style::Fullscreen;
+				videoMode = sf::VideoMode::getDesktopMode();
+				break;
+			case WindowType::Resizable:
+				windowStyle = sf::Style::Default;
+				break;
+			case WindowType::Unresizable:
+				windowStyle = sf::Style::Close;
+				break;
+			}
+
+			mWindow = std::make_unique<sf::Window>(videoMode, title, windowStyle, csettings);
 		}
 	}
 }

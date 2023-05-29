@@ -5,52 +5,55 @@
 	The abstract event class. Used for window's input.
 */
 
-#include "KeyEnum.hpp"
+#include "Keyboard.hpp"
 #include "Mouse.hpp"
 
 namespace HJUIK
 {
-	struct Event
+	namespace Window
 	{
-		// Size of window after resizing
-		struct Size
+		struct Event
 		{
-			unsigned int x;
-			unsigned int y;
-		} size;
+			// Size of window after resizing
+			struct Size
+			{
+				unsigned int x;
+				unsigned int y;
+			} size;
 
-		// Position of mouse after moved
-		struct MousePosition
-		{
-			int x;
-			int y;
-		} mousePos;
+			// Position of mouse after moved
+			struct MousePosition
+			{
+				int x;
+				int y;
+			} mousePos;
 
-		// Scroll delta of mouse
-		float mouseScrollDelta; // Positive value means upwards movement
+			// Scroll delta of mouse
+			float mouseScrollDelta; // Positive value means upwards movement
 
-		// Button clicked
-		Mouse::Button button;
+			// Button clicked
+			Mouse::Button button;
 
-		// Key pressed
-		Keyboard::Key key;
+			// Key pressed
+			Keyboard::Key key;
 
-		// Enum instead of enum class for shorter typing
-		enum Type
-		{
-			// Window
-			Resized = 0, Closed, LostFocus, GainedFocus,
-			// Keyboard
-			KeyPressed, KeyReleased,
-			// Mouse
-			MouseButtonPressed, MouseButtonReleased,
-			MouseScrolled,
+			// Enum instead of enum class for shorter typing
+			enum Type
+			{
+				// Window
+				Resized = 0, Closed, LostFocus, GainedFocus,
+				// Keyboard
+				KeyPressed, KeyReleased,
+				// Mouse
+				MouseButtonPressed, MouseButtonReleased,
+				MouseScrolled, MouseMoved,
 
-			TypeCount,
-			// Not specified
-			OTHER
-		} type;
-	};
+				TypeCount,
+				// Not specified
+				Other
+			} type;
+		};
+	}
 }
 
 #endif

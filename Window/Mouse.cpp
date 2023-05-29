@@ -2,14 +2,14 @@
 
 namespace HJUIK
 {
-	namespace Mouse
+	namespace Window
 	{
-		bool isPressed(Button button)
+		bool Mouse::isPressed(Button button)
 		{
 			return sf::Mouse::isButtonPressed(toSFMLButton(button));
 		}
 
-		sf::Mouse::Button toSFMLButton(Button button)
+		sf::Mouse::Button Mouse::toSFMLButton(Button button)
 		{
 			switch (button)
 			{
@@ -30,13 +30,13 @@ namespace HJUIK
 			}
 		}
 
-		Button fromSFMLButton(sf::Mouse::Button button)
+		Mouse::Button Mouse::fromSFMLButton(sf::Mouse::Button button)
 		{
 			// The enum are originally from SFML so we only need to cast
 			return static_cast<Button>(static_cast<std::int8_t>(button));
 		}
 
-		std::string getName(Button button)
+		std::string Mouse::getName(Mouse::Button button)
 		{
 			switch (button)
 			{
