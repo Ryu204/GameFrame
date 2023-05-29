@@ -2,8 +2,8 @@
 #define __UTILIZE_RESOURCEHOLDER_HPP__
 
 /*
-	This class is used to manage many instances 
-	of a heavy resource type. Each instance is 
+	This class is used to manage instances 
+	of heavy resource types. Each instance is 
 	identified by a key.
 */
 
@@ -21,15 +21,14 @@ namespace HJUIK
 		{
 		public:
 			ResourceHolder();
-
+			// Create new resource. Args... are resource's constructor paramter(s)
 			template <typename... Args>
 			void create(Key key, Args... params);
-			
+			// Create new default resource
 			void create(Key key);
-
+			// Retrieve the resource reference
 			Val& get(Key key);
 		private:
-
 			std::unordered_map<Key, std::unique_ptr<Val>> mContainer;
 		};
 	}

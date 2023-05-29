@@ -4,7 +4,7 @@
 /*
 	Define core properties of the application,
 	such as FPS, window's size, ...
-	Work similiar to a init file
+	Work similiar to an init file
 */
 
 #include "../Utilize.hpp"

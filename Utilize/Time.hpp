@@ -1,6 +1,10 @@
 #ifndef __UTILIZE_TIME_HPP__
 #define __UTILIZE_TIME_HPP__
 
+/*
+	Represent time duration. Use std::chrono::steady_clock
+*/
+
 #include <chrono>
 
 namespace HJUIK
@@ -12,8 +16,11 @@ namespace HJUIK
 		public:
 			Time(float second = 0.f);
 			Time(const Time& other);
+
+			// Convert the time to float second value
 			float toSecond() const;
 
+			// Overload operators
 			Time& operator = (Time&) = default;
 			Time& operator = (Time&&) = default;
 			void operator += (const Time& time);
@@ -24,6 +31,7 @@ namespace HJUIK
 			float mSecond;
 		};
 
+		// Overload operators
 		Time operator * (float scalar, const Time& time);
 		Time operator * (const Time& time, float scalar);
 		Time operator / (const Time& time, float scalar);

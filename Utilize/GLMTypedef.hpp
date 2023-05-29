@@ -1,6 +1,10 @@
 #ifndef __UTILIZE_GLMTYPEDEF_HPP__
 #define __UTILIZE_GLMTYPEDEF_HPP__
 
+/*	
+	Alias for commonly used glm types
+*/
+
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"

@@ -2,7 +2,7 @@
 #define __WINDOW_EVENT_HPP__
 
 /*
-	The abstract event class. Used for window's input.
+	Events will be used during window's input handling
 */
 
 #include "Keyboard.hpp"
@@ -21,7 +21,7 @@ namespace HJUIK
 				unsigned int y;
 			} size;
 
-			// Position of mouse after moved
+			// Position of mouse after moving
 			struct MousePosition
 			{
 				int x;
@@ -31,13 +31,13 @@ namespace HJUIK
 			// Scroll delta of mouse
 			float mouseScrollDelta; // Positive value means upwards movement
 
-			// Button clicked
+			// Mouse button clicked
 			Mouse::Button button;
 
-			// Key pressed
+			// Keyboard key pressed
 			Keyboard::Key key;
 
-			// Enum instead of enum class for shorter typing
+			// Event type
 			enum Type
 			{
 				// Window
@@ -49,7 +49,7 @@ namespace HJUIK
 				MouseScrolled, MouseMoved,
 
 				TypeCount,
-				// Not specified
+				// Not specified (Other irrelevant event)
 				Other
 			} type;
 		};

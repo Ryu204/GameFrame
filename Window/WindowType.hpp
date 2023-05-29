@@ -1,6 +1,10 @@
 #ifndef __WINDOW_STYLE_HPP__
 #define __WINDOW_STYLE_HPP__
 
+/*
+	Specify the attribute of a window
+*/
+
 namespace HJUIK
 {
 	namespace Window

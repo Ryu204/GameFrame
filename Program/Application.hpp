@@ -2,7 +2,8 @@
 #define __PROGRAM_APPLICATION__
 
 /*
-	The highest layer of wrapper. Used in main function
+	The highest layer of the engine wrapper. 
+	Will be used in main() function.
 */
 
 #include "../Window.hpp"
@@ -16,6 +17,8 @@ namespace HJUIK
 	{
 	public:
 		Application();
+		// Runs the application, returns only if the application
+		// is shutdown or terminates
 		void run();
 	private:
 		void update(Time time);
