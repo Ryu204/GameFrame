@@ -1,2 +1,7 @@
 # build directory
 build
+out
+
+# cmake-related ignored files
+CMakeUserPresets.json
+CMakeSettings.json
