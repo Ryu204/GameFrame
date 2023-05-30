@@ -1,5 +1,5 @@
-#ifndef __UTILIZE_CLOCK_HPP__
-#define __UTILIZE_CLOCK_HPP__
+#ifndef __UTILIZE_STOPWATCH_HPP__
+#define __UTILIZE_STOPWATCH_HPP__
 
 /*
 	Uses to know how much time has passed since
