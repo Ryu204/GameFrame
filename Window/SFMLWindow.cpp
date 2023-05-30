@@ -1,5 +1,5 @@
 #include "SFMLWindow.hpp"
-#include "glad/glad.h"
+#include "../Graphics/glad/glad.h"
 #include <iostream>
 
 namespace HJUIK

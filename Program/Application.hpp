@@ -1,5 +1,5 @@
-#ifndef __PROGRAM_APPLICATION__
-#define __PROGRAM_APPLICATION__
+#ifndef __PROGRAM_APPLICATION_HPP__
+#define __PROGRAM_APPLICATION_HPP__
 
 /*
 	The highest layer of the engine wrapper. 
