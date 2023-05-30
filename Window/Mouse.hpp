@@ -6,6 +6,7 @@
 */
 
 #include <string>
+#include <cstdint>
 
 #include "SFML/Window.hpp"
 
