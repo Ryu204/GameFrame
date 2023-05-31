@@ -7,6 +7,8 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v3
+    - name: Create SFML directory
+      run: mkdir -p build/sfml
     - name: Checkout SFML 2.6.x branch
       uses: actions/checkout@v3
       with:
