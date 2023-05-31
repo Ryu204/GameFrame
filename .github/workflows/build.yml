@@ -1,0 +1,26 @@
+name: Build & Lint
+on: [push, pull_requests]
+
+jobs:
+  build:
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v3
+    - name: Checkout SFML 2.6.x branch
+      uses: actions/checkout@v3
+      with:
+        reposistory: SFML/SFML
+        ref: 2.6.x
+        path: build/sfml
+    - name: Configure, Build & Install SFML
+      runs: >
+        cmake -Sbuild/sfml -Bbuild/sfml/build
+        cmake --build build/sfml/build
+        cmake --install build/sfml/build --config Debug
+    - name: Install clang-tidy & dependencies
+      runs: sudo apt install clang-tidy libglm-dev
+    - name: Configure
+      runs: cmake --preset=ci
+    - name: Build & Lint
+      runs: cmake --build build -j 2
+
