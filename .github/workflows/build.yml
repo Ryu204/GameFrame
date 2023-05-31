@@ -3,6 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build:
+    runs_on: ubuntu-latest
     steps:
     - name: Checkout sources
       uses: actions/checkout@v3
