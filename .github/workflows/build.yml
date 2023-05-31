@@ -17,8 +17,8 @@ jobs:
         path: build/sfml
     - name: Configure, Build & Install SFML
       run: >
-        cmake -Sbuild/sfml -Bbuild/sfml/build
-        cmake --build build/sfml/build
+        cmake -Sbuild/sfml -Bbuild/sfml/build &&
+        cmake --build build/sfml/build &&
         cmake --install build/sfml/build --config Debug
     - name: Install clang-tidy & dependencies
       run: sudo apt install clang-tidy libglm-dev
