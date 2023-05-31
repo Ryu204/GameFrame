@@ -21,7 +21,7 @@ jobs:
       run: >
         cmake -Sbuild/sfml -Bbuild/sfml/build &&
         cmake --build build/sfml/build &&
-        cmake --install build/sfml/build --config Debug
+        sudo cmake --install build/sfml/build --config Debug
     - name: Configure
       run: cmake --preset=ci
     - name: Build & Lint
