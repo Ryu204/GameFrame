@@ -2,8 +2,7 @@
 #define GAMEFRAME_PROGRAM_APPLICATION_HPP
 
 /*
-	The highest layer of the engine wrapper. 
-	Will be used in main() function.
+	Application class is the highest layer of wrapper and will be used in main() function.
 */
 
 #include "../Window.hpp"
@@ -21,14 +20,15 @@ namespace HJUIK
 		// is shutdown or terminates
 		void run();
 	private:
-		void update(Time time);
+		void update(Time deltaTime);
 		void processInput();
 		void render();
-	private:
-		std::unique_ptr<IWindow> mWindow;
 
+
+		std::unique_ptr<IWindow> mWindow;
 		const Time mUpdateInterval;
+		Graphics::Color mBackgroundColor;
 	};
-}
+} // namespace HJUIK
 
 #endif

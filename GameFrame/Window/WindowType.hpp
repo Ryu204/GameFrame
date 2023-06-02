@@ -5,16 +5,21 @@
 	Specify the attribute of a window
 */
 
-namespace HJUIK::Window
+#include <cstdint>
+
+namespace HJUIK
 {
-	enum class WindowType
+	namespace Window
 	{
-		NONE = 0,
-		RESIZABLE = 1 << 0,
-		FULLSCREEN = 1 << 2,
-		UNRESIZABLE = 1 << 3,
-		DEFAULT = RESIZABLE
-	};
-}
+		enum class WindowType : std::uint8_t
+		{
+			NONE = 0,
+			RESIZABLE = 1U << 0U,
+			FULLSCREEN = 1U << 2U,
+			UNRESIZABLE = 1U << 3U,
+			DEFAULT = RESIZABLE
+		};
+	} // namespace Window
+} // namespace HJUIK
 
 #endif

@@ -15,13 +15,13 @@ namespace HJUIK
 		// Color represented in 8-bit RGBA format
 		struct Color
 		{
-		public:
 			using val = std::uint8_t;
 			val Red;
 			val Green;
 			val Blue;
 			val Alpha;
-		public:
+
+			Color();
 			Color(const Color& other) = default;
 			Color(Color&& other) = default;
 			~Color() = default;
@@ -36,7 +36,7 @@ namespace HJUIK
 
 		auto operator == (const Color& left, const Color& right) -> bool;
 		auto operator != (const Color& left, const Color& right) -> bool;
-	}
-}
+	} // namespace Graphics
+} // namespace HJUIK
 
 #endif

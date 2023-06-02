@@ -26,6 +26,6 @@ namespace HJUIK
 	auto getFramerate() -> unsigned int;
 	// True if the key events are repeatable when pressed
 	auto getKeyRepeatability() -> bool;
-}
+} // namespace HJUIK
 
 #endif

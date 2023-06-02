@@ -9,22 +9,25 @@
 #include "Time.hpp"
 #include <chrono>
 
-namespace HJUIK::Utilize
+namespace HJUIK
 {
-	class StopWatch
+	namespace Utilize
 	{
-	public:
-		StopWatch();
-		// Get how much time has passed since last restart
-		auto restart() -> Time;
-		// Get how much time has passed since initialization
-		auto total() -> Time;
-	private:
-		using Point = std::chrono::time_point<std::chrono::steady_clock>;
-	private:
-		Point mInitialization;
-		Point mStart;
-	};
-}
+		class StopWatch
+		{
+		public:
+			StopWatch();
+			// Get how much time has passed since last restart
+			auto restart() -> Time;
+			// Get how much time has passed since initialization
+			auto total() -> Time;
+		private:
+			using Point = std::chrono::time_point<std::chrono::steady_clock>;
+
+			Point mInitialization;
+			Point mStart;
+		};
+	} // namespace Utilize
+} //namespace HJUIK
 
 #endif

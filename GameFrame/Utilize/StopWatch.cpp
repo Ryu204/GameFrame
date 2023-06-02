@@ -1,22 +1,25 @@
 #include "StopWatch.hpp"
 
-namespace HJUIK::Utilize
+namespace HJUIK
 {
-	StopWatch::StopWatch()
-		: mInitialization(std::chrono::steady_clock::now())
-		, mStart(mInitialization)
-	{ }
-
-	auto StopWatch::restart() -> Time
+	namespace Utilize
 	{
-		const Point now = std::chrono::steady_clock::now();
-		const std::chrono::duration<float> duration = (now - mStart);
-		mStart = now;
-		return { static_cast<float>(duration.count()) };
-	}
+		StopWatch::StopWatch()
+			: mInitialization(std::chrono::steady_clock::now())
+			, mStart(mInitialization)
+		{ }
 
-	auto StopWatch::total() -> Time
-	{
-		return {static_cast<float>((std::chrono::steady_clock::now() - mInitialization).count())};
-	}
-}
+		auto StopWatch::restart() -> Time
+		{
+			const Point now = std::chrono::steady_clock::now();
+			const std::chrono::duration<float> duration = (now - mStart);
+			mStart = now;
+			return Time{ static_cast<float>(duration.count()) };
+		}
+
+		auto StopWatch::total() -> Time
+		{
+			return Time{ static_cast<float>((std::chrono::steady_clock::now() - mInitialization).count()) };
+		}
+	} // namespace Utilize
+} // namespace HJUIK

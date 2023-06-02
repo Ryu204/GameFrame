@@ -171,7 +171,9 @@ namespace HJUIK
             };
 
             if (key == Key::UNKNOWN || key == Key::KEY_COUNT)
+            {
                 return "Unknown";
+            }
             return names[static_cast<int>(key)];
         }
 
@@ -186,5 +188,5 @@ namespace HJUIK
         {
             return static_cast<Key>(static_cast<int>(key));
         }
-	}
-}
+	} // namespace Window
+} // namespace HJUIK

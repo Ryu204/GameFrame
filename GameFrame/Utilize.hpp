@@ -8,6 +8,6 @@ namespace HJUIK
 {
 	using Time = Utilize::Time;
 	using Clock = Utilize::StopWatch;
-}
+} // namespace HJUIK
 
 #endif

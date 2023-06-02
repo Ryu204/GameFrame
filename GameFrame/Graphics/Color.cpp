@@ -4,6 +4,13 @@ namespace HJUIK
 {
 	namespace Graphics
 	{
+		Color::Color()
+			: Red(0)
+			, Green(0)
+			, Blue(0)
+			, Alpha(UINT8_MAX)
+		{ }
+		
 		Color::Color(Vector4u code)
 			: Red(code.r)
 			, Green(code.g)
@@ -34,5 +41,5 @@ namespace HJUIK
 		{
 			return !(left == right);
 		}
-	}
-}
+	} // namespace Graphics
+} // namespace HJUIK

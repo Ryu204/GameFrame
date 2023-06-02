@@ -14,8 +14,8 @@ namespace HJUIK
 
 	auto getUpdateInterval() -> Time
 	{
-		static constexpr float duration = 60.f;
-		return {1.f / duration};
+		static constexpr float duration = 60.F;
+		return Time{1.F / duration};
 	}
 
 	auto getDefaultWindowSize() -> Vector2u
@@ -34,4 +34,4 @@ namespace HJUIK
 	{
 		return false;
 	}
-}
+} // namespace HJUIK

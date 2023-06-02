@@ -59,8 +59,8 @@ namespace HJUIK
 
 	void Application::render()
 	{
-		mWindow->clear(Graphics::Color({ 10, 20, 30, 255 }));
+		mWindow->clear(mBackgroundColor);
 
 		mWindow->display();
 	}
-}
+} // namespace HJUIK

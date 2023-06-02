@@ -1,5 +1,5 @@
-#ifndef __WINDOW_HPP__
-#define __WINDOW_HPP__
+#ifndef GAMEFRAME_WINDOW_HPP
+#define GAMEFRAME_WINDOW_HPP
 
 #include "Window/SFMLWindow.hpp"
 
@@ -12,6 +12,6 @@ namespace HJUIK
 	using WindowType = Window::WindowType;
 
 	using SFMLWindow = Window::SFMLWindow;
-}
+} // namespace HJUIK
 
 #endif

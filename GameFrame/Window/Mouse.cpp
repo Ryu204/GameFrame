@@ -50,10 +50,9 @@ namespace HJUIK
 				return "Extra Button 1";
 			case Button::EXTRA_2:
 				return "Extra Button 2";
-			case Button::BUTTON_COUNT:
-			case Button::UNKNOWN:
+			default:
 				return "Unknown";
 			}
 		}
-	}
-}
+	} // namespace Window
+} // namespace HJUIK
