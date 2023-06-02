@@ -1,7 +1,10 @@
 ---
-Checks: '*'
+Checks: '-*,
+  readability-identifier-naming,
+  modernize-*'
 WarningsAsErrors: '*'
 CheckOptions:
+  # Readability
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.PrivateMemberCase

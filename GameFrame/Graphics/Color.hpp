@@ -1,5 +1,5 @@
-#ifndef __GRAPHICS_COLOR_HPP__
-#define __GRAPHICS_COLOR_HPP__
+#ifndef GAMEFRAME_GRAPHICS_COLOR_HPP
+#define GAMEFRAME_GRAPHICS_COLOR_HPP
 
 /*
 	Color represented in 8-bit RGBA format
@@ -12,24 +12,30 @@ namespace HJUIK
 {
 	namespace Graphics
 	{
+		// Color represented in 8-bit RGBA format
 		struct Color
 		{
+		public:
 			using val = std::uint8_t;
-			val r;
-			val g;
-			val b;
-			val a;
-			Color(Color& other) = default;
+			val Red;
+			val Green;
+			val Blue;
+			val Alpha;
+		public:
+			Color(const Color& other) = default;
 			Color(Color&& other) = default;
-			Color(Vector4u code);
-			Color(Vector3u code);
-			Color(val red, val green, val blue, val alpha = 255);
+			~Color() = default;
+
+			auto operator = (const Color& other) -> Color& = default;
+			auto operator = (Color&& other) -> Color& = default;
+			explicit Color(Vector4u code);
+			explicit Color(Vector3u code);
 			// Get the RGBA format of the color in [0,1] range
-			Vector4f getNormalizedColor();
+			auto getNormalizedColor() const -> Vector4f;
 		};
 
-		bool operator == (const Color& left, const Color& right);
-		bool operator != (const Color& left, const Color& right);
+		auto operator == (const Color& left, const Color& right) -> bool;
+		auto operator != (const Color& left, const Color& right) -> bool;
 	}
 }
 

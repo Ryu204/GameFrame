@@ -5,13 +5,13 @@ namespace HJUIK
 	namespace Window
 	{
         // Check real-time state of a key. True if it is being pressed
-		bool Keyboard::isPressed(Keyboard::Key key)
+		auto Keyboard::isPressed(Keyboard::Key key) -> bool
 		{
 			return sf::Keyboard::isKeyPressed(toSFMLKey(key));
 		}
 
         // Get descriptive name of buttons
-        std::string Keyboard::getName(Keyboard::Key key)
+        auto Keyboard::getName(Keyboard::Key key) -> std::string
         {
             static const std::vector<std::string> names =
             {
@@ -63,7 +63,7 @@ namespace HJUIK
                 "}",     //!< Keyboard ] and } key
                 // For US keyboards mapped to key 29 (Microsoft Keyboard Scan Code Specification)
                 // For Non-US keyboards mapped to key 42 (Microsoft Keyboard Scan Code Specification)
-                // Typical language mappings: Belg:£µ` FrCa:<>} Dan:*' Dutch:`´ Fren:µ* Ger:'# Ital:§ù LatAm:[}` Nor:*@ Span:ç} Swed:*' Swiss:$£} UK:~# Brazil:}]
+                // Typical language mappings: Belg:ï¿½ï¿½` FrCa:<>} Dan:*' Dutch:`ï¿½ Fren:ï¿½* Ger:'# Ital:ï¿½ï¿½ LatAm:[}` Nor:*@ Span:ï¿½} Swed:*' Swiss:$ï¿½} UK:~# Brazil:}]
                 "\\",      //!< Keyboard \ and | key OR various keys for Non-US keyboards
                 ";",      //!< Keyboard ; and : key
                 "\'",     //!< Keyboard ' and " key
@@ -129,7 +129,7 @@ namespace HJUIK
                 "Numpad 0",        //!< Keypad 0 and Insert key
                 // For US keyboards doesn't exist
                 // For Non-US keyboards mapped to key 45 (Microsoft Keyboard Scan Code Specification)
-                // Typical language mappings: Belg:<\> FrCa:«°» Dan:<\> Dutch:]|[ Fren:<> Ger:<|> Ital:<> LatAm:<> Nor:<> Span:<> Swed:<|> Swiss:<\> UK:\| Brazil: \|.
+                // Typical language mappings: Belg:<\> FrCa:ï¿½ï¿½ï¿½ Dan:<\> Dutch:]|[ Fren:<> Ger:<|> Ital:<> LatAm:<> Nor:<> Span:<> Swed:<|> Swiss:<\> UK:\| Brazil: \|.
                 "Non-US \\",     //!< Keyboard Non-US \ and | key
                 "Application",        //!< Keyboard Application key
                 "Execute",            //!< Keyboard Execute key
@@ -170,20 +170,19 @@ namespace HJUIK
                 "Launch Media Select",  //!< Keyboard Launch Media Select key
             };
 
-            if (key == Key::Unknown || key == Key::ScancodeCount)
+            if (key == Key::UNKNOWN || key == Key::KEY_COUNT)
                 return "Unknown";
-            else
-                return names[static_cast<int>(key)];
+            return names[static_cast<int>(key)];
         }
 
         // The underlying enum is actually SFML key so we only cast
-        sf::Keyboard::Scancode Keyboard::toSFMLKey(Keyboard::Key key)
+        auto Keyboard::toSFMLKey(Keyboard::Key key) -> sf::Keyboard::Scancode
         {
             return static_cast<sf::Keyboard::Scancode>(static_cast<int>(key));
         }
 
         // The underlying enum is actually SFML key so we only cast
-        Keyboard::Key Keyboard::fromSFMLKey(sf::Keyboard::Scancode key)
+        auto Keyboard::fromSFMLKey(sf::Keyboard::Scancode key) -> Keyboard::Key
         {
             return static_cast<Key>(static_cast<int>(key));
         }

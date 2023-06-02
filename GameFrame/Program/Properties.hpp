@@ -1,5 +1,5 @@
-#ifndef __PROGRAM_PROPERTIES_HPP__
-#define __PROGRAM_PROPERTIES_HPP__
+#ifndef GAMEFRAME_PROGRAM_PROPERTIES_HPP
+#define GAMEFRAME_PROGRAM_PROPERTIES_HPP
 
 /*
 	Define core properties of the application,
@@ -15,17 +15,17 @@
 namespace HJUIK
 {
 	// Get the title of window
-	std::string GET_WINDOW_TITLE();
+	auto getWindowTitle() -> std::string;
 	// Get window type
-	WindowType GET_WINDOW_TYPE();
+	auto getWindowType() -> WindowType;
 	// Get the interval of Application::update(Time) call
-	Time GET_UPDATE_INTERVAL();
+	auto getUpdateInterval() -> Time;
 	// Get the size of starting window
-	Vector2u GET_START_WINDOW_SIZE();
+	auto getDefaultWindowSize() -> Vector2u;
 	// Get the starting framerate
-	unsigned int GET_FRAMERATE();
+	auto getFramerate() -> unsigned int;
 	// True if the key events are repeatable when pressed
-	bool GET_KEY_REPEATABILITY();
+	auto getKeyRepeatability() -> bool;
 }
 
 #endif

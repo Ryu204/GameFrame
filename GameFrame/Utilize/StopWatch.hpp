@@ -1,5 +1,5 @@
-#ifndef __UTILIZE_STOPWATCH_HPP__
-#define __UTILIZE_STOPWATCH_HPP__
+#ifndef GAMEFRAME_UTILIZE_STOPWATCH_HPP
+#define GAMEFRAME_UTILIZE_STOPWATCH_HPP
 
 /*
 	Uses to know how much time has passed since
@@ -9,25 +9,22 @@
 #include "Time.hpp"
 #include <chrono>
 
-namespace HJUIK
+namespace HJUIK::Utilize
 {
-	namespace Utilize
+	class StopWatch
 	{
-		class StopWatch
-		{
-		public:
-			StopWatch();
-			// Get how much time has passed since last restart
-			Time restart();
-			// Get how much time has passed since initialization
-			Time total();
-		private:
-			using Point = std::chrono::time_point<std::chrono::steady_clock>;
-		private:
-			Point mInitialization;
-			Point mStart;
-		};
-	}
+	public:
+		StopWatch();
+		// Get how much time has passed since last restart
+		auto restart() -> Time;
+		// Get how much time has passed since initialization
+		auto total() -> Time;
+	private:
+		using Point = std::chrono::time_point<std::chrono::steady_clock>;
+	private:
+		Point mInitialization;
+		Point mStart;
+	};
 }
 
 #endif

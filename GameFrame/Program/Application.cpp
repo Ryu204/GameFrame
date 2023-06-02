@@ -5,16 +5,16 @@
 namespace HJUIK
 {
 	Application::Application()
-		: mUpdateInterval(GET_UPDATE_INTERVAL())
+		: mUpdateInterval(getUpdateInterval())
 	{
 		mWindow = std::make_unique<SFMLWindow>(
-			GET_START_WINDOW_SIZE(),
-			GET_WINDOW_TITLE(),
-			GET_WINDOW_TYPE()
+			getDefaultWindowSize(),
+			getWindowTitle(),
+			getWindowType()
 		);
 
-		mWindow->limitFrameRate(GET_FRAMERATE());
-		mWindow->setKeyRepeatable(GET_KEY_REPEATABILITY());
+		mWindow->limitFrameRate(getFramerate());
+		mWindow->setKeyRepeatable(getKeyRepeatability());
 	}
 
 	void Application::run()
@@ -28,7 +28,7 @@ namespace HJUIK
 			while (elapsed >= mUpdateInterval)
 			{
 				elapsed -= mUpdateInterval;
-				processInput(mUpdateInterval);
+				processInput();
 				update(mUpdateInterval);
 			}
 
@@ -36,19 +36,19 @@ namespace HJUIK
 		}
 	}
 
-	void Application::update(Time dt)
+	void Application::update(Time deltaTime)
 	{
 
 	}
 
-	void Application::processInput(Time dt)
+	void Application::processInput()
 	{
-		Event e;
-		while (mWindow->pollEvent(e))
+		Event event;
+		while (mWindow->pollEvent(event))
 		{
-			switch (e.type)
+			switch (event.Type)
 			{
-			case Event::Closed:
+			case Event::CLOSED:
 				mWindow->close();
 				break;
 			default:
@@ -59,7 +59,7 @@ namespace HJUIK
 
 	void Application::render()
 	{
-		mWindow->clear(Graphics::Color(10, 20, 30, 255));
+		mWindow->clear(Graphics::Color({ 10, 20, 30, 255 }));
 
 		mWindow->display();
 	}

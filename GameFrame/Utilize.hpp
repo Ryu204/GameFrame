@@ -1,7 +1,6 @@
-#ifndef __UTILIZE_HPP__
-#define __UTILIZE_HPP__
+#ifndef GAMEFRAME_UTILIZE_HPP
+#define GAMEFRAME_UTILIZE_HPP
 
-#include "Utilize/Time.hpp"
 #include "Utilize/StopWatch.hpp"
 #include "Utilize/GLMTypedef.hpp"
 

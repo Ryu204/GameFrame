@@ -5,39 +5,32 @@ namespace HJUIK
 	namespace Graphics
 	{
 		Color::Color(Vector4u code)
-			: r(code.r)
-			, g(code.g)
-			, b(code.b)
-			, a(code.a)
+			: Red(code.r)
+			, Green(code.g)
+			, Blue(code.b)
+			, Alpha(code.a)
 		{ }
 
 		Color::Color(Vector3u code)
-			: r(code.r)
-			, g(code.g)
-			, b(code.b)
-			, a(255)
+			: Red(code.r)
+			, Green(code.g)
+			, Blue(code.b)
+			, Alpha(UINT8_MAX)
 		{ }
 
-		Color::Color(val red, val green, val blue, val alpha)
-			: r(red)
-			, g(green)
-			, b(blue)
-			, a(alpha)
-		{ }
-
-		Vector4f Color::getNormalizedColor()
+		auto Color::getNormalizedColor() const -> Vector4f
 		{
-			Vector4f res(r, g, b, a);
-			return res / 255.f;
+			const Vector4f res(Red, Green, Blue, Alpha);
+			return res / static_cast<float>UINT8_MAX;
 		}
 
-		bool operator == (const Color& left, const Color& right)
+		auto operator == (const Color& left, const Color& right) -> bool
 		{
-			return left.a == right.a && left.r == right.r
-				&& left.g == right.g && left.b == right.b;
+			return left.Alpha == right.Alpha && left.Red == right.Red
+				&& left.Green == right.Green && left.Blue == right.Blue;
 		}
 
-		bool operator != (const Color& left, const Color& right)
+		auto operator != (const Color& left, const Color& right) -> bool
 		{
 			return !(left == right);
 		}

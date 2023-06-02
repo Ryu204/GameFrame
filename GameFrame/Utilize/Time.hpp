@@ -1,5 +1,5 @@
-#ifndef __UTILIZE_TIME_HPP__
-#define __UTILIZE_TIME_HPP__
+#ifndef GAMEFRAME_UTILIZE_TIME_HPP
+#define GAMEFRAME_UTILIZE_TIME_HPP
 
 /*
 	Represent time duration. Use std::chrono::steady_clock
@@ -7,44 +7,41 @@
 
 #include <chrono>
 
-namespace HJUIK
+namespace HJUIK::Utilize
 {
-	namespace Utilize
+	class Time
 	{
-		class Time
-		{
-		public:
-			Time(float second = 0.f);
-			Time(const Time& other);
+	public:
+		Time(float second = 0.f);
+		Time(const Time& other) = default;
 
-			// Convert the time to float second value
-			float toSecond() const;
-
-			// Overload operators
-			Time& operator = (Time&) = default;
-			Time& operator = (Time&&) = default;
-			void operator += (const Time& time);
-			void operator -= (const Time& time);
-			void operator *= (float scalar);
-			void operator /= (float scalar);
-		private:
-			float mSecond;
-		};
+		// Convert the time to float second value
+		auto toSecond() const -> float;
 
 		// Overload operators
-		Time operator * (float scalar, const Time& time);
-		Time operator * (const Time& time, float scalar);
-		Time operator / (const Time& time, float scalar);
-		Time operator + (const Time& left, const Time& right);
-		Time operator - (const Time& left, const Time& right);
-		Time operator - (const Time& left);
-		bool operator == (const Time& left, const Time& right);
-		bool operator != (const Time& left, const Time& right);
-		bool operator < (const Time& left, const Time& right);
-		bool operator > (const Time& left, const Time& right);
-		bool operator >= (const Time& left, const Time& right);
-		bool operator <= (const Time& left, const Time& right);
-	}
+		auto operator = (Time&) -> Time& = default;
+		auto operator = (Time&&) -> Time& = default;
+		auto operator += (const Time& time) -> void;
+		auto operator -= (const Time& time) -> void;
+		auto operator *= (float scalar) -> void;
+		auto operator /= (float scalar) -> void;
+	private:
+		float mSecond;
+	};
+
+	// Overload operators
+	auto operator * (float scalar, const Time& time) -> Time;
+	auto operator * (const Time& time, float scalar) -> Time;
+	auto operator / (const Time& time, float scalar) -> Time;
+	auto operator + (const Time& left, const Time& right) -> Time;
+	auto operator - (const Time& left, const Time& right) -> Time;
+	auto operator - (const Time& left) -> Time;
+	auto operator == (const Time& left, const Time& right) -> bool;
+	auto operator != (const Time& left, const Time& right) -> bool;
+	auto operator < (const Time& left, const Time& right) -> bool;
+	auto operator > (const Time& left, const Time& right) -> bool;
+	auto operator >= (const Time& left, const Time& right) -> bool;
+	auto operator <= (const Time& left, const Time& right) -> bool;
 }
 
 #endif
