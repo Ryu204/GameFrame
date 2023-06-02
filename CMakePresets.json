@@ -9,7 +9,7 @@
         {
             "name": "clang-tidy",
             "cacheVariables": {
-                "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--header-filter=${sourceDir}/*"
+                "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--header-filter=${sourceDir}/.*\\.hpp"
             }
         },
         {
