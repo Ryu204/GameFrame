@@ -7,7 +7,7 @@
 
 #include "IWindow.hpp"
 #include "../Utilize/GLMTypedef.hpp"
-
+#include "../Graphics/IOpenGLContext.hpp"
 #include "SFML/Window.hpp"
 
 #include <memory>
@@ -31,7 +31,7 @@ namespace HJUIK
 			};
 
 			SFMLWindow(Vector2u size, std::string title, WindowType style = WindowType::DEFAULT);
-			explicit SFMLWindow(const Settings& settings);
+			explicit SFMLWindow(const Settings &settings);
 			// Check if the window is still opened and available
 			auto isOpen() const -> bool override;
 			// Get size of the window in pixels
@@ -40,25 +40,37 @@ namespace HJUIK
 			auto close() -> void override;
 			// This function polls the event from the queue and returns false if
 			// nothing is found
-			auto pollEvent(Event& event) -> bool override;
-			// Registers key pressed event only once after it is pressed if set 
+			auto pollEvent(Event &event) -> bool override;
+			// Registers key pressed event only once after it is pressed if set
 			// to false, otherwise registers the event every frame it is held
 			auto setKeyRepeatable(bool repeatable) -> void override;
 			// Try to match the framerate to FPS value, note that this function
 			// is not precise
 			auto limitFrameRate(unsigned int FPS) -> void override;
-			// Clear the screen of the window
-			auto clear(Graphics::Color color) -> void override;
-			// Display the content after finished rendering
-			auto display() -> void override;
+			// Get the OpenGL context that corresponds to this window
+			auto getOpenGLContext() -> Graphics::IOpenGLContext & override;
+
 		private:
 			// Helper functions
-			auto createWindow(const Settings& settings) -> void;
-			static auto loadOpenGL() -> void;
+			static auto createWindow(const Settings &settings) -> std::unique_ptr<sf::Window>;
+			class SFMLOpenGLContext : public Graphics::IOpenGLContext
+			{
+			public:
+				explicit SFMLOpenGLContext(sf::Window &window);
+				~SFMLOpenGLContext() override;
+				SFMLOpenGLContext(const SFMLOpenGLContext &) = delete;
+				SFMLOpenGLContext(SFMLOpenGLContext &&) = delete;
+				auto operator=(const SFMLOpenGLContext &) -> SFMLOpenGLContext & = delete;
+				auto operator=(SFMLOpenGLContext &&) -> SFMLOpenGLContext & = delete;
+
+				auto display() -> void override;
+
+			private:
+				sf::Window &mWindow;
+			};
 
 			std::unique_ptr<sf::Window> mWindow;
-			// OpenGL status
-			static auto mOpenGLLoaded() -> bool&;
+			SFMLOpenGLContext mOpenGLContext;
 		};
 	} // namespace Window
 } // namespace HJUIK

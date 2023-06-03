@@ -6,32 +6,13 @@ namespace HJUIK
 {
 	namespace Window
 	{
-		auto SFMLWindow::mOpenGLLoaded() -> bool &
+
+		SFMLWindow::SFMLWindow(const SFMLWindow::Settings &settings) : mWindow{createWindow(settings)}, mOpenGLContext{*mWindow}
 		{
-			static bool loaded = false;
-			return loaded;
 		}
 
-		auto SFMLWindow::loadOpenGL() -> void
+		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style) : SFMLWindow(SFMLWindow::Settings{size, std::move(title), style, 3, 3})
 		{
-			if (!mOpenGLLoaded())
-			{
-				gladLoadGL();
-				mOpenGLLoaded() = true;
-			}
-		}
-
-		SFMLWindow::SFMLWindow(const SFMLWindow::Settings& settings)
-		{
-			createWindow(settings);
-			loadOpenGL();
-		}
-
-		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style)
-		{
-			SFMLWindow::Settings const settings{ size, std::move(title), style, 3, 3 };
-			createWindow(settings);
-			loadOpenGL();
 		}
 
 		auto SFMLWindow::isOpen() const -> bool
@@ -50,7 +31,7 @@ namespace HJUIK
 			mWindow->close();
 		}
 
-		auto SFMLWindow::pollEvent(Event& event) -> bool
+		auto SFMLWindow::pollEvent(Event &event) -> bool
 		{
 			// We just pass the value from sf::Window::pollEvent(sf::Event& e)
 			sf::Event sfEvent{};
@@ -117,19 +98,7 @@ namespace HJUIK
 			mWindow->setFramerateLimit(FPS);
 		}
 
-		auto SFMLWindow::display() -> void
-		{
-			mWindow->display();
-		}
-
-		auto SFMLWindow::clear(Graphics::Color color) -> void
-		{
-			auto normalized = color.getNormalizedColor();
-			glClearColor(normalized.r, normalized.g, normalized.b, normalized.a);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}
-
-		auto SFMLWindow::createWindow(const SFMLWindow::Settings& settings) -> void
+		auto SFMLWindow::createWindow(const SFMLWindow::Settings &settings) -> std::unique_ptr<sf::Window>
 		{
 			sf::ContextSettings csettings;
 			csettings.sRgbCapable = true;
@@ -139,10 +108,10 @@ namespace HJUIK
 			auto size = settings.Size;
 			auto title = settings.Title;
 			auto style = settings.Style;
-			
+
 			auto windowStyle = sf::Style::Default;
 			auto videoMode = sf::VideoMode(size.x, size.y);
-			
+
 			switch (style)
 			{
 			case WindowType::NONE:
@@ -160,7 +129,19 @@ namespace HJUIK
 				break;
 			}
 
-			mWindow = std::make_unique<sf::Window>(videoMode, title, windowStyle, csettings);
+			return std::make_unique<sf::Window>(videoMode, title, windowStyle, csettings);
+		}
+
+		auto SFMLWindow::getOpenGLContext() -> Graphics::IOpenGLContext &
+		{
+			return mOpenGLContext;
+		}
+
+		SFMLWindow::SFMLOpenGLContext::SFMLOpenGLContext(sf::Window &window) : mWindow{window} {}
+		SFMLWindow::SFMLOpenGLContext::~SFMLOpenGLContext() = default;
+		auto SFMLWindow::SFMLOpenGLContext::display() -> void
+		{
+			mWindow.display();
 		}
 	} // namespace Window
 } // namespace HJUIK
