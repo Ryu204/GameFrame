@@ -13,13 +13,13 @@ namespace HJUIK
       struct VertexArrayTrait
       {
         using HandleType = GLuint;
-        static GLuint create()
+        static auto create() -> GLuint
         {
           return checkNonZero(callGLGen<GLuint>(glGenVertexArrays),
                               "unable to generate vertex arrays");
         }
 
-        static void destroy(GLuint handle) { glDeleteVertexArrays(1, &handle); }
+        static auto destroy(GLuint handle) -> void { glDeleteVertexArrays(1, &handle); }
       };
     } // namespace detail
 
@@ -30,8 +30,8 @@ namespace HJUIK
       using OpenGLWrapper::OpenGLWrapper;
       using OpenGLWrapper::operator=;
 
-      auto bind() -> void const;
-      static auto unbind() -> void const;
+      auto bind() const -> void;
+      static auto unbind() -> void;
     };
   } // namespace Graphics
 

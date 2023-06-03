@@ -4,8 +4,8 @@ namespace HJUIK
 {
   namespace Graphics
   {
-    auto VertexArray::bind() -> void const { glBindVertexArray(get()); }
-    auto VertexArray::unbind() -> void const { glBindVertexArray(0); }
+    auto VertexArray::bind() const -> void { glBindVertexArray(get()); }
+    auto VertexArray::unbind() -> void { glBindVertexArray(0); }
   } // namespace Graphics
 
 } // namespace HJUIK
