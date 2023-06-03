@@ -11,7 +11,7 @@ namespace HJUIK
   class OpenGLWrapper
   {
   public:
-    using Handle = WrapperTrait::HandleType;
+    using Handle = typename WrapperTrait::HandleType;
     static constexpr Handle NULL_HANDLE = static_cast<Handle>(0);
 
     // Create an OpenGL object
@@ -21,10 +21,10 @@ namespace HJUIK
     explicit OpenGLWrapper(Handle handle) : mHandle{handle} {}
     explicit OpenGLWrapper(std::nullptr_t) : mHandle{NULL_HANDLE} {}
 
-    OpenGLWrapper(OpenGLWrapper &&other) : mHandle(other.release()) {}
+    OpenGLWrapper(OpenGLWrapper &&other) noexcept : mHandle(other.release()) {}
     OpenGLWrapper(const OpenGLWrapper &) = delete;
 
-    auto operator=(OpenGLWrapper &&other) -> OpenGLWrapper &
+    auto operator=(OpenGLWrapper &&other) noexcept -> OpenGLWrapper &
     {
       OpenGLWrapper(std::move(other)).swap(*this);
       return *this;
@@ -51,7 +51,7 @@ namespace HJUIK
 
     auto get() const -> Handle { return mHandle; }
 
-    operator bool() const { return mHandle != NULL_HANDLE; }
+    explicit operator bool() const { return mHandle != NULL_HANDLE; }
 
   private:
     Handle mHandle;
@@ -63,7 +63,7 @@ template <typename ReturnType, typename Func, typename... Args>
 inline auto callGLGen(Func &&glGenFunc, Args &&...args) -> ReturnType
 {
   ReturnType value;
-  std::forward<Func>(glGenFunc)(std::forward<Args>(args)..., 1, value);
+  std::forward<Func>(glGenFunc)(std::forward<Args>(args)..., 1, &value);
   return value;
 }
 
