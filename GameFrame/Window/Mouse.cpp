@@ -4,55 +4,55 @@ namespace HJUIK
 {
 	namespace Window
 	{
-		bool Mouse::isPressed(Button button)
+		auto Mouse::isPressed(Button button) -> bool
 		{
 			return sf::Mouse::isButtonPressed(toSFMLButton(button));
 		}
 
-		sf::Mouse::Button Mouse::toSFMLButton(Button button)
+		auto Mouse::toSFMLButton(Button button) -> sf::Mouse::Button
 		{
 			switch (button)
 			{
-			case Button::Left:
+			case Button::LEFT:
 				return sf::Mouse::Left;
-			case Button::Right:
+			case Button::RIGHT:
 				return sf::Mouse::Right;
-			case Button::Middle:
+			case Button::MIDDLE:
 				return sf::Mouse::Middle;
-			case Button::Extra1:
+			case Button::EXTRA_1:
 				return sf::Mouse::XButton1;
-			case Button::Extra2:
+			case Button::EXTRA_2:
 				return sf::Mouse::XButton2;
-			case Button::ButtonCount:
+			case Button::BUTTON_COUNT:
 				return sf::Mouse::ButtonCount;
 			default:
 				return sf::Mouse::Left;
 			}
 		}
 
-		Mouse::Button Mouse::fromSFMLButton(sf::Mouse::Button button)
+		auto Mouse::fromSFMLButton(sf::Mouse::Button button) -> Mouse::Button
 		{
 			// The enum are originally from SFML so we only need to cast
 			return static_cast<Button>(static_cast<std::int8_t>(button));
 		}
 
-		std::string Mouse::getName(Mouse::Button button)
+		auto Mouse::getName(Mouse::Button button) -> std::string
 		{
 			switch (button)
 			{
-			case Button::Left:
+			case Button::LEFT:
 				return "Left";
-			case Button::Right:
+			case Button::RIGHT:
 				return "Right";
-			case Button::Middle:
+			case Button::MIDDLE:
 				return "Middle";
-			case Button::Extra1:
+			case Button::EXTRA_1:
 				return "Extra Button 1";
-			case Button::Extra2:
+			case Button::EXTRA_2:
 				return "Extra Button 2";
 			default:
 				return "Unknown";
 			}
 		}
-	}
-}
+	} // namespace Window
+} // namespace HJUIK

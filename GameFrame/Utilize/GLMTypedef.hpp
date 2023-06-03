@@ -1,13 +1,13 @@
-#ifndef __UTILIZE_GLMTYPEDEF_HPP__
-#define __UTILIZE_GLMTYPEDEF_HPP__
+#ifndef GAMEFRAME_UTILIZE_GLMTYPEDEF_HPP
+#define GAMEFRAME_UTILIZE_GLMTYPEDEF_HPP
 
 /*	
 	Alias for commonly used glm types
 */
 
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace HJUIK
 {
@@ -22,6 +22,6 @@ namespace HJUIK
 	using Vector2i = glm::ivec2;
 	using Vector3i = glm::ivec3;
 	using Vector4i = glm::ivec4;
-}
+} // namespace HJUIK
 
 #endif

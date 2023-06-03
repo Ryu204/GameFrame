@@ -1,5 +1,5 @@
-#ifndef __WINDOW_MOUSE_HPP__
-#define __WINDOW_MOUSE_HPP__
+#ifndef GAMEFRAME_WINDOW_MOUSE_HPP
+#define GAMEFRAME_WINDOW_MOUSE_HPP
 
 /*
     Define mouse buttons. Use SFML scancode in SFML/Window/Mouse.hpp.
@@ -21,26 +21,26 @@ namespace HJUIK
             // From SFML include/Window/Event.hpp
             enum class Button : std::int8_t
             {
-                Unknown = -1,
-                Left = 0, 
-                Right,
-                Middle,
-                Extra1,
-                Extra2,
+                UNKNOWN = -1,
+                LEFT = 0, 
+                RIGHT,
+                MIDDLE,
+                EXTRA_1,
+                EXTRA_2,
 
-                ButtonCount
+                BUTTON_COUNT
             };
-        public:
+            
             // Get the name of the button
-            static std::string getName(Button button);
+            static auto getName(Button button) -> std::string;
             // Return true if the button is currently pressed, and false otherwise
-            static bool isPressed(Button button);
+            static auto isPressed(Button button) -> bool;
 
             // Library specific functions
-            static sf::Mouse::Button toSFMLButton(Button button);
-            static Button fromSFMLButton(sf::Mouse::Button button);
+            static auto toSFMLButton(Button button) -> sf::Mouse::Button;
+            static auto fromSFMLButton(sf::Mouse::Button button) -> Button;
         };
-    }
-}
+    } // namespace Window
+} // namespace HJUIK
 
 #endif

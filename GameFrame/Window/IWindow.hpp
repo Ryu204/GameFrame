@@ -1,9 +1,8 @@
-#ifndef __WINDOW_WINDOW_HPP__
-#define __WINDOW_WINDOW_HPP__
+#ifndef GAMEFRAME_WINDOW_IWINDOW_HPP
+#define GAMEFRAME_WINDOW_IWINDOW_HPP
 
 /*
-	The abstract window class for specific windows 
-	from different libraries
+	The abstract window class for specific windows from different libraries
 */
 
 #include "WindowType.hpp"
@@ -23,27 +22,35 @@ namespace HJUIK
 		// A derived class's constructor must be in this form:
 		// DerivedClass(Vector2u size, std::string title, Style style = Style::Default);
 		public:
+			IWindow() = default;
+			IWindow(const IWindow&) = default;
+			IWindow(IWindow&&) = default;
+			auto operator = (const IWindow&) -> IWindow& = default;
+			auto operator = (IWindow&&) -> IWindow& = default;
+			// Virtual destructor for use of std::unique_ptr
+			virtual ~IWindow() = default;
+
 			// Check if the window is still opened and available
-			virtual bool isOpen() const = 0;
+			virtual auto isOpen() const -> bool = 0;
 			// Get size of the window in pixels
-			virtual Vector2u getSize() const = 0;
+			virtual auto getSize() const -> Vector2u = 0;
 			// Close the window
-			virtual void close() = 0;
+			virtual auto close() -> void = 0;
 			// This function polls the event from the queue and returns false if
 			// nothing is found
-			virtual bool pollEvent(Event& e) = 0;
+			virtual auto pollEvent(Event& event) -> bool = 0;
 			// Registers key pressed event only once after it is pressed if set 
 			// to false, otherwise registers the event every frame it is held
-			virtual void setKeyRepeatable(bool repeatable = true) = 0;
+			virtual auto setKeyRepeatable(bool repeatable) -> void = 0;
 			// Try to match the framerate to FPS value, note that this function
 			// is not precise
-			virtual void limitFrameRate(unsigned int FPS) = 0;
+			virtual auto limitFrameRate(unsigned int FPS) -> void = 0;
 			// Clear the screen of the window
-			virtual void clear(Graphics::Color color = Graphics::Color(0, 0, 0)) = 0;
+			virtual auto clear(Graphics::Color color) -> void = 0;
 			// Display the content after finished rendering
-			virtual void display() = 0;
+			virtual auto display() -> void = 0;
 		};
-	}
-}
+	} // namespace Window
+} // namespace HJUIK
 
 #endif

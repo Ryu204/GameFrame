@@ -9,17 +9,17 @@ namespace HJUIK
 			, mStart(mInitialization)
 		{ }
 
-		Time StopWatch::restart()
+		auto StopWatch::restart() -> Time
 		{
-			Point now = std::chrono::steady_clock::now();
-			std::chrono::duration<float> duration = (now - mStart);
+			const Point now = std::chrono::steady_clock::now();
+			const std::chrono::duration<float> duration = (now - mStart);
 			mStart = now;
-			return Time(duration.count());
+			return Time{ static_cast<float>(duration.count()) };
 		}
 
-		Time StopWatch::total()
+		auto StopWatch::total() -> Time
 		{
-			return Time((std::chrono::steady_clock::now() - mInitialization).count());
+			return Time{ static_cast<float>((std::chrono::steady_clock::now() - mInitialization).count()) };
 		}
-	}
-}
+	} // namespace Utilize
+} // namespace HJUIK

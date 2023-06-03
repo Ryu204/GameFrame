@@ -2,33 +2,36 @@
 
 namespace HJUIK
 {
-	std::string GET_WINDOW_TITLE()
+	auto getWindowTitle() -> std::string
 	{
 		return "Application";
 	}
 
-	WindowType GET_WINDOW_TYPE()
+	auto getWindowType() -> WindowType
 	{
-		return WindowType::Default;
+		return WindowType::DEFAULT;
 	}
 
-	Time GET_UPDATE_INTERVAL()
+	auto getUpdateInterval() -> Time
 	{
-		return Time(1.f / 60.f);
+		static constexpr float duration = 60.F;
+		return Time{1.F / duration};
 	}
 
-	Vector2u GET_START_WINDOW_SIZE()
+	auto getDefaultWindowSize() -> Vector2u
 	{
-		return Vector2u(800, 800);
+		static constexpr Vector2u size{800, 800};
+		return size;
 	}
 
-	unsigned int GET_FRAMERATE()
+	auto getFramerate() -> unsigned int
 	{
-		return 120;
+		constexpr unsigned int fps{ 120 };
+		return fps;
 	}
 
-	bool GET_KEY_REPEATABILITY()
+	auto getKeyRepeatability() -> bool
 	{
 		return false;
 	}
-}
+} // namespace HJUIK

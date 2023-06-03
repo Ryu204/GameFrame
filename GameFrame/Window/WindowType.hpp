@@ -1,23 +1,25 @@
-#ifndef __WINDOW_STYLE_HPP__
-#define __WINDOW_STYLE_HPP__
+#ifndef GAMEFRAME_WINDOW_WINDOWTYPE_HPP
+#define GAMEFRAME_WINDOW_WINDOWTYPE_HPP
 
 /*
 	Specify the attribute of a window
 */
 
+#include <cstdint>
+
 namespace HJUIK
 {
 	namespace Window
 	{
-		enum class WindowType
+		enum class WindowType : std::uint8_t
 		{
-			None = 0,
-			Resizable = 1 << 0,
-			FullScreen = 1 << 2,
-			Unresizable = 1 << 3,
-			Default = Resizable
+			NONE = 0,
+			RESIZABLE = 1U << 0U,
+			FULLSCREEN = 1U << 2U,
+			UNRESIZABLE = 1U << 3U,
+			DEFAULT = RESIZABLE
 		};
-	}
-}
+	} // namespace Window
+} // namespace HJUIK
 
 #endif

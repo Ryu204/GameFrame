@@ -1,5 +1,5 @@
-#ifndef __WINDOW_SFMLWINDOW_HPP__
-#define __WINDOW_SFMLWINDOW_HPP__
+#ifndef GAMEFRAME_WINDOW_SFMLWINDOW_HPP
+#define GAMEFRAME_WINDOW_SFMLWINDOW_HPP
 
 /*
 	The derived window class with SFML implementation
@@ -23,44 +23,44 @@ namespace HJUIK
 			// Window construction parameters
 			struct Settings
 			{
-				Vector2u size;
-				std::string title;
-				WindowType style;
+				Vector2u Size;
+				std::string Title;
+				WindowType Style;
 				unsigned int OpenGLMajorVersion = 3;
 				unsigned int OpenGLMinorVersion = 3;
 			};
-		public:
-			SFMLWindow(Vector2u size, std::string title, WindowType style = WindowType::Default);
-			SFMLWindow(Settings settings);
+
+			SFMLWindow(Vector2u size, std::string title, WindowType style = WindowType::DEFAULT);
+			explicit SFMLWindow(const Settings& settings);
 			// Check if the window is still opened and available
-			bool isOpen() const override;
+			auto isOpen() const -> bool override;
 			// Get size of the window in pixels
-			Vector2u getSize() const override;
+			auto getSize() const -> Vector2u override;
 			// Close the window
-			void close() override;
+			auto close() -> void override;
 			// This function polls the event from the queue and returns false if
 			// nothing is found
-			bool pollEvent(Event& e) override;
+			auto pollEvent(Event& event) -> bool override;
 			// Registers key pressed event only once after it is pressed if set 
 			// to false, otherwise registers the event every frame it is held
-			void setKeyRepeatable(bool repeatable = true) override;
+			auto setKeyRepeatable(bool repeatable) -> void override;
 			// Try to match the framerate to FPS value, note that this function
 			// is not precise
-			void limitFrameRate(unsigned int FPS) override;
+			auto limitFrameRate(unsigned int FPS) -> void override;
 			// Clear the screen of the window
-			void clear(Graphics::Color color = Graphics::Color(0, 0, 0)) override;
+			auto clear(Graphics::Color color) -> void override;
 			// Display the content after finished rendering
-			void display() override;
+			auto display() -> void override;
 		private:
 			// Helper functions
-			void createWindow(Settings settings);
-			void loadOpenGL();
-		private:
+			auto createWindow(const Settings& settings) -> void;
+			static auto loadOpenGL() -> void;
+
 			std::unique_ptr<sf::Window> mWindow;
 			// OpenGL status
-			bool& mOpenGLLoaded() const;
+			static auto mOpenGLLoaded() -> bool&;
 		};
-	}
-}
+	} // namespace Window
+} // namespace HJUIK
 
 #endif

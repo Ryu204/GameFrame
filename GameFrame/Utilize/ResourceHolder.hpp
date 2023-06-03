@@ -1,5 +1,5 @@
-#ifndef __UTILIZE_RESOURCEHOLDER_HPP__
-#define __UTILIZE_RESOURCEHOLDER_HPP__
+#ifndef GAMEFRAME_UTILIZE_RESOURCEHOLDER_HPP
+#define GAMEFRAME_UTILIZE_RESOURCEHOLDER_HPP
 
 /*
 	This class is used to manage instances 
@@ -11,7 +11,7 @@
 #include <memory>
 
 namespace HJUIK
-{
+{		
 	namespace Utilize
 	{
 		// Efficient data structure to store heavy-weight data
@@ -23,16 +23,16 @@ namespace HJUIK
 			ResourceHolder();
 			// Create new resource. Args... are resource's constructor paramter(s)
 			template <typename... Args>
-			void create(Key key, Args... params);
+			auto create(Key key, Args... params) -> void;
 			// Create new default resource
-			void create(Key key);
+			auto create(Key key) -> void;
 			// Retrieve the resource reference
-			Val& get(Key key);
+			auto get(Key key) -> Val&;
 		private:
 			std::unordered_map<Key, std::unique_ptr<Val>> mContainer;
 		};
-	}
-}
+	} // namespace Utilize
+} // namespace HJUIK
 
 #include "ResourceHolder.inl"
 

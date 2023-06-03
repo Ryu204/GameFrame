@@ -5,3 +5,6 @@ out
 # cmake-related ignored files
 CMakeUserPresets.json
 CMakeSettings.json
+
+# vscode-related ignored folder
+.vscode

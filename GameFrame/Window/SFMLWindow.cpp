@@ -6,13 +6,13 @@ namespace HJUIK
 {
 	namespace Window
 	{
-		bool& SFMLWindow::mOpenGLLoaded() const
+		auto SFMLWindow::mOpenGLLoaded() -> bool &
 		{
 			static bool loaded = false;
 			return loaded;
 		}
 
-		void SFMLWindow::loadOpenGL()
+		auto SFMLWindow::loadOpenGL() -> void
 		{
 			if (!mOpenGLLoaded())
 			{
@@ -21,141 +21,146 @@ namespace HJUIK
 			}
 		}
 
-		SFMLWindow::SFMLWindow(SFMLWindow::Settings settings)
+		SFMLWindow::SFMLWindow(const SFMLWindow::Settings& settings)
 		{
 			createWindow(settings);
 			loadOpenGL();
 		}
 
 		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style)
-			: mWindow()
 		{
-			SFMLWindow::Settings settings{ size, title, style, 3, 3 };
+			SFMLWindow::Settings const settings{ size, std::move(title), style, 3, 3 };
 			createWindow(settings);
 			loadOpenGL();
 		}
 
-		bool SFMLWindow::isOpen() const
+		auto SFMLWindow::isOpen() const -> bool
 		{
 			return mWindow->isOpen();
 		}
 
-		Vector2u SFMLWindow::getSize() const
+		auto SFMLWindow::getSize() const -> Vector2u
 		{
 			auto size = mWindow->getSize();
-			return Vector2u(size.x, size.y);
+			return {size.x, size.y};
 		}
 
-		void SFMLWindow::close()
+		auto SFMLWindow::close() -> void
 		{
 			mWindow->close();
 		}
 
-		bool SFMLWindow::pollEvent(Event& e)
+		auto SFMLWindow::pollEvent(Event& event) -> bool
 		{
 			// We just pass the value from sf::Window::pollEvent(sf::Event& e)
-			sf::Event event;
-			if (mWindow->pollEvent(event) == false)
+			sf::Event sfEvent{};
+			if (!mWindow->pollEvent(sfEvent))
+			{
 				return false;
+			}
 
-			switch (event.type)
+			switch (sfEvent.type)
 			{
 			case sf::Event::Resized:
-				e.type = Event::Type::Resized;
-				e.size.x = event.size.width;
-				e.size.y = event.size.height;
+				event.Type = Event::Type::RESIZED;
+				event.Data.Resize.Width = sfEvent.size.width;
+				event.Data.Resize.Height = sfEvent.size.height;
 				break;
 			case sf::Event::Closed:
-				e.type = Event::Type::Closed;
+				event.Type = Event::Type::CLOSED;
 				break;
 			case sf::Event::GainedFocus:
-				e.type = Event::Type::GainedFocus;
+				event.Type = Event::Type::GAINED_FOCUS;
 				break;
 			case sf::Event::LostFocus:
-				e.type = Event::Type::LostFocus;
+				event.Type = Event::Type::LOST_FOCUS;
 				break;
 			case sf::Event::KeyPressed:
-				// std::cout << "KeyPressed!!\t";
-				e.type = Event::Type::KeyPressed;
-				e.key = Keyboard::fromSFMLKey(event.key.scancode);
+				event.Type = Event::Type::KEY_PRESSED;
+				event.Data.Key = Keyboard::fromSFMLKey(sfEvent.key.scancode);
 				break;
 			case sf::Event::KeyReleased:
-				e.type = Event::Type::KeyReleased;
-				e.key = Keyboard::fromSFMLKey(event.key.scancode);
+				event.Type = Event::Type::KEY_RELEASED;
+				event.Data.Key = Keyboard::fromSFMLKey(sfEvent.key.scancode);
 				break;
 			case sf::Event::MouseButtonPressed:
-				e.type = Event::Type::MouseButtonPressed;
-				e.button = Mouse::fromSFMLButton(event.mouseButton.button);
+				event.Type = Event::Type::MOUSE_BUTTON_PRESSED;
+				event.Data.Button = Mouse::fromSFMLButton(sfEvent.mouseButton.button);
 				break;
 			case sf::Event::MouseButtonReleased:
-				e.type = Event::Type::MouseButtonReleased;
-				e.button = Mouse::fromSFMLButton(event.mouseButton.button);
+				event.Type = Event::Type::MOUSE_BUTTON_RELEASED;
+				event.Data.Button = Mouse::fromSFMLButton(sfEvent.mouseButton.button);
 				break;
 			case sf::Event::MouseWheelScrolled:
-				e.type = Event::Type::MouseScrolled;
-				e.mouseScrollDelta = event.mouseWheelScroll.delta;
+				event.Type = Event::Type::MOUSE_SCROLLED;
+				event.Data.MouseDelta = sfEvent.mouseWheelScroll.delta;
 				break;
+			case sf::Event::MouseMoved:
+				event.Type = Event::Type::MOUSE_MOVED;
+				event.Data.MousePos.X = sfEvent.mouseMove.x;
+				event.Data.MousePos.Y = sfEvent.mouseMove.y;
 			default:
-				e.type = Event::Other;
+				event.Type = Event::OTHER;
 				break;
 			}
 
 			return true;
 		}
 
-		void SFMLWindow::setKeyRepeatable(bool repeatable)
+		auto SFMLWindow::setKeyRepeatable(bool repeatable) -> void
 		{
 			mWindow->setKeyRepeatEnabled(repeatable);
 		}
 
-		void SFMLWindow::limitFrameRate(unsigned int FPS)
+		auto SFMLWindow::limitFrameRate(unsigned int FPS) -> void
 		{
 			mWindow->setFramerateLimit(FPS);
 		}
 
-		void SFMLWindow::display()
+		auto SFMLWindow::display() -> void
 		{
 			mWindow->display();
 		}
 
-		void SFMLWindow::clear(Graphics::Color color)
+		auto SFMLWindow::clear(Graphics::Color color) -> void
 		{
 			auto normalized = color.getNormalizedColor();
 			glClearColor(normalized.r, normalized.g, normalized.b, normalized.a);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
-		void SFMLWindow::createWindow(SFMLWindow::Settings settings)
+		auto SFMLWindow::createWindow(const SFMLWindow::Settings& settings) -> void
 		{
 			sf::ContextSettings csettings;
 			csettings.sRgbCapable = true;
 			csettings.majorVersion = settings.OpenGLMajorVersion;
 			csettings.minorVersion = settings.OpenGLMinorVersion;
 
-			auto size = settings.size;
-			auto title = settings.title;
-			auto style = settings.style;
+			auto size = settings.Size;
+			auto title = settings.Title;
+			auto style = settings.Style;
 			
 			auto windowStyle = sf::Style::Default;
 			auto videoMode = sf::VideoMode(size.x, size.y);
+			
 			switch (style)
 			{
-			case WindowType::None:
+			case WindowType::NONE:
 				windowStyle = sf::Style::None;
 				break;
-			case WindowType::FullScreen:
+			case WindowType::FULLSCREEN:
 				windowStyle = sf::Style::Fullscreen;
 				videoMode = sf::VideoMode::getDesktopMode();
 				break;
-			case WindowType::Resizable:
+			case WindowType::RESIZABLE:
 				windowStyle = sf::Style::Default;
 				break;
-			case WindowType::Unresizable:
+			case WindowType::UNRESIZABLE:
 				windowStyle = sf::Style::Close;
 				break;
 			}
 
 			mWindow = std::make_unique<sf::Window>(videoMode, title, windowStyle, csettings);
 		}
-	}
-}
+	} // namespace Window
+} // namespace HJUIK

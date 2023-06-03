@@ -1,5 +1,5 @@
-#ifndef __WINDOW_EVENT_HPP__
-#define __WINDOW_EVENT_HPP__
+#ifndef GAMEFRAME_WINDOW_EVENT_HPP
+#define GAMEFRAME_WINDOW_EVENT_HPP
 
 /*
 	Events will be used during window's input handling
@@ -14,46 +14,47 @@ namespace HJUIK
 	{
 		struct Event
 		{
-			// Size of window after resizing
 			struct Size
 			{
-				unsigned int x;
-				unsigned int y;
-			} size;
-
-			// Position of mouse after moving
+				unsigned int Width;
+				unsigned int Height;
+			};
 			struct MousePosition
 			{
-				int x;
-				int y;
-			} mousePos;
-
-			// Scroll delta of mouse
-			float mouseScrollDelta; // Positive value means upwards movement
-
-			// Mouse button clicked
-			Mouse::Button button;
-
-			// Keyboard key pressed
-			Keyboard::Key key;
+				int X;
+				int Y;
+			};
+			union
+			{
+				// Size of the screen after resizing
+				Size Resize;
+				// Position of mouse
+				MousePosition MousePos;
+				// Delta of mouse wheel
+				float MouseDelta;
+				// Mouse button 
+				Mouse::Button Button;
+				// Keyboard key pressed
+				Keyboard::Key Key;
+			} Data;
 
 			// Event type
 			enum Type
 			{
 				// Window
-				Resized = 0, Closed, LostFocus, GainedFocus,
+				RESIZED = 0, CLOSED, LOST_FOCUS, GAINED_FOCUS,
 				// Keyboard
-				KeyPressed, KeyReleased,
+				KEY_PRESSED, KEY_RELEASED,
 				// Mouse
-				MouseButtonPressed, MouseButtonReleased,
-				MouseScrolled, MouseMoved,
+				MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED,
+				MOUSE_SCROLLED, MOUSE_MOVED,
 
-				TypeCount,
+				TYPE_COUNT,
 				// Not specified (Other irrelevant event)
-				Other
-			} type;
+				OTHER
+			} Type;
 		};
-	}
-}
+	} // namespace Window
+} // namespace HJUIK
 
 #endif

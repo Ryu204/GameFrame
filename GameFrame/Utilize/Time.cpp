@@ -8,16 +8,12 @@ namespace HJUIK
 			: mSecond(second)
 		{ }
 
-		Time::Time(const Time& other)
-			: mSecond(other.mSecond)
-		{ }
-
-		float Time::toSecond() const
+		auto Time::toSecond() const -> float
 		{
 			return mSecond;
 		}
 
-		void Time::operator += (const Time& time)
+		auto Time::operator += (const Time& time) -> void
 		{
 			mSecond += time.mSecond;
 		}
@@ -37,64 +33,64 @@ namespace HJUIK
 			mSecond /= scalar;
 		}
 
-		Time operator * (float scalar, const Time& time)
+		auto operator * (float scalar, const Time& time) -> Time
 		{
-			return Time(scalar * time.toSecond());
+			return Time{ scalar * time.toSecond() };
 		}
 
-		Time operator * (const Time& time, float scalar)
+		auto operator * (const Time& time, float scalar) -> Time
 		{
-			return Time(scalar * time.toSecond());
+			return Time{ scalar * time.toSecond() };
 		}
 
-		Time operator / (const Time& time, float scalar)
+		auto operator / (const Time& time, float scalar) -> Time
 		{
-			return Time(time.toSecond() / scalar);
+			return Time{ time.toSecond() / scalar };
 		}
 
-		Time operator + (const Time& left, const Time& right)
+		auto operator + (const Time& left, const Time& right) -> Time
 		{
-			return Time(left.toSecond() + right.toSecond());
+			return Time{ left.toSecond() + right.toSecond() };
 		}
 
-		Time operator - (const Time& left, const Time& right)
+		auto operator - (const Time& left, const Time& right) -> Time
 		{
-			return Time(left.toSecond() - right.toSecond());
+			return Time{ left.toSecond() - right.toSecond() };
 		}
 
-		Time operator - (const Time& left)
+		auto operator - (const Time& left) -> Time
 		{
-			return Time(-left.toSecond());
+			return Time{ -left.toSecond() };
 		}
 
-		bool operator == (const Time& left, const Time& right)
+		auto operator == (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() == right.toSecond();
 		}
 
-		bool operator != (const Time& left, const Time& right)
+		auto operator != (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() != right.toSecond();
 		}
 
-		bool operator < (const Time& left, const Time& right)
+		auto operator < (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() < right.toSecond();
 		}
 
-		bool operator > (const Time& left, const Time& right)
+		auto operator > (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() > right.toSecond();
 		}
 
-		bool operator >= (const Time& left, const Time& right)
+		auto operator >= (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() >= right.toSecond();
 		}
 
-		bool operator <= (const Time& left, const Time& right)
+		auto operator <= (const Time& left, const Time& right) -> bool
 		{
 			return left.toSecond() <= right.toSecond();
 		}
-	}
-}
+	} // namespace Utilize
+} // namespace HJUIK

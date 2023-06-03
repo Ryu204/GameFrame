@@ -1,5 +1,5 @@
-#ifndef __WINDOW_KEYBOARD_HPP__
-#define __WINDOW_KEYBOARD_HPP__
+#ifndef GAMEFRAME_WINDOW_KEYBOARD_HPP
+#define GAMEFRAME_WINDOW_KEYBOARD_HPP
 
 /*
     Define keyboard keys. Use SFML scancode in SFML/Window/Keyboard.hpp.
@@ -9,15 +9,15 @@
 
 namespace HJUIK
 {
-	namespace Window
-	{
+    namespace Window
+    {
         // Static class for querying real-time keyboard information
-		class Keyboard
-		{
+        class Keyboard
+        {
         public:
             enum class Key : int
             {
-                Unknown = -1, // Represents any scancode not present in this enum
+                UNKNOWN = -1, // Represents any scancode not present in this enum
                 A = 0,        // Keyboard a and A key
                 B,            // Keyboard b and B key
                 C,            // Keyboard c and C key
@@ -44,35 +44,35 @@ namespace HJUIK
                 X,            // Keyboard x and X key
                 Y,            // Keyboard y and Y key
                 Z,            // Keyboard z and Z key
-                Num1,         // Keyboard 1 and ! key
-                Num2,         // Keyboard 2 and @ key
-                Num3,         // Keyboard 3 and # key
-                Num4,         // Keyboard 4 and $ key
-                Num5,         // Keyboard 5 and % key
-                Num6,         // Keyboard 6 and ^ key
-                Num7,         // Keyboard 7 and & key
-                Num8,         // Keyboard 8 and * key
-                Num9,         // Keyboard 9 and ) key
-                Num0,         // Keyboard 0 and ) key
-                Enter,        // Keyboard Enter/Return key
-                Escape,       // Keyboard Escape key
-                Backspace,    // Keyboard Backspace key
-                Tab,          // Keyboard Tab key
-                Space,        // Keyboard Space key
-                Hyphen,       // Keyboard - and _ key
-                Equal,        // Keyboard = and +
-                LBracket,     // Keyboard [ and { key
-                RBracket,     // Keyboard ] and } key
+                NUM_1,         // Keyboard 1 and ! key
+                NUM_2,         // Keyboard 2 and @ key
+                NUM_3,         // Keyboard 3 and # key
+                NUM_4,         // Keyboard 4 and $ key
+                NUM_5,         // Keyboard 5 and % key
+                NUM_6,         // Keyboard 6 and ^ key
+                NUM_7,         // Keyboard 7 and & key
+                NUM_8,         // Keyboard 8 and * key
+                NUM_9,         // Keyboard 9 and ) key
+                NUM_0,         // Keyboard 0 and ) key
+                ENTER,        // Keyboard Enter/Return key
+                ESCAPE,       // Keyboard Escape key
+                BACKSPACE,    // Keyboard Backspace key
+                TAB,          // Keyboard Tab key
+                SPACE,        // Keyboard Space key
+                HYPHEN,       // Keyboard - and _ key
+                EQUAL,        // Keyboard = and +
+                LEFT_BRACKET,     // Keyboard [ and { key
+                RIGHT_BRACKET,     // Keyboard ] and } key
                 // For US keyboards mapped to key 29 (Microsoft Keyboard Scan Code Specification)
                 // For Non-US keyboards mapped to key 42 (Microsoft Keyboard Scan Code Specification)
                 // Typical language mappings: Belg:��` FrCa:<>} Dan:*' Dutch:`� Fren:�* Ger:'# Ital:�� LatAm:[}` Nor:*@ Span:�} Swed:*' Swiss:$�} UK:~# Brazil:}]
-                Backslash,      // Keyboard \ and | key OR various keys for Non-US keyboards
-                Semicolon,      // Keyboard ; and : key
-                Apostrophe,     // Keyboard ' and " key
-                Grave,          // Keyboard ` and ~ key
-                Comma,          // Keyboard , and < key
-                Period,         // Keyboard . and > key
-                Slash,          // Keyboard / and ? key
+                BACKSLASH,      // Keyboard \ and | key OR various keys for Non-US keyboards
+                SEMICOLON,      // Keyboard ; and : key
+                APOSTROPHE,     // Keyboard ' and " key
+                GRAVE,          // Keyboard ` and ~ key
+                COMMA,          // Keyboard , and < key
+                PERIOD,         // Keyboard . and > key
+                SLASH,          // Keyboard / and ? key
                 F1,             // Keyboard F1 key
                 F2,             // Keyboard F2 key
                 F3,             // Keyboard F3 key
@@ -97,93 +97,93 @@ namespace HJUIK
                 F22,            // Keyboard F22 key
                 F23,            // Keyboard F23 key
                 F24,            // Keyboard F24 key
-                CapsLock,       // Keyboard Caps %Lock key
-                PrintScreen,    // Keyboard Print Screen key
-                ScrollLock,     // Keyboard Scroll %Lock key
-                Pause,          // Keyboard Pause key
-                Insert,         // Keyboard Insert key
-                Home,           // Keyboard Home key
-                PageUp,         // Keyboard Page Up key
-                Delete,         // Keyboard Delete Forward key
-                End,            // Keyboard End key
-                PageDown,       // Keyboard Page Down key
-                Right,          // Keyboard Right Arrow key
-                Left,           // Keyboard Left Arrow key
-                Down,           // Keyboard Down Arrow key
-                Up,             // Keyboard Up Arrow key
-                NumLock,        // Keypad Num %Lock and Clear key
-                NumpadDivide,   // Keypad / key
-                NumpadMultiply, // Keypad * key
-                NumpadMinus,    // Keypad - key
-                NumpadPlus,     // Keypad + key
-                NumpadEqual,    // keypad = key
-                NumpadEnter,    // Keypad Enter/Return key
-                NumpadDecimal,  // Keypad . and Delete key
-                Numpad1,        // Keypad 1 and End key
-                Numpad2,        // Keypad 2 and Down Arrow key
-                Numpad3,        // Keypad 3 and Page Down key
-                Numpad4,        // Keypad 4 and Left Arrow key
-                Numpad5,        // Keypad 5 key
-                Numpad6,        // Keypad 6 and Right Arrow key
-                Numpad7,        // Keypad 7 and Home key
-                Numpad8,        // Keypad 8 and Up Arrow key
-                Numpad9,        // Keypad 9 and Page Up key
-                Numpad0,        // Keypad 0 and Insert key
+                CAPS_LOCK,       // Keyboard Caps %Lock key
+                PRINT_SCREEN,    // Keyboard Print Screen key
+                SCROLL_LOCK,     // Keyboard Scroll %Lock key
+                PAUSE,          // Keyboard Pause key
+                INSERT,         // Keyboard Insert key
+                HOME,           // Keyboard Home key
+                PAGE_UP,         // Keyboard Page Up key
+                DELETE,         // Keyboard Delete Forward key
+                END,            // Keyboard End key
+                PAGE_DOWN,       // Keyboard Page Down key
+                RIGHT,          // Keyboard Right Arrow key
+                LEFT,           // Keyboard Left Arrow key
+                DOWN,           // Keyboard Down Arrow key
+                UP,             // Keyboard Up Arrow key
+                NUM_LOCK,        // Keypad Num %Lock and Clear key
+                NUMPAD_DIVIDE,   // Keypad / key
+                NUMPAD_MULTIPLY, // Keypad * key
+                NUMPAD_MINUS,    // Keypad - key
+                NUMPAD_PLUS,     // Keypad + key
+                NUMPAD_EQUAL,    // keypad = key
+                NUMPAD_ENTER,    // Keypad Enter/Return key
+                NUMPAD_DECIMAL,  // Keypad . and Delete key
+                NUMPAD_1,        // Keypad 1 and End key
+                NUMPAD_2,        // Keypad 2 and Down Arrow key
+                NUMPAD_3,        // Keypad 3 and Page Down key
+                NUMPAD_4,        // Keypad 4 and Left Arrow key
+                NUMPAD_5,        // Keypad 5 key
+                NUMPAD_6,        // Keypad 6 and Right Arrow key
+                NUMPAD_7,        // Keypad 7 and Home key
+                NUMPAD_8,        // Keypad 8 and Up Arrow key
+                NUMPAD_9,        // Keypad 9 and Page Up key
+                NUMPAD_0,        // Keypad 0 and Insert key
                 // For US keyboards doesn't exist
                 // For Non-US keyboards mapped to key 45 (Microsoft Keyboard Scan Code Specification)
                 // Typical language mappings: Belg:<\> FrCa:��� Dan:<\> Dutch:]|[ Fren:<> Ger:<|> Ital:<> LatAm:<> Nor:<> Span:<> Swed:<|> Swiss:<\> UK:\| Brazil: \|.
-                NonUsBackslash,     // Keyboard Non-US \ and | key
-                Application,        // Keyboard Application key
-                Execute,            // Keyboard Execute key
-                ModeChange,         // Keyboard Mode Change key
-                Help,               // Keyboard Help key
-                Menu,               // Keyboard Menu key
-                Select,             // Keyboard Select key
-                Redo,               // Keyboard Redo key
-                Undo,               // Keyboard Undo key
-                Cut,                // Keyboard Cut key
-                Copy,               // Keyboard Copy key
-                Paste,              // Keyboard Paste key
-                VolumeMute,         // Keyboard Volume Mute key
-                VolumeUp,           // Keyboard Volume Up key
-                VolumeDown,         // Keyboard Volume Down key
-                MediaPlayPause,     // Keyboard Media Play Pause key
-                MediaStop,          // Keyboard Media Stop key
-                MediaNextTrack,     // Keyboard Media Next Track key
-                MediaPreviousTrack, // Keyboard Media Previous Track key
-                LControl,           // Keyboard Left Control key
-                LShift,             // Keyboard Left Shift key
-                LAlt,               // Keyboard Left Alt key
-                LSystem,            // Keyboard Left System key
-                RControl,           // Keyboard Right Control key
-                RShift,             // Keyboard Right Shift key
-                RAlt,               // Keyboard Right Alt key
-                RSystem,            // Keyboard Right System key
-                Back,               // Keyboard Back key
-                Forward,            // Keyboard Forward key
-                Refresh,            // Keyboard Refresh key
-                Stop,               // Keyboard Stop key
-                Search,             // Keyboard Search key
-                Favorites,          // Keyboard Favorites key
-                HomePage,           // Keyboard Home Page key
-                LaunchApplication1, // Keyboard Launch Application 1 key
-                LaunchApplication2, // Keyboard Launch Application 2 key
-                LaunchMail,         // Keyboard Launch Mail key
-                LaunchMediaSelect,  // Keyboard Launch Media Select key
+                NON_US_BACKSLASH,     // Keyboard Non-US \ and | key
+                APPLICATION,        // Keyboard Application key
+                EXECUTE,            // Keyboard Execute key
+                MODE_CHANGE,         // Keyboard Mode Change key
+                HELP,               // Keyboard Help key
+                MENU,               // Keyboard Menu key
+                SELECT,             // Keyboard Select key
+                REDO,               // Keyboard Redo key
+                UNDO,               // Keyboard Undo key
+                CUT,                // Keyboard Cut key
+                COPY,               // Keyboard Copy key
+                PASTE,              // Keyboard Paste key
+                VOLUME_MUTE,         // Keyboard Volume Mute key
+                VOLUME_UP,           // Keyboard Volume Up key
+                VOLUME_DOWN,         // Keyboard Volume Down key
+                MEDIA_PLAY_PAUSE,     // Keyboard Media Play Pause key
+                MEDIA_STOP,          // Keyboard Media Stop key
+                MEDIA_NEXT_TRACK,     // Keyboard Media Next Track key
+                MEDIA_PREVIOUS_TRACK, // Keyboard Media Previous Track key
+                LEFT_CONTROL,           // Keyboard Left Control key
+                LEFT_SHIFT,             // Keyboard Left Shift key
+                LEFT_ALT,               // Keyboard Left Alt key
+                LEFT_SYSTEM,            // Keyboard Left System key
+                RIGHT_CONTROL,           // Keyboard Right Control key
+                RIGHT_SHIFT,             // Keyboard Right Shift key
+                RIGHT_ALT,               // Keyboard Right Alt key
+                RIGHT_SYSTEM,            // Keyboard Right System key
+                BACK,               // Keyboard Back key
+                FORWARD,            // Keyboard Forward key
+                REFRESH,            // Keyboard Refresh key
+                STOP,               // Keyboard Stop key
+                SEARCH,             // Keyboard Search key
+                FAVORITES,          // Keyboard Favorites key
+                HOME_PAGE,           // Keyboard Home Page key
+                LAUNCH_APPLICATION_1, // Keyboard Launch Application 1 key
+                LAUNCH_APPLICATION_2, // Keyboard Launch Application 2 key
+                LAUNCH_MAIL,         // Keyboard Launch Mail key
+                LAUNCH_MEDIA_SELECT,  // Keyboard Launch Media Select key
 
-                ScancodeCount // Keep last -- the total number of scancodes
+                KEY_COUNT // Keep last -- the total number of scancodes
             };
 
             // Get the name of the key
-            static std::string getName(Key key);
+            static auto getName(Key key) -> std::string;
             // Return true if key is currently being pressed, and false otherwise
-            static bool isPressed(Key key);
+            static auto isPressed(Key key) -> bool;
 
             // Library specific functions
-            static sf::Keyboard::Scancode toSFMLKey(Key key);
-            static Key fromSFMLKey(sf::Keyboard::Scancode key);
+            static auto toSFMLKey(Key key) -> sf::Keyboard::Scancode;
+            static auto fromSFMLKey(sf::Keyboard::Scancode key) -> Key;
         };
-	}
-}
+    } // namespace Window
+} // namespace HJUIK
 
 #endif
