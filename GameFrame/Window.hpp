@@ -2,6 +2,7 @@
 #define GAMEFRAME_WINDOW_HPP
 
 #include "Window/SFMLWindow.hpp"
+#include "Window/EventManager.hpp"
 
 namespace HJUIK
 {

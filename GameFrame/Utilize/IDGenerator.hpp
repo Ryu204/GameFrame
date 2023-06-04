@@ -18,9 +18,9 @@ namespace HJUIK
             // Generate a new ID. Return 0 if all possible ID were generated and not erased.
             auto generate() -> std::size_t;
             // Erase an ID generated before
-            auto erase(std::size_t ID) -> void;
+            auto erase(std::size_t ID) -> void; // NOLINT
             // Check if ID is still in active state 
-            auto isActive(std::size_t ID) -> bool;
+            auto isActive(std::size_t ID) -> bool; // NOLINT
         private:
             std::queue<std::size_t> mAvailable;
             std::array<bool, N> mAliveLists;
@@ -42,6 +42,7 @@ namespace HJUIK
             if (!mAvailable.empty())
             {
                 std::size_t res = mAvailable.front();
+                mAvailable.pop();
                 mAliveLists[res] = true;
                 return res;
             }
@@ -50,14 +51,14 @@ namespace HJUIK
         }
 
         template <std::size_t N>
-        auto IDGenerator<N>::erase(std::size_t ID) -> void
+        auto IDGenerator<N>::erase(std::size_t ID) -> void // NOLINT
         {
             mAliveLists[ID] = false;
             mAvailable.push(ID);
         }
 
         template <std::size_t N>
-        auto IDGenerator<N>::isActive(std::size_t ID) -> bool
+        auto IDGenerator<N>::isActive(std::size_t ID) -> bool // NOLINT
         {
             return mAliveLists[ID];
         }
