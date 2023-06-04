@@ -2,11 +2,8 @@
 
 namespace HJUIK
 {
-    namespace Window
+    Event::Data& Event::getData()
     {
-        Event::Data& Event::getData()
-        {
-            return mData;
-        }
-    } // namespace Window
+        return mData;
+    }
 } // namespace HJUIK

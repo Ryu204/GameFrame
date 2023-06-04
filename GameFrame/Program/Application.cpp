@@ -43,18 +43,7 @@ namespace HJUIK
 
 	void Application::processInput()
 	{
-		Event event;
-		while (mWindow->pollEvent(event))
-		{
-			switch (event.Type)
-			{
-			case Event::CLOSED:
-				mWindow->close();
-				break;
-			default:
-				break;
-			}
-		}
+		
 	}
 
 	void Application::render()

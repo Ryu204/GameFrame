@@ -5,7 +5,6 @@
 
 namespace HJUIK
 {
-	using Event = Window::Event;
 	using IWindow = Window::IWindow;
 	using Mouse = Window::Mouse;
 	using Keyboard = Window::Keyboard;

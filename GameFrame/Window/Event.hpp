@@ -7,6 +7,7 @@
 
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
+#include "../Utilize/VariantHelper.hpp"
 
 #include <variant>
 
@@ -60,6 +61,8 @@ namespace HJUIK
 			int X;
 			int Y;
 		};
+		// #11 Others
+		struct Unknown { }; // Represents unknown events or those we never care about
 	} // namespace EventType
 
 	// Represent system events happening during runtime
@@ -76,11 +79,20 @@ namespace HJUIK
 			EventType::MousePress,
 			EventType::MouseRelease,
 			EventType::MouseScroll,
-			EventType::MouseMove>;
+			EventType::MouseMove,
+			EventType::Unknown>;
+		// Get the actual data of the event
 		Data& getData();
+		// Get the total number of event types
+		static constexpr std::size_t getTypeCount();
 	private:
 		Data mData;
 	};
+
+	constexpr std::size_t Event::getTypeCount()
+	{
+		return Utilize::VariantHelper<EventType::Unknown, Data>::index() + 1;
+	}
 } // namespace HJUIK
 
 #endif
