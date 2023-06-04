@@ -7,7 +7,6 @@ auto main() -> int
 {
 	try
 	{
-		std::cout << HJUIK::Event::getTypeCount() << '\n';
 		HJUIK::Application app1;
 		app1.run();
 

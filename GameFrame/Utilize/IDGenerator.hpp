@@ -42,6 +42,7 @@ namespace HJUIK
             if (!mAvailable.empty())
             {
                 std::size_t res = mAvailable.front();
+                mAvailable.pop();
                 mAliveLists[res] = true;
                 return res;
             }

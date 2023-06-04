@@ -18,14 +18,16 @@ namespace HJUIK
 		Application();
 		// Runs the application, returns only if the application
 		// is shutdown or terminates
-		void run();
+		auto run() -> void;
 	private:
-		void update(Time deltaTime);
-		void processInput();
-		void render();
+		auto update(Time deltaTime) -> void;
+		auto processInput() -> void;
+		auto render() -> void;
 
+		auto initEventCallback() -> void;
 
 		std::unique_ptr<IWindow> mWindow;
+		EventManager mEventManager;
 		const Time mUpdateInterval;
 		Graphics::Color mBackgroundColor;
 	};

@@ -14,17 +14,20 @@ namespace HJUIK
         // Implementation details, please ignore
         namespace detail
         {
-            template <typename Type>
-            struct Tag { };
+            namespace Variant
+            {
+                template <typename Type>
+                struct Tag { };
 
-            template <typename Type, typename T>
-            struct IndexGetter { };
+                template <typename Type, typename T>
+                struct IndexGetter { };
 
-            // Usage: IndexGetter<Type, std::variant<...>>::value
-            template <typename Type, typename... Ts>
-            struct IndexGetter<Type, std::variant<Ts...>>
-                : std::integral_constant<std::size_t, std::variant<Tag<Ts>...>(Tag<Type>()).index()>
-            { };
+                // Usage: IndexGetter<Type, std::variant<...>>::value
+                template <typename Type, typename... Ts>
+                struct IndexGetter<Type, std::variant<Ts...>>
+                    : std::integral_constant<std::size_t, std::variant<Tag<Ts>...>(Tag<Type>()).index()>
+                { };
+            } // namespace Variant
         } // namespace detail
 
         template <typename T, typename V>
@@ -42,7 +45,7 @@ namespace HJUIK
         template <typename Type, typename... Ts>
         constexpr std::size_t VariantHelper<Type, std::variant<Ts...>>::index()
         {
-            return detail::IndexGetter<Type, std::variant<Ts...>>::value;
+            return detail::Variant::IndexGetter<Type, std::variant<Ts...>>::value;
         }
     } // namespace Utilize
 } // namespace HJUIK
