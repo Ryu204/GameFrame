@@ -6,4 +6,9 @@ namespace HJUIK
     {
         return mData;
     }
+
+    const Event::Data& Event::getData() const
+    {
+        return mData;
+    }
 } // namespace HJUIK

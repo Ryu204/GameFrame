@@ -83,6 +83,7 @@ namespace HJUIK
 			EventType::Unknown>;
 		// Get the actual data of the event
 		Data& getData();
+		const Data& getData() const;
 		// Get the total number of event types
 		static constexpr std::size_t getTypeCount();
 	private:
