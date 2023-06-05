@@ -20,4 +20,3 @@ add_executable(GameFrame ${GameFrame_SOURCES})
 
 # add_library(GameFrame ${GameFrame_SOURCES})
 target_link_libraries(GameFrame PRIVATE sfml-window glm::glm)
-target_compile_features(GameFrame PRIVATE cxx_std_17)
