@@ -43,7 +43,7 @@ namespace HJUIK
             {
                 std::size_t res = mAvailable.front();
                 mAvailable.pop();
-                mAliveLists.at(res) = true;
+                mAliveLists[res] = true;
                 return res;
             }
 
