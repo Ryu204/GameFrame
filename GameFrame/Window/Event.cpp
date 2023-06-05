@@ -2,12 +2,16 @@
 
 namespace HJUIK
 {
-    Event::Data& Event::getData()
+    Event::Event()
+        : mData(EventType::Unknown { })
+    { }
+
+    auto Event::getData() -> Event::Data&
     {
         return mData;
     }
 
-    const Event::Data& Event::getData() const
+    auto Event::getData() const -> const Event::Data&
     {
         return mData;
     }

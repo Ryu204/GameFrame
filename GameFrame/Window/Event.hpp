@@ -81,16 +81,17 @@ namespace HJUIK
 			EventType::MouseScroll,
 			EventType::MouseMove,
 			EventType::Unknown>;
+		Event();
 		// Get the actual data of the event
-		Data& getData();
-		const Data& getData() const;
+		auto getData() const -> const Data&;
+		auto getData() -> Data&;
 		// Get the total number of event types
-		static constexpr std::size_t getTypeCount();
+		static constexpr auto getTypeCount() -> std::size_t;
 	private:
 		Data mData;
 	};
 
-	constexpr std::size_t Event::getTypeCount()
+	constexpr auto Event::getTypeCount() -> std::size_t
 	{
 		return Utilize::VariantHelper<EventType::Unknown, Data>::index() + 1;
 	}

@@ -20,13 +20,13 @@ namespace HJUIK
     public:
         using Handler = std::function<void(const Event&)>;
         // Process event based on registered handlers
-        auto processEvent(const Event& event) -> void const;
+        auto processEvent(const Event& event) const -> void;
         // Register handler for callback when event Type happens
         // Returns the ID of this handler
         template <typename Type, typename Func>
         auto registerHandler(Func&& handler) -> std::size_t;
         // Delete the handler with corresponding ID
-        auto deleteHandler(std::size_t ID) -> void;
+        auto deleteHandler(std::size_t ID) -> void; // NOLINT
     private:
         std::array<std::unordered_map<std::size_t, Handler>, Event::getTypeCount()> mHandlers;
         std::unordered_map<std::size_t, std::size_t> mIDToTypeIndex;

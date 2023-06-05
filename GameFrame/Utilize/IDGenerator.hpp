@@ -32,7 +32,7 @@ namespace HJUIK
             for (std::size_t i = 0; i < N; ++i)
             {
                 mAvailable.push(i);
-                mAliveLists[i] = false;
+                mAliveLists.at(i) = false;
             }
         }
 
@@ -43,7 +43,7 @@ namespace HJUIK
             {
                 std::size_t res = mAvailable.front();
                 mAvailable.pop();
-                mAliveLists[res] = true;
+                mAliveLists.at(res) = true;
                 return res;
             }
 
@@ -53,7 +53,7 @@ namespace HJUIK
         template <std::size_t N>
         auto IDGenerator<N>::erase(std::size_t ID) -> void // NOLINT
         {
-            mAliveLists[ID] = false;
+            mAliveLists.at(ID) = false;
             mAvailable.push(ID);
         }
 

@@ -39,11 +39,11 @@ namespace HJUIK
         {
         public:
             // Return the index of Type inside std::variant<Ts...>
-            static constexpr std::size_t index();
+            static constexpr auto index() -> std::size_t;
         }; 
 
         template <typename Type, typename... Ts>
-        constexpr std::size_t VariantHelper<Type, std::variant<Ts...>>::index()
+        constexpr auto VariantHelper<Type, std::variant<Ts...>>::index() -> std::size_t
         {
             return detail::Variant::IndexGetter<Type, std::variant<Ts...>>::value;
         }

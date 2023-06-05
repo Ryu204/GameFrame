@@ -63,7 +63,7 @@ namespace HJUIK
 
 	auto Application::initEventCallback() -> void
 	{
-		std::size_t id = mEventManager.registerHandler<EventType::Close>(
+		mEventManager.registerHandler<EventType::Close>(
 			[this](const EventType::Close&){ mWindow->close(); }
 		);
 	}
