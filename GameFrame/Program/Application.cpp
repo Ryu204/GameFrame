@@ -2,6 +2,8 @@
 #include "Properties.hpp"
 #include "../Graphics/Color.hpp"
 
+#include <iostream>
+
 namespace HJUIK
 {
 	Application::Application()
@@ -15,9 +17,11 @@ namespace HJUIK
 
 		mWindow->limitFrameRate(getFramerate());
 		mWindow->setKeyRepeatable(getKeyRepeatability());
+
+		initEventCallback();
 	}
 
-	void Application::run()
+	auto Application::run() -> void
 	{
 		Clock clock;
 		Time elapsed = clock.restart();
@@ -36,31 +40,31 @@ namespace HJUIK
 		}
 	}
 
-	void Application::update(Time deltaTime)
+	auto Application::update(Time deltaTime) -> void
 	{
 
 	}
 
-	void Application::processInput()
+	auto Application::processInput() -> void
 	{
 		Event event;
 		while (mWindow->pollEvent(event))
 		{
-			switch (event.Type)
-			{
-			case Event::CLOSED:
-				mWindow->close();
-				break;
-			default:
-				break;
-			}
+			mEventManager.processEvent(event);
 		}
 	}
 
-	void Application::render()
+	auto Application::render() -> void
 	{
 		mWindow->clear(mBackgroundColor);
 
 		mWindow->display();
+	}
+
+	auto Application::initEventCallback() -> void
+	{
+		mEventManager.registerHandler<EventType::Close>(
+			[this](const EventType::Close&){ mWindow->close(); }
+		);
 	}
 } // namespace HJUIK

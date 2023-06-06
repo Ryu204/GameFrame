@@ -12,7 +12,10 @@ Checks: "*,\
   -llvmlibc-*,\
   -*-no-recursion,\
   -cppcoreguidelines-pro-type-union-access,\
-  -misc-non-private-member-variables-in-classes"
+  -misc-non-private-member-variables-in-classes,\
+  -modernize-concat-nested-namespaces,\
+  -modernize-use-nodiscard,\
+  -cppcoreguidelines-pro-bounds-constant-array-index"
 WarningsAsErrors: '*'
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'
