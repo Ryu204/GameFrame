@@ -35,7 +35,7 @@ namespace HJUIK {
     }
 
     auto Program::getAllAttachedShaderHandles() const -> std::vector<GLuint> {
-      const auto numShaders = static_cast<size_t>(getInt(GL_ATTACHED_SHADERS));
+      const auto numShaders = static_cast<std::size_t>(getInt(GL_ATTACHED_SHADERS));
       std::vector<GLuint> shaders;
       shaders.resize(numShaders);
       glGetAttachedShaders(get(), static_cast<GLsizei>(numShaders), nullptr, shaders.data());
@@ -58,7 +58,7 @@ namespace HJUIK {
     }
 
     auto Program::getInfoLog() const -> std::string {
-      auto length = static_cast<size_t>(getInt(GL_INFO_LOG_LENGTH));
+      auto length = static_cast<std::size_t>(getInt(GL_INFO_LOG_LENGTH));
       if (length >= 1) {
         length--;
       }
@@ -91,10 +91,10 @@ namespace HJUIK {
     auto Program::getUniformBlockIndex(const char* name) const -> std::ptrdiff_t {
       return static_cast<std::ptrdiff_t>(glGetUniformBlockIndex(get(), name));
     }
-    auto Program::setUniformBlockBinding(size_t index, size_t binding) -> void {
+    auto Program::setUniformBlockBinding(std::size_t index, std::size_t binding) -> void {
       return glUniformBlockBinding(get(), static_cast<GLuint>(index), static_cast<GLuint>(binding));
     }
-    auto Program::setUniformBlockBinding(const char* name, size_t binding) -> void {
+    auto Program::setUniformBlockBinding(const char* name, std::size_t binding) -> void {
       const auto index = getUniformBlockIndex(name);
       if (index >= 0) {
         setUniformBlockBinding(index, binding);

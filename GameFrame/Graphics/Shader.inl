@@ -4,7 +4,7 @@ namespace HJUIK {
   namespace Graphics {
     template <ShaderType Type>
     auto detail::ShaderTrait<Type>::create() -> GLuint {
-      return glCreateShader(Type);
+      return glCreateShader(static_cast<GLenum>(Type));
     }
 
     template <ShaderType Type>
@@ -25,23 +25,23 @@ namespace HJUIK {
 
     template <ShaderType Type>
     auto Shader<Type>::setLabel(const char* name) const -> void {
-      glObjectLabel(GL_SHADER, get(), -1, name);
+      glObjectLabel(GL_SHADER, this->get(), -1, name);
     }
 
     template <ShaderType Type>
     inline auto Shader<Type>::setSource(const char* source) const -> void {
-      glShaderSource(get(), 1, &source, nullptr);
+      glShaderSource(this->get(), 1, &source, nullptr);
     }
 
     template <ShaderType Type>
     inline auto Shader<Type>::compile() const -> bool {
-      glCompileShader(get());
+      glCompileShader(this->get());
       return getInt(GL_COMPILE_STATUS) != GL_FALSE;
     }
 
     template <ShaderType Type>
     inline auto Shader<Type>::getInt(GLenum pname) const -> GLint {
-      return callGLGet<GLint>(glGetShaderiv, get(), pname);
+      return callGLGet<GLint>(glGetShaderiv, this->get(), pname);
     }
 
     template <ShaderType Type>
@@ -55,7 +55,7 @@ namespace HJUIK {
 
       std::string infoLog;
       infoLog.resize(length);
-      glGetShaderInfoLog(get(), length + 1, nullptr, infoLog.data());
+      glGetShaderInfoLog(this->get(), length + 1, nullptr, infoLog.data());
 
       return infoLog;
     }

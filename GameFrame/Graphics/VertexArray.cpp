@@ -27,27 +27,27 @@ namespace HJUIK {
       }
     }
 
-    auto VertexArray::enableAttrib(size_t index) -> void {
+    auto VertexArray::enableAttrib(std::size_t index) -> void {
       glEnableVertexAttribArray(static_cast<GLuint>(index));
     }
 
-    auto VertexArray::disableAttrib(size_t index) -> void {
+    auto VertexArray::disableAttrib(std::size_t index) -> void {
       glDisableVertexAttribArray(static_cast<GLuint>(index));
     }
 
     // NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr)
-    auto VertexArray::intAttribPointer(size_t index, size_t size, GLenum type, size_t stride, size_t offset) -> void {
+    auto VertexArray::intAttribPointer(std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void {
       glVertexAttribIPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type, static_cast<GLsizei>(stride),
           reinterpret_cast<const void*>(offset));
     }
 
-    static auto floatAttribPointer(size_t index, size_t size, GLenum type, bool normalize, size_t stride, size_t offset)
+    static auto floatAttribPointer(std::size_t index, std::size_t size, GLenum type, bool normalize, std::size_t stride, std::size_t offset)
         -> void {
       glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,
           static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
     }
 
-    static auto doubleAttribPointer(size_t index, size_t size, GLenum type, size_t stride, size_t offset) -> void {
+    static auto doubleAttribPointer(std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void {
       glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type, static_cast<GLsizei>(stride),
           reinterpret_cast<const void*>(offset));
     }

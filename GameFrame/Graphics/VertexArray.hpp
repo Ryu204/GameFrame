@@ -41,15 +41,17 @@ namespace HJUIK {
       // consider using DSA (OpenGL 4.5+)
 
       // wraps glEnableVertexAttribArray/glDisableVertexAttribArray
-      static auto enableAttrib(size_t index) -> void;
-      static auto disableAttrib(size_t index) -> void;
+      static auto enableAttrib(std::size_t index) -> void;
+      static auto disableAttrib(std::size_t index) -> void;
 
       // wraps glVertexAttrib*Pointer
       // required a buffer to be already bound with target GL_ARRAY_BUFFER
-      static auto floatAttribPointer(
-          size_t index, size_t size, GLenum type, bool normalize, size_t stride, size_t offset) -> void;
-      static auto intAttribPointer(size_t index, size_t size, GLenum type, size_t stride, size_t offset) -> void;
-      static auto doubleAttribPointer(size_t index, size_t size, GLenum type, size_t stride, size_t offset) -> void;
+      static auto floatAttribPointer(std::size_t index, std::size_t size, GLenum type, bool normalize,
+          std::size_t stride, std::size_t offset) -> void;
+      static auto intAttribPointer(
+          std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void;
+      static auto doubleAttribPointer(
+          std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void;
     };
   } // namespace Graphics
 

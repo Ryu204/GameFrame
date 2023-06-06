@@ -68,8 +68,8 @@ namespace HJUIK {
 
       // wrappers for glGetUniformBlockIndex/glUniformBlockBinding
       auto getUniformBlockIndex(const char* name) const -> std::ptrdiff_t;
-      auto setUniformBlockBinding(size_t index, size_t binding) -> void;
-      auto setUniformBlockBinding(const char* name, size_t binding) -> void;
+      auto setUniformBlockBinding(std::size_t index, std::size_t binding) -> void;
+      auto setUniformBlockBinding(const char* name, std::size_t binding) -> void;
     };
   } // namespace Graphics
 
