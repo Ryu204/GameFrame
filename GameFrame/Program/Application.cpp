@@ -1,9 +1,6 @@
 #include "Application.hpp"
 #include "Properties.hpp"
 #include "../Graphics/Color.hpp"
-#include <iostream>
-
-#include <iostream>
 
 namespace HJUIK
 {
