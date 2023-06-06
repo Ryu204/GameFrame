@@ -43,45 +43,37 @@ namespace HJUIK
 			switch (sfEvent.type)
 			{
 			case sf::Event::Resized:
-				event.Type = Event::Type::RESIZED;
-				event.Data.Resize.Width = sfEvent.size.width;
-				event.Data.Resize.Height = sfEvent.size.height;
+				event.getData() = EventType::Resize{ sfEvent.size.width, sfEvent.size.height };
 				break;
 			case sf::Event::Closed:
-				event.Type = Event::Type::CLOSED;
+				event.getData() = EventType::Close{ };
 				break;
 			case sf::Event::GainedFocus:
-				event.Type = Event::Type::GAINED_FOCUS;
+				event.getData() = EventType::GainFocus{ };
 				break;
 			case sf::Event::LostFocus:
-				event.Type = Event::Type::LOST_FOCUS;
+				event.getData() = EventType::LoseFocus{ };
 				break;
 			case sf::Event::KeyPressed:
-				event.Type = Event::Type::KEY_PRESSED;
-				event.Data.Key = Keyboard::fromSFMLKey(sfEvent.key.scancode);
+				event.getData() = EventType::KeyPress{ Keyboard::fromSFMLKey(sfEvent.key.scancode) };
 				break;
 			case sf::Event::KeyReleased:
-				event.Type = Event::Type::KEY_RELEASED;
-				event.Data.Key = Keyboard::fromSFMLKey(sfEvent.key.scancode);
+				event.getData() = EventType::KeyRelease{ Keyboard::fromSFMLKey(sfEvent.key.scancode) };
 				break;
 			case sf::Event::MouseButtonPressed:
-				event.Type = Event::Type::MOUSE_BUTTON_PRESSED;
-				event.Data.Button = Mouse::fromSFMLButton(sfEvent.mouseButton.button);
+				event.getData() = EventType::MousePress { Mouse::fromSFMLButton(sfEvent.mouseButton.button) };
 				break;
 			case sf::Event::MouseButtonReleased:
-				event.Type = Event::Type::MOUSE_BUTTON_RELEASED;
-				event.Data.Button = Mouse::fromSFMLButton(sfEvent.mouseButton.button);
+				event.getData() = EventType::MouseRelease{ Mouse::fromSFMLButton(sfEvent.mouseButton.button) };
 				break;
 			case sf::Event::MouseWheelScrolled:
-				event.Type = Event::Type::MOUSE_SCROLLED;
-				event.Data.MouseDelta = sfEvent.mouseWheelScroll.delta;
+				event.getData() = EventType::MouseScroll{ sfEvent.mouseWheelScroll.delta };
 				break;
 			case sf::Event::MouseMoved:
-				event.Type = Event::Type::MOUSE_MOVED;
-				event.Data.MousePos.X = sfEvent.mouseMove.x;
-				event.Data.MousePos.Y = sfEvent.mouseMove.y;
+				event.getData() = EventType::MouseMove{ sfEvent.mouseMove.x, sfEvent.mouseMove.y };
+				break;
 			default:
-				event.Type = Event::OTHER;
+				event.getData() = EventType::Unknown { };
 				break;
 			}
 

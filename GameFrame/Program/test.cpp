@@ -17,4 +17,8 @@ auto main() -> int
 		std::cerr << e.what() << '\n';
 		return -1;
 	}
+	catch (...)
+	{
+		return -2;
+	}
 }
