@@ -29,6 +29,8 @@ namespace HJUIK
 
     auto Program::setLabel(const char* name) const -> void
     {
+      // no need for binding the program because it was already
+      // created when one calls glCreateProgram
       glObjectLabel(GL_PROGRAM, get(), -1, name);
     }
 

@@ -84,6 +84,12 @@ namespace HJUIK
       // temporarily binding a Renderbuffer
       static auto getCurrentBound() -> GLuint;
 
+      // set a label for this Renderbuffer via `glObjectLabel`.
+      // this label may show up in debug callback or an external OpenGL
+      // debugger (e.g. RenderDoc)
+      // (only have effect in OpenGL 4.3+)
+      auto setLabel(const char* name) const -> void;
+
       static auto allocStorage(
           TextureInternalFormat internalFormat, size_t width, size_t height, std::ptrdiff_t samples = -1) -> void;
     };

@@ -106,11 +106,8 @@ namespace HJUIK
     }
     auto Buffer::getSize() const -> size_t
     {
-      auto currentlyBound = getCurrentBound(TEMP_BUFFER_TARGET);
-      bind(TEMP_BUFFER_TARGET);
-      const auto size = getSize(TEMP_BUFFER_TARGET);
-      glBindBuffer(static_cast<GLenum>(TEMP_BUFFER_TARGET), currentlyBound);
-      return static_cast<size_t>(size);
+      const BindGuard guard{*this, TEMP_BUFFER_TARGET};
+      return getSize(TEMP_BUFFER_TARGET);
     }
     // NOLINTNEXTLINE(*-easily-swappable-parameters)a
     auto Buffer::bindBase(BufferTarget target, std::size_t index, std::size_t offset, std::size_t size) const -> void
@@ -132,10 +129,10 @@ namespace HJUIK
     }
     auto Buffer::setLabel(const char* name) const -> void
     {
-      auto currentlyBound = getCurrentBound(TEMP_BUFFER_TARGET);
-      bind(TEMP_BUFFER_TARGET);
-      glObjectLabel(GL_BUFFER, get(), -1, name);
-      glBindBuffer(static_cast<GLenum>(TEMP_BUFFER_TARGET), currentlyBound);
+      if (GLAD_GL_VERSION_4_3 != 0) {
+        const BindGuard guard{*this, TEMP_BUFFER_TARGET};
+        glObjectLabel(GL_BUFFER, get(), -1, name);
+      }
     }
     auto Buffer::allocate(BufferTarget target, const BufferUsage& usage, std::size_t size, const void* initialData)
         -> void
@@ -214,7 +211,8 @@ namespace HJUIK
 
     auto Buffer::getSize(BufferTarget target) -> size_t
     {
-      return callGLGet<GLint64>(glGetBufferParameteri64v, static_cast<GLenum>(target), GL_BUFFER_SIZE);
+      return static_cast<size_t>(
+          callGLGet<GLint64>(glGetBufferParameteri64v, static_cast<GLenum>(target), GL_BUFFER_SIZE));
     }
 
     auto Buffer::checkRange(size_t offset, size_t size, BufferTarget target) -> std::tuple<GLintptr, GLsizeiptr>
@@ -229,16 +227,8 @@ namespace HJUIK
 
     auto Buffer::checkRange(size_t offset, size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
     {
-      auto currentlyBound = getCurrentBound(TEMP_BUFFER_TARGET);
-      bind(TEMP_BUFFER_TARGET);
-      try {
-        const auto result = checkRange(offset, size, TEMP_BUFFER_TARGET);
-        glBindBuffer(static_cast<GLenum>(TEMP_BUFFER_TARGET), currentlyBound);
-        return result;
-      } catch (...) {
-        glBindBuffer(static_cast<GLenum>(TEMP_BUFFER_TARGET), currentlyBound);
-        throw;
-      }
+      const BindGuard guard{*this, TEMP_BUFFER_TARGET};
+      return checkRange(offset, size, TEMP_BUFFER_TARGET);
     }
 
   } // namespace Graphics

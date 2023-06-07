@@ -1,6 +1,8 @@
 #ifndef GAMEFRAME_GRAPHICS_OPENGL_WRAPPER_HPP
 #define GAMEFRAME_GRAPHICS_OPENGL_WRAPPER_HPP
 
+#include <functional>
+#include <set>
 #include <stdexcept>
 #include <utility>
 
@@ -94,5 +96,48 @@ inline auto checkNonZero(Type&& value, const char* errorMessage) -> decltype(aut
 
   return std::forward<Type>(value);
 }
+
+template <typename GLObjectType, typename... Args>
+class BindGuard
+{
+public:
+  explicit BindGuard(const GLObjectType& object, Args... args)
+      : mCurrentBound{GLObjectType::getCurrentBound(args...)}, mArgs{args...}
+  {
+    if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
+      throw std::runtime_error("another bind guard already in effect");
+    }
+
+    mAlreadyBoundTargets().insert(mArgs);
+    object.bind(args...);
+  }
+
+  BindGuard(const BindGuard&)                    = delete;
+  auto operator=(const BindGuard&) -> BindGuard& = delete;
+
+  BindGuard(BindGuard&&) noexcept                    = default;
+  auto operator=(BindGuard&&) noexcept -> BindGuard& = default;
+
+  ~BindGuard()
+  {
+    mAlreadyBoundTargets().erase(mArgs);
+    auto tempObject = GLObjectType{mCurrentBound};
+    std::apply([&](auto... args) { tempObject.bind(args...); }, mArgs);
+    (void) tempObject.release();
+  }
+
+private:
+  typename GLObjectType::Handle mCurrentBound;
+  std::tuple<Args...> mArgs;
+
+  static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
+  {
+    static std::set<std::tuple<Args...>> alreadyBoundTargets{};
+    return alreadyBoundTargets;
+  }
+};
+
+template <typename GLObjectType, typename... Args>
+BindGuard(const GLObjectType&, Args...) -> BindGuard<GLObjectType, Args...>;
 
 #endif

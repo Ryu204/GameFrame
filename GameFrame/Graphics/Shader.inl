@@ -31,6 +31,8 @@ namespace HJUIK
     template <ShaderType Type>
     auto Shader<Type>::setLabel(const char* name) const -> void
     {
+      // no need for binding the shader because it was already
+      // created when one calls glCreateShader
       glObjectLabel(GL_SHADER, this->get(), -1, name);
     }
 

@@ -237,6 +237,8 @@ namespace HJUIK
 
       auto getDimension(size_t mipLevel = 0) const -> DimensionType;
 
+      auto setLabel(const char* name) -> void;
+
       auto bindActive(size_t slot) const -> void;
 
       static auto allocate(const TextureAllocationInfo& allocInfo, const DimensionType& dimensions) -> void;

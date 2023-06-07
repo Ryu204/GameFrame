@@ -39,6 +39,14 @@ namespace HJUIK
       return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, GL_RENDERBUFFER_BINDING));
     }
 
+    auto Renderbuffer::setLabel(const char* name) const -> void
+    {
+      if (GLAD_GL_VERSION_4_3 != 0) {
+        const BindGuard guard{*this};
+        glObjectLabel(GL_RENDERBUFFER, get(), -1, name);
+      }
+    }
+
     auto Renderbuffer::allocStorage(
         TextureInternalFormat internalFormat, size_t width, size_t height, std::ptrdiff_t samples) -> void
     {
@@ -71,10 +79,8 @@ namespace HJUIK
     {
       static constexpr auto tempTarget = FramebufferTarget::READ;
       if (GLAD_GL_VERSION_4_3 != 0) {
-        auto currentBound = getCurrentBound(tempTarget);
-        bind(tempTarget);
+        const BindGuard guard{*this, tempTarget};
         glObjectLabel(GL_VERTEX_ARRAY, get(), -1, name);
-        glBindFramebuffer(static_cast<GLenum>(tempTarget), currentBound);
       }
     }
 

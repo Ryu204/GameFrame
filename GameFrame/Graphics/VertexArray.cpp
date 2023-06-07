@@ -28,10 +28,8 @@ namespace HJUIK
     auto VertexArray::setLabel(const char* name) const -> void
     {
       if (GLAD_GL_VERSION_4_3 != 0) {
-        auto currentBound = getCurrentBound();
-        bind();
+        const BindGuard guard{*this};
         glObjectLabel(GL_VERTEX_ARRAY, get(), -1, name);
-        glBindVertexArray(currentBound);
       }
     }
 

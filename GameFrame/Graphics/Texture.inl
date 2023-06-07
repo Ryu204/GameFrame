@@ -1,5 +1,5 @@
-#include <stdexcept>
 #include <cstdint>
+#include <stdexcept>
 
 #include "Texture.hpp"
 
@@ -104,8 +104,7 @@ namespace HJUIK
     inline auto Texture<Type>::getDimension(size_t mipLevel) const -> DimensionType
     {
       DimensionType dimensions;
-      const auto handle = getCurrentBound();
-      bind();
+      BindGuard guard{*this};
       if constexpr (NUM_DIMENSIONS >= 1) {
         dimensions.Width = static_cast<size_t>(callGLGet<GLint>(
             glGetTexLevelParameteriv, static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_WIDTH));
@@ -118,8 +117,16 @@ namespace HJUIK
         dimensions.Depth = static_cast<size_t>(callGLGet<GLint>(
             glGetTexLevelParameteriv, static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_DEPTH));
       }
-      glBindTexture(static_cast<GLenum>(Type), handle);
       return dimensions;
+    }
+
+    template <TextureType Type>
+    inline auto Texture<Type>::setLabel(const char* name) -> void
+    {
+      if (GLAD_GL_VERSION_4_3 != 0) {
+        BindGuard guard{*this};
+        glObjectLabel(GL_TEXTURE, get(), -1, name);
+      }
     }
 
     template <TextureType Type>

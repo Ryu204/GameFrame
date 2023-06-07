@@ -64,9 +64,15 @@ namespace HJUIK
       // wrapper for glGetProgramInfoLog
       auto getInfoLog() const -> std::string;
 
+      // wrappers for glUseProgram
       auto use() const -> void;
       static auto unuse() -> void;
       static auto getCurrentUsed() -> GLuint;
+
+      // same API but with standardized naming
+      auto bind() const -> void { use(); }
+      static auto unbind() -> void { unuse(); }
+      static auto getCurrentBound() -> GLuint { return getCurrentUsed(); }
 
       // -1 if attribute/uniform is not present
       auto getAttribLocation(const char* name) const -> std::ptrdiff_t;
