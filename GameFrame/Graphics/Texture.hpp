@@ -3,6 +3,7 @@
 
 #include "glad/glad.h"
 #include <type_traits>
+#include <tuple>
 
 #include "OpenGLWrapper.hpp"
 
