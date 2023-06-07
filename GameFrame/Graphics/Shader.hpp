@@ -5,8 +5,10 @@
 
 #include "OpenGLWrapper.hpp"
 
-namespace HJUIK {
-  namespace Graphics {
+namespace HJUIK
+{
+  namespace Graphics
+  {
     enum class ShaderType {
       VERTEX          = GL_VERTEX_SHADER,
       FRAGMENT        = GL_FRAGMENT_SHADER,
@@ -16,7 +18,8 @@ namespace HJUIK {
       TESS_CONTROL    = GL_TESS_CONTROL_SHADER,
     };
 
-    namespace detail {
+    namespace detail
+    {
       template <ShaderType Type>
       struct ShaderTrait {
         using HandleType = GLuint;
@@ -26,7 +29,8 @@ namespace HJUIK {
     } // namespace detail
 
     template <ShaderType Type>
-    class Shader : public OpenGLWrapper<detail::ShaderTrait<Type>> {
+    class Shader : public OpenGLWrapper<detail::ShaderTrait<Type>>
+    {
     public:
       using OpenGLWrapper<detail::ShaderTrait<Type>>::OpenGLWrapper;
       using OpenGLWrapper<detail::ShaderTrait<Type>>::operator=;

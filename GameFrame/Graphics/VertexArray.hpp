@@ -5,9 +5,12 @@
 
 #include "OpenGLWrapper.hpp"
 
-namespace HJUIK {
-  namespace Graphics {
-    namespace detail {
+namespace HJUIK
+{
+  namespace Graphics
+  {
+    namespace detail
+    {
       struct VertexArrayTrait {
         using HandleType = GLuint;
         static auto create() -> GLuint;
@@ -16,7 +19,8 @@ namespace HJUIK {
       };
     } // namespace detail
 
-    class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait> {
+    class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait>
+    {
     public:
       // inherits base constructors and assigments
       using OpenGLWrapper::OpenGLWrapper;
