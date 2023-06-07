@@ -199,7 +199,7 @@ namespace HJUIK
       glClearBufferSubData(static_cast<GLenum>(target), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     }
 
-    auto Buffer::memCopyToBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
+    auto Buffer::memCopyFromBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
         std::size_t srcOffset, std::size_t size) -> void
     {
       const auto [glSrcOffset, glSrcSize]   = checkRange(srcOffset, size, srcTarget);

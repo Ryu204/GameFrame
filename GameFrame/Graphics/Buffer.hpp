@@ -178,7 +178,7 @@ namespace HJUIK
       static auto memCopy(BufferTarget target, std::size_t destOffset, const void* src, std::size_t size) -> void;
       // TODO: add support for custom clearing
       static auto memClear(BufferTarget target, std::size_t offset = 0, std::size_t size = SIZE_MAX) -> void;
-      static auto memCopyToBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
+      static auto memCopyFromBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
           std::size_t srcOffset, std::size_t size) -> void;
 
       template <typename Container>
