@@ -1,4 +1,5 @@
 #include "IOpenGLContext.hpp"
+
 #include "glad/glad.h"
 #include <iostream>
 
@@ -12,7 +13,7 @@ namespace HJUIK
       setupDebugLogger();
     }
 
-    auto IOpenGLContext::mOpenGLLoaded() -> bool &
+    auto IOpenGLContext::mOpenGLLoaded() -> bool&
     {
       static bool loaded = false;
       return loaded;
@@ -20,8 +21,7 @@ namespace HJUIK
 
     auto IOpenGLContext::loadOpenGL() -> void
     {
-      if (!mOpenGLLoaded())
-      {
+      if (!mOpenGLLoaded()) {
         gladLoadGL();
         mOpenGLLoaded() = true;
       }
@@ -38,19 +38,15 @@ namespace HJUIK
     auto IOpenGLContext::setupDebugLogger() -> bool
     {
 #ifndef NDEBUG
-      if (GLAD_GL_VERSION_4_3 != 0)
-      {
+      if (GLAD_GL_VERSION_4_3 != 0) {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(
             // NOLINTNEXTLINE(bugprone-easily-swappable-parameters, readability-identifier-length)
-            [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei /*length*/, const GLchar *message,
-               const void * /*userParam*/)
-            {
-              const auto *sourceStr = [source]()
-              {
-                switch (source)
-                {
+            [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei /*length*/, const GLchar* message,
+                const void* /*userParam*/) {
+              const auto* sourceStr = [source]() {
+                switch (source) {
                 case GL_DEBUG_SOURCE_API:
                   return "API";
                 case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
@@ -66,10 +62,8 @@ namespace HJUIK
                 }
               }();
 
-              const auto *typeStr = [type]()
-              {
-                switch (type)
-                {
+              const auto* typeStr = [type]() {
+                switch (type) {
                 case GL_DEBUG_TYPE_ERROR:
                   return "ERROR";
                 case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
@@ -87,10 +81,8 @@ namespace HJUIK
                 }
               }();
 
-              const auto *severityStr = [severity]()
-              {
-                switch (severity)
-                {
+              const auto* severityStr = [severity]() {
+                switch (severity) {
                 case GL_DEBUG_SEVERITY_NOTIFICATION:
                   return "NOTIFICATION";
                 case GL_DEBUG_SEVERITY_LOW:
@@ -103,8 +95,7 @@ namespace HJUIK
                   return "UNKNOWN";
                 }
               }();
-              std::cout << sourceStr << ", " << typeStr << ", " << severityStr << ", " << id << ": " << message
-                        << '\n';
+              std::cout << sourceStr << ", " << typeStr << ", " << severityStr << ", " << id << ": " << message << '\n';
             },
             nullptr);
         return true;

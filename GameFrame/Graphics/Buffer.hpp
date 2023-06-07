@@ -8,9 +8,12 @@
 
 #include "OpenGLWrapper.hpp"
 
-namespace HJUIK {
-  namespace Graphics {
-    namespace detail {
+namespace HJUIK
+{
+  namespace Graphics
+  {
+    namespace detail
+    {
       struct BufferTrait {
         using HandleType = GLuint;
         static auto create() -> GLuint;
@@ -125,7 +128,8 @@ namespace HJUIK {
       auto asBitfield() const -> GLbitfield;
     };
 
-    class Buffer : public OpenGLWrapper<detail::BufferTrait> {
+    class Buffer : public OpenGLWrapper<detail::BufferTrait>
+    {
     public:
       using OpenGLWrapper::OpenGLWrapper;
       using OpenGLWrapper::operator=;
@@ -177,12 +181,14 @@ namespace HJUIK {
           std::size_t srcOffset, std::size_t size) -> void;
 
       template <typename Container>
-      static auto allocate(BufferTarget target, const BufferUsage& usage, const Container& container) -> void {
+      static auto allocate(BufferTarget target, const BufferUsage& usage, const Container& container) -> void
+      {
         allocate(target, usage, container.size() * sizeof(*container.data()), container.data());
       }
 
       template <typename Container>
-      static auto memCopy(BufferTarget target, std::size_t destOffset, const Container& container) -> void {
+      static auto memCopy(BufferTarget target, std::size_t destOffset, const Container& container) -> void
+      {
         memCopy(target, destOffset, container.data(), container.size() * sizeof(*container.data()));
       }
 

@@ -13,10 +13,10 @@ namespace HJUIK
       IOpenGLContext();
       virtual ~IOpenGLContext() = default;
 
-      IOpenGLContext(const IOpenGLContext &) = delete;
-      IOpenGLContext(IOpenGLContext &&) = delete;
-      auto operator=(const IOpenGLContext &) -> IOpenGLContext & = delete;
-      auto operator=(IOpenGLContext &&) -> IOpenGLContext & = delete;
+      IOpenGLContext(const IOpenGLContext&)                    = delete;
+      IOpenGLContext(IOpenGLContext&&)                         = delete;
+      auto operator=(const IOpenGLContext&) -> IOpenGLContext& = delete;
+      auto operator=(IOpenGLContext&&) -> IOpenGLContext&      = delete;
 
       // Clear the current framebuffer
       auto clear(Color color) -> void;
@@ -29,7 +29,7 @@ namespace HJUIK
       static auto loadOpenGL() -> void;
 
       // OpenGL status
-      static auto mOpenGLLoaded() -> bool &;
+      static auto mOpenGLLoaded() -> bool&;
     };
   } // namespace Graphics
 } // namespace HJUIK

@@ -7,9 +7,12 @@
 #include "OpenGLWrapper.hpp"
 #include "Shader.hpp"
 
-namespace HJUIK {
-  namespace Graphics {
-    namespace detail {
+namespace HJUIK
+{
+  namespace Graphics
+  {
+    namespace detail
+    {
       struct ProgramTrait {
         using HandleType = GLuint;
         static auto create() -> GLuint;
@@ -17,7 +20,8 @@ namespace HJUIK {
       };
     } // namespace detail
 
-    class Program : public OpenGLWrapper<detail::ProgramTrait> {
+    class Program : public OpenGLWrapper<detail::ProgramTrait>
+    {
     public:
       using OpenGLWrapper::OpenGLWrapper;
       using OpenGLWrapper::operator=;
@@ -40,11 +44,13 @@ namespace HJUIK {
       auto detachAllShaders() const -> void;
 
       template <ShaderType Type>
-      auto attachShader(const Shader<Type>& shader) const -> void {
+      auto attachShader(const Shader<Type>& shader) const -> void
+      {
         attachShader(shader.get());
       }
       template <ShaderType Type>
-      auto detachShader(const Shader<Type>& shader) const -> void {
+      auto detachShader(const Shader<Type>& shader) const -> void
+      {
         detachShader(shader.get());
       }
 
