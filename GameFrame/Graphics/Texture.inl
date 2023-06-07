@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <cstdint>
 
 #include "Texture.hpp"
 
@@ -48,34 +49,34 @@ namespace HJUIK
     }
 
     template <TextureType Type>
-    inline auto TextureDimension<Type>::toGLsizeiTuple() -> std::tuple<GLsizei, GLsizei, GLsizei>
+    inline auto TextureDimension<Type>::toGLsizeiTuple() const -> std::tuple<GLsizei, GLsizei, GLsizei>
     {
       GLsizei width = 1, height = 1, depth = 1;
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 1>) {
-        width = static_cast<GLsizei>(Width);
+        width = static_cast<GLsizei>(this->Width);
       }
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 2>) {
-        height = static_cast<GLsizei>(Height);
+        height = static_cast<GLsizei>(this->Height);
       }
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 3>) {
-        depth = static_cast<GLsizei>(Depth);
+        depth = static_cast<GLsizei>(this->Depth);
       }
 
       return std::make_tuple(width, height, depth);
     }
 
     template <TextureType Type>
-    inline auto TextureOffset<Type>::toGLintTuple() -> std::tuple<GLint, GLint, GLint>
+    inline auto TextureOffset<Type>::toGLintTuple() const -> std::tuple<GLint, GLint, GLint>
     {
       GLint x = 1, y = 1, z = 1;
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 1>) {
-        x = static_cast<GLint>(OffsetX);
+        x = static_cast<GLint>(this->OffsetX);
       }
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 2>) {
-        y = static_cast<GLint>(OffsetY);
+        y = static_cast<GLint>(this->OffsetY);
       }
       if constexpr (detail::AT_LEAST_DIMENSION<Type, 3>) {
-        z = static_cast<GLint>(OffsetZ);
+        z = static_cast<GLint>(this->OffsetZ);
       }
 
       return std::make_tuple(x, y, z);
@@ -239,7 +240,7 @@ namespace HJUIK
 
     template <TextureType Type>
     inline auto Texture<Type>::invalidate(
-        const OffsetType& offset, const DimensionType& dimension, size_t MipLevel) const -> void
+        const OffsetType& offset, const DimensionType& dimension, size_t mipLevel) const -> void
     {
       auto [x, y, z]              = offset.toGLintTuple();
       auto [width, height, depth] = dimension.toGLsizeiTuple();
@@ -256,13 +257,13 @@ namespace HJUIK
       auto [destX, destY, destZ]           = destOffset.toGLintTuple();
       auto [srcWidth, srcHeight, srcDepth] = srcDimension.toGLsizeiTuple();
       glCopyImageSubData(get(), static_cast<GLenum>(SrcType), static_cast<GLint>(srcMipLevel), srcX, srcY, srcZ,
-          dest.get(), static_cast<GLenum>(DestType), static_cast<Glint>(destMipLevel), destX, destY, destZ, srcWidth,
+          dest.get(), static_cast<GLenum>(DestType), static_cast<GLint>(destMipLevel), destX, destY, destZ, srcWidth,
           srcHeight, srcDepth);
     }
 
     // TODO: add buffer range checking
     template <TextureType Type>
-    template <typename>
+    template <TextureType ThisType, typename>
     inline auto Texture<Type>::setStorageBuffer(
         TextureInternalFormat format, GLuint bufferHandle, size_t offset, size_t size) const -> void
     {

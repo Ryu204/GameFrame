@@ -174,7 +174,7 @@ namespace HJUIK
         : std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 1>, detail::TextureSizeAtLeast1D, detail::Empty>,
           std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 2>, detail::TextureSizeAtLeast2D, detail::Empty>,
           std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 3>, detail::TextureSizeAtLeast3D, detail::Empty> {
-      auto toGLsizeiTuple() -> std::tuple<GLsizei, GLsizei, GLsizei>;
+      auto toGLsizeiTuple() const -> std::tuple<GLsizei, GLsizei, GLsizei>;
     };
 
     template <TextureType Type>
@@ -182,7 +182,7 @@ namespace HJUIK
         : std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 1>, detail::TextureOffsetAtLeast1D, detail::Empty>,
           std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 2>, detail::TextureOffsetAtLeast2D, detail::Empty>,
           std::conditional_t<detail::AT_LEAST_DIMENSION<Type, 3>, detail::TextureOffsetAtLeast3D, detail::Empty> {
-      auto toGLintTuple() -> std::tuple<GLint, GLint, GLint>;
+      auto toGLintTuple() const -> std::tuple<GLint, GLint, GLint>;
     };
 
     template <TextureType Type>
@@ -242,16 +242,16 @@ namespace HJUIK
       static auto imageCopy(const OffsetType& offset, const DataType& data, size_t MipLevel = 0) -> void;
       static auto generateMipmap() -> void;
       // TODO: add custom clear
-      auto imageClear(const OffsetType& offset, const DimensionType& dimension, size_t MipLevel = 0) const -> void;
+      auto imageClear(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
 
       template <TextureType DestType>
       auto imageCopyToTexture(const Texture<DestType>& dest, const TextureOffset<DestType>& destOffset,
           const OffsetType& srcOffset, const DimensionType& srcDimension, size_t destMipLevel = 0,
           size_t srcMipLevel = 0) const -> void;
 
-      auto invalidate(const OffsetType& offset, const DimensionType& dimension, size_t MipLevel = 0) const -> void;
+      auto invalidate(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
 
-      template <typename = std::enable_if_t<Type == TextureType::BUFFER>>
+      template <TextureType ThisType = Type, typename = std::enable_if_t<(ThisType == TextureType::BUFFER)>>
       auto setStorageBuffer(
           TextureInternalFormat format, GLuint bufferHandle, size_t offset = 0, size_t size = SIZE_MAX) const -> void;
     };
