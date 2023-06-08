@@ -39,7 +39,7 @@ namespace HJUIK
 		auto IDGenerator<N>::generate() -> std::size_t
 		{
 			if (!mAvailable.empty()) {
-				std::size_t res = mAvailable.front();
+				const auto res = mAvailable.front();
 				mAvailable.pop();
 				mAliveLists[res] = true;
 				return res;
