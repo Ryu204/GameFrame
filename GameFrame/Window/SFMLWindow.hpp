@@ -5,12 +5,11 @@
 	The derived window class with SFML implementation
 */
 
-#include "IWindow.hpp"
-#include "../Utilize/GLMTypedef.hpp"
-
-#include "SFML/Window.hpp"
-
 #include <memory>
+
+#include "../Utilize/GLMTypedef.hpp"
+#include "IWindow.hpp"
+#include "SFML/Window.hpp"
 
 namespace HJUIK
 {
@@ -21,8 +20,7 @@ namespace HJUIK
 		{
 		public:
 			// Window construction parameters
-			struct Settings
-			{
+			struct Settings {
 				Vector2u Size;
 				std::string Title;
 				WindowType Style;
@@ -41,7 +39,7 @@ namespace HJUIK
 			// This function polls the event from the queue and returns false if
 			// nothing is found
 			auto pollEvent(Event& event) -> bool override;
-			// Registers key pressed event only once after it is pressed if set 
+			// Registers key pressed event only once after it is pressed if set
 			// to false, otherwise registers the event every frame it is held
 			auto setKeyRepeatable(bool repeatable) -> void override;
 			// Try to match the framerate to FPS value, note that this function
@@ -51,6 +49,7 @@ namespace HJUIK
 			auto clear(Graphics::Color color) -> void override;
 			// Display the content after finished rendering
 			auto display() -> void override;
+
 		private:
 			// Helper functions
 			auto createWindow(const Settings& settings) -> void;

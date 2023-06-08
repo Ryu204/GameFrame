@@ -5,12 +5,12 @@
 	The abstract window class for specific windows from different libraries
 */
 
-#include "WindowType.hpp"
-#include "Event.hpp"
-#include "../Utilize/GLMTypedef.hpp"
-#include "../Graphics/Color.hpp"
-
 #include <string>
+
+#include "../Graphics/Color.hpp"
+#include "../Utilize/GLMTypedef.hpp"
+#include "Event.hpp"
+#include "WindowType.hpp"
 
 namespace HJUIK
 {
@@ -19,14 +19,14 @@ namespace HJUIK
 		// Abstract window class
 		class IWindow
 		{
-		// A derived class's constructor must be in this form:
-		// DerivedClass(Vector2u size, std::string title, Style style = Style::Default);
+			// A derived class's constructor must be in this form:
+			// DerivedClass(Vector2u size, std::string title, Style style = Style::Default);
 		public:
-			IWindow() = default;
-			IWindow(const IWindow&) = default;
-			IWindow(IWindow&&) = default;
-			auto operator = (const IWindow&) -> IWindow& = default;
-			auto operator = (IWindow&&) -> IWindow& = default;
+			IWindow()								   = default;
+			IWindow(const IWindow&)					   = default;
+			IWindow(IWindow&&)						   = default;
+			auto operator=(const IWindow&) -> IWindow& = default;
+			auto operator=(IWindow&&) -> IWindow&	   = default;
 			// Virtual destructor for use of std::unique_ptr
 			virtual ~IWindow() = default;
 
@@ -39,7 +39,7 @@ namespace HJUIK
 			// This function polls the event from the queue and returns false if
 			// nothing is found
 			virtual auto pollEvent(Event& event) -> bool = 0;
-			// Registers key pressed event only once after it is pressed if set 
+			// Registers key pressed event only once after it is pressed if set
 			// to false, otherwise registers the event every frame it is held
 			virtual auto setKeyRepeatable(bool repeatable) -> void = 0;
 			// Try to match the framerate to FPS value, note that this function

@@ -1,9 +1,9 @@
 namespace HJUIK::Utilize
 {
 	template <typename Key, typename Val>
-	ResourceHolder<Key, Val>::ResourceHolder()
-		: mContainer()
-	{ }
+	ResourceHolder<Key, Val>::ResourceHolder() : mContainer()
+	{
+	}
 
 	template <typename Key, typename Val>
 	template <typename... Args>
@@ -23,4 +23,4 @@ namespace HJUIK::Utilize
 	{
 		return *mContainer[key];
 	}
-}
+} // namespace HJUIK::Utilize

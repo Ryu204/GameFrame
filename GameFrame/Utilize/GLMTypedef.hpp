@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_UTILIZE_GLMTYPEDEF_HPP
 #define GAMEFRAME_UTILIZE_GLMTYPEDEF_HPP
 
-/*	
+/*
 	Alias for commonly used glm types
 */
 
@@ -18,7 +18,7 @@ namespace HJUIK
 	using Vector2u = glm::uvec2;
 	using Vector3u = glm::uvec3;
 	using Vector4u = glm::uvec4;
-	
+
 	using Vector2i = glm::ivec2;
 	using Vector3i = glm::ivec3;
 	using Vector4i = glm::ivec4;

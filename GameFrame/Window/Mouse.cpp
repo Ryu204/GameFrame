@@ -11,8 +11,7 @@ namespace HJUIK
 
 		auto Mouse::toSFMLButton(Button button) -> sf::Mouse::Button
 		{
-			switch (button)
-			{
+			switch (button) {
 			case Button::LEFT:
 				return sf::Mouse::Left;
 			case Button::RIGHT:
@@ -38,8 +37,7 @@ namespace HJUIK
 
 		auto Mouse::getName(Mouse::Button button) -> std::string
 		{
-			switch (button)
-			{
+			switch (button) {
 			case Button::LEFT:
 				return "Left";
 			case Button::RIGHT:

@@ -6,8 +6,9 @@
 	last check.
 */
 
-#include "Time.hpp"
 #include <chrono>
+
+#include "Time.hpp"
 
 namespace HJUIK
 {
@@ -21,6 +22,7 @@ namespace HJUIK
 			auto restart() -> Time;
 			// Get how much time has passed since initialization
 			auto total() -> Time;
+
 		private:
 			using Point = std::chrono::time_point<std::chrono::steady_clock>;
 
@@ -28,6 +30,6 @@ namespace HJUIK
 			Point mStart;
 		};
 	} // namespace Utilize
-} //namespace HJUIK
+} // namespace HJUIK
 
 #endif
