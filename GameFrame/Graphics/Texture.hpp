@@ -2,8 +2,8 @@
 #define GAMEFRAME_GRAPHICS_TEXTURE_HPP
 
 #include "glad/glad.h"
-#include <type_traits>
 #include <tuple>
+#include <type_traits>
 
 #include "OpenGLWrapper.hpp"
 
@@ -92,15 +92,15 @@ namespace HJUIK
       inline constexpr bool AT_LEAST_DIMENSION = TEXTURE_DIMENSION<Type> >= Dimension;
 
       struct TextureSizeAtLeast1D {
-        size_t Width = 0;
+        size_t Width = 1;
       };
 
       struct TextureSizeAtLeast2D {
-        size_t Height = 0;
+        size_t Height = 1;
       };
 
       struct TextureSizeAtLeast3D {
-        size_t Depth = 0;
+        size_t Depth = 1;
       };
 
       struct TextureOffsetAtLeast1D {
@@ -195,14 +195,14 @@ namespace HJUIK
 
     namespace TextureInternalFormats
     {
-      constexpr static TextureInternalFormat RGBA8{GL_RGBA8};
-      constexpr static TextureInternalFormat RGB8{GL_RGB8};
-      constexpr static TextureInternalFormat RG8{GL_RG8};
-      constexpr static TextureInternalFormat RED_8{GL_R8};
-      constexpr static TextureInternalFormat RGBA32F{GL_RGBA32F};
-      constexpr static TextureInternalFormat RGB32F{GL_RGB32F};
-      constexpr static TextureInternalFormat RG32F{GL_RG32F};
-      constexpr static TextureInternalFormat R32F{GL_R32F};
+      inline constexpr TextureInternalFormat RGBA8{GL_RGBA8};
+      inline constexpr TextureInternalFormat RGB8{GL_RGB8};
+      inline constexpr TextureInternalFormat RG8{GL_RG8};
+      inline constexpr TextureInternalFormat RED_8{GL_R8};
+      inline constexpr TextureInternalFormat RGBA32F{GL_RGBA32F};
+      inline constexpr TextureInternalFormat RGB32F{GL_RGB32F};
+      inline constexpr TextureInternalFormat RG32F{GL_RG32F};
+      inline constexpr TextureInternalFormat R32F{GL_R32F};
       // TODO: add more
     } // namespace TextureInternalFormats
 
@@ -230,37 +230,56 @@ namespace HJUIK
       using OffsetType                            = TextureOffset<Type>;
       using DataType                              = TextureData<Type>;
 
+      // wrappers for glBindTexture
       auto bind() const -> void;
       static auto unbind() -> void;
 
+      // get the currently bound texture
       static auto getCurrentBound() -> GLuint;
 
+      // get the texture dimension
       auto getDimension(size_t mipLevel = 0) const -> DimensionType;
 
+      // set a label for this Texture via `glObjectLabel`.
+      // this label may show up in debug callback or an external OpenGL
+      // debugger (e.g. RenderDoc)
+      // (only have effect in OpenGL 4.3+)
       auto setLabel(const char* name) -> void;
 
+      // bind a texture to the texture slot `slot`
       auto bindActive(size_t slot) const -> void;
 
+      // texture memory-related methods
+      // allocate texture image data
       static auto allocate(const TextureAllocationInfo& allocInfo, const DimensionType& dimensions) -> void;
+      // copy image from client (CPU) to server (GPU)
       static auto imageCopy(const OffsetType& offset, const DataType& data, size_t MipLevel = 0) -> void;
+      // generate mipmaps for the texture
       static auto generateMipmap() -> void;
       // TODO: add custom clear
+      // clear the texture to a default color of black transparent
+      // (this default color may be changed in the future)
       auto imageClear(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
 
+      // copy image from this texture to another texture
       template <TextureType DestType>
       auto imageCopyToTexture(const Texture<DestType>& dest, const TextureOffset<DestType>& destOffset,
           const OffsetType& srcOffset, const DimensionType& srcDimension, size_t destMipLevel = 0,
           size_t srcMipLevel = 0) const -> void;
 
+      // invalidate texture, i.e., marking the texture data (in the specified region) as invalid
       auto invalidate(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
 
+      // set data buffer for this TextureBuffer
       template <TextureType ThisType = Type, typename = std::enable_if_t<(ThisType == TextureType::BUFFER)>>
       auto setStorageBuffer(
           TextureInternalFormat format, GLuint bufferHandle, size_t offset = 0, size_t size = SIZE_MAX) const -> void;
     };
 
-    template class Texture<TextureType::CUBE_MAP>;
-    template class Texture<TextureType::CUBE_MAP_ARRAY>;
+    // only aliasing the most frequently used texture types
+    using Texture2D      = Texture<TextureType::E2D>;
+    using Texture2DArray = Texture<TextureType::E2D_ARRAY>;
+    using TextureCubeMap = Texture<TextureType::CUBE_MAP>;
   } // namespace Graphics
 } // namespace HJUIK
 

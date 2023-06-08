@@ -18,7 +18,7 @@ namespace HJUIK
       glDeleteTextures(1, &handle);
     }
 
-    inline auto getTextureBindingType(TextureType type) -> GLenum
+    inline auto detail::getTextureBindingType(TextureType type) -> GLenum
     {
       switch (type) {
       case TextureType::E1D:
@@ -97,7 +97,7 @@ namespace HJUIK
     template <TextureType Type>
     inline auto Texture<Type>::getCurrentBound() -> GLuint
     {
-      return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, getTextureBindingType(Type)));
+      return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, detail::getTextureBindingType(Type)));
     }
 
     template <TextureType Type>
@@ -274,6 +274,7 @@ namespace HJUIK
     inline auto Texture<Type>::setStorageBuffer(
         TextureInternalFormat format, GLuint bufferHandle, size_t offset, size_t size) const -> void
     {
+      static_assert(Type == ThisType);
       if (offset == 0 && size == SIZE_MAX) {
         glTextureBuffer(get(), static_cast<GLenum>(format), bufferHandle);
       } else {
