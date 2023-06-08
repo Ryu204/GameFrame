@@ -7,10 +7,10 @@
 	Work similiar to an init file
 */
 
+#include <string>
+
 #include "../Utilize.hpp"
 #include "../Window.hpp"
-
-#include <string>
 
 namespace HJUIK
 {

@@ -1,17 +1,12 @@
 #include "Application.hpp"
-#include "Properties.hpp"
 #include "../Graphics/Color.hpp"
+#include "Properties.hpp"
 
 namespace HJUIK
 {
-	Application::Application()
-			: mUpdateInterval(getUpdateInterval())
+	Application::Application() : mUpdateInterval(getUpdateInterval())
 	{
-		mWindow = std::make_unique<SFMLWindow>(
-				getDefaultWindowSize(),
-				getWindowTitle(),
-				getWindowType());
-
+		mWindow = std::make_unique<SFMLWindow>(getDefaultWindowSize(), getWindowTitle(), getWindowType());
 		mWindow->limitFrameRate(getFramerate());
 		mWindow->setKeyRepeatable(getKeyRepeatability());
 
@@ -23,11 +18,9 @@ namespace HJUIK
 		Clock clock;
 		Time elapsed = clock.restart();
 
-		while (mWindow->isOpen())
-		{
+		while (mWindow->isOpen()) {
 			elapsed += clock.restart();
-			while (elapsed >= mUpdateInterval)
-			{
+			while (elapsed >= mUpdateInterval) {
 				elapsed -= mUpdateInterval;
 				processInput();
 				update(mUpdateInterval);
@@ -37,15 +30,13 @@ namespace HJUIK
 		}
 	}
 
-	auto Application::update(Time deltaTime) -> void
-	{
-	}
+	auto Application::update(Time deltaTime) -> void {}
+
 
 	auto Application::processInput() -> void
 	{
 		Event event;
-		while (mWindow->pollEvent(event))
-		{
+		while (mWindow->pollEvent(event)) {
 			mEventManager.processEvent(event);
 		}
 	}
@@ -59,8 +50,6 @@ namespace HJUIK
 
 	auto Application::initEventCallback() -> void
 	{
-		mEventManager.registerHandler<EventType::Close>(
-			[this](const EventType::Close&){ mWindow->close(); }
-		);
+		mEventManager.registerHandler<EventType::Close>([this](const EventType::Close&) { mWindow->close(); });
 	}
 } // namespace HJUIK

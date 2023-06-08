@@ -2,16 +2,16 @@
 #define GAMEFRAME_UTILIZE_RESOURCEHOLDER_HPP
 
 /*
-	This class is used to manage instances 
-	of heavy resource types. Each instance is 
+	This class is used to manage instances
+	of heavy resource types. Each instance is
 	identified by a key.
 */
 
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 namespace HJUIK
-{		
+{
 	namespace Utilize
 	{
 		// Efficient data structure to store heavy-weight data
@@ -28,6 +28,7 @@ namespace HJUIK
 			auto create(Key key) -> void;
 			// Retrieve the resource reference
 			auto get(Key key) -> Val&;
+
 		private:
 			std::unordered_map<Key, std::unique_ptr<Val>> mContainer;
 		};
@@ -37,5 +38,3 @@ namespace HJUIK
 #include "ResourceHolder.inl"
 
 #endif
-
-

@@ -5,10 +5,10 @@
 	Application class is the highest layer of wrapper and will be used in main() function.
 */
 
-#include "../Window.hpp"
-#include "../Utilize.hpp"
-
 #include <memory>
+
+#include "../Utilize.hpp"
+#include "../Window.hpp"
 
 namespace HJUIK
 {
@@ -19,6 +19,7 @@ namespace HJUIK
 		// Runs the application, returns only if the application
 		// is shutdown or terminates
 		auto run() -> void;
+
 	private:
 		auto update(Time deltaTime) -> void;
 		auto processInput() -> void;

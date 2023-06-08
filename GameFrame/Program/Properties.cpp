@@ -26,7 +26,7 @@ namespace HJUIK
 
 	auto getFramerate() -> unsigned int
 	{
-		constexpr unsigned int fps{ 120 };
+		constexpr unsigned int fps{120};
 		return fps;
 	}
 
