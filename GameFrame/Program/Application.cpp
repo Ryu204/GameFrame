@@ -1,4 +1,5 @@
 #include "Application.hpp"
+
 #include "../Graphics/Color.hpp"
 #include "Properties.hpp"
 
@@ -43,7 +44,7 @@ namespace HJUIK
 
 	auto Application::render() -> void
 	{
-		auto &glContext = mWindow->getOpenGLContext();
+		auto& glContext = mWindow->getOpenGLContext();
 		glContext.clear(mBackgroundColor);
 		glContext.display();
 	}

@@ -71,7 +71,7 @@ namespace HJUIK
 
 		class Renderbuffer : public OpenGLWrapper<detail::RenderbufferTrait>
 		{
-		  public:
+		public:
 			// inherits base constructors and assigments
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
@@ -96,7 +96,7 @@ namespace HJUIK
 
 		class Framebuffer : public OpenGLWrapper<detail::FramebufferTrait>
 		{
-		  public:
+		public:
 			// inherits base constructors and assigments
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;

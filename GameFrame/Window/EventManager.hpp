@@ -38,7 +38,7 @@ namespace HJUIK
 	auto EventManager::registerHandler(Func&& handler) -> std::size_t
 	{
 		const auto typeIndex = Utilize::VariantHelper<Type, Event::Data>::index();
-		const auto res		  = mIDGenerator.generate();
+		const auto res		 = mIDGenerator.generate();
 		mHandlers[typeIndex].emplace(res,
 			[handler = std::forward<Func>(handler)](const Event& event) { handler(std::get<Type>(event.getData())); });
 		mIDToTypeIndex[res] = typeIndex;

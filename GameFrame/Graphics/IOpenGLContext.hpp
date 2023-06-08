@@ -9,7 +9,7 @@ namespace HJUIK
 	{
 		class IOpenGLContext
 		{
-		  public:
+		public:
 			IOpenGLContext();
 			virtual ~IOpenGLContext() = default;
 
@@ -24,7 +24,7 @@ namespace HJUIK
 			// Display the content after finished rendering
 			virtual auto display() -> void = 0;
 
-		  private:
+		private:
 			static auto setupDebugLogger() -> bool;
 			static auto loadOpenGL() -> void;
 

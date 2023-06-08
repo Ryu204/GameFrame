@@ -31,7 +31,7 @@ namespace HJUIK
 		template <ShaderType Type>
 		class Shader : public OpenGLWrapper<detail::ShaderTrait<Type>>
 		{
-		  public:
+		public:
 			using OpenGLWrapper<detail::ShaderTrait<Type>>::OpenGLWrapper;
 			using OpenGLWrapper<detail::ShaderTrait<Type>>::operator=;
 

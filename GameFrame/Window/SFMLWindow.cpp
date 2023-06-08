@@ -7,11 +7,13 @@ namespace HJUIK
 {
 	namespace Window
 	{
-		SFMLWindow::SFMLWindow(const SFMLWindow::Settings &settings) : mWindow{createWindow(settings)}, mOpenGLContext{*mWindow}
+		SFMLWindow::SFMLWindow(const SFMLWindow::Settings& settings)
+			: mWindow{createWindow(settings)}, mOpenGLContext{*mWindow}
 		{
 		}
 
-		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style) : SFMLWindow(SFMLWindow::Settings{size, std::move(title), style, 3, 3})
+		SFMLWindow::SFMLWindow(Vector2u size, std::string title, WindowType style)
+			: SFMLWindow(SFMLWindow::Settings{size, std::move(title), style, 3, 3})
 		{
 		}
 
@@ -31,7 +33,7 @@ namespace HJUIK
 			mWindow->close();
 		}
 
-		auto SFMLWindow::pollEvent(Event &event) -> bool
+		auto SFMLWindow::pollEvent(Event& event) -> bool
 		{
 			// We just pass the value from sf::Window::pollEvent(sf::Event& e)
 			sf::Event sfEvent{};
@@ -88,7 +90,7 @@ namespace HJUIK
 			mWindow->setFramerateLimit(FPS);
 		}
 
-		auto SFMLWindow::createWindow(const SFMLWindow::Settings &settings) -> std::unique_ptr<sf::Window>
+		auto SFMLWindow::createWindow(const SFMLWindow::Settings& settings) -> std::unique_ptr<sf::Window>
 		{
 			sf::ContextSettings csettings;
 			csettings.sRgbCapable  = true;
@@ -101,7 +103,7 @@ namespace HJUIK
 
 			auto windowStyle = sf::Style::Default;
 
-			auto videoMode	 = sf::VideoMode(size.x, size.y);
+			auto videoMode = sf::VideoMode(size.x, size.y);
 
 			switch (style) {
 			case WindowType::NONE:
@@ -122,12 +124,12 @@ namespace HJUIK
 			return std::make_unique<sf::Window>(videoMode, title, windowStyle, csettings);
 		}
 
-		auto SFMLWindow::getOpenGLContext() -> Graphics::IOpenGLContext &
+		auto SFMLWindow::getOpenGLContext() -> Graphics::IOpenGLContext&
 		{
 			return mOpenGLContext;
 		}
 
-		SFMLWindow::SFMLOpenGLContext::SFMLOpenGLContext(sf::Window &window) : mWindow{window} {}
+		SFMLWindow::SFMLOpenGLContext::SFMLOpenGLContext(sf::Window& window) : mWindow{window} {}
 		SFMLWindow::SFMLOpenGLContext::~SFMLOpenGLContext() = default;
 		auto SFMLWindow::SFMLOpenGLContext::display() -> void
 		{

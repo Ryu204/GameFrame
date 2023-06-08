@@ -126,7 +126,7 @@ namespace HJUIK
 
 		class TextureInternalFormat
 		{
-		  public:
+		public:
 			constexpr explicit TextureInternalFormat(GLenum value) : mValue{value} {}
 
 			constexpr auto get() const -> GLenum
@@ -139,7 +139,7 @@ namespace HJUIK
 				return get();
 			}
 
-		  private:
+		private:
 			GLenum mValue;
 		};
 
@@ -180,7 +180,7 @@ namespace HJUIK
 		template <TextureType Type>
 		class Texture : public OpenGLWrapper<detail::TextureTrait>
 		{
-		  public:
+		public:
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
 			constexpr static std::size_t NUM_DIMENSIONS = detail::TEXTURE_DIMENSIONS<Type>;
@@ -235,7 +235,7 @@ namespace HJUIK
 			auto setStorageBuffer(TextureInternalFormat format, GLuint bufferHandle, std::size_t offset = 0,
 				std::size_t size = SIZE_MAX) const -> void;
 
-		  private:
+		private:
 			template <typename T>
 			static auto padVectorTo3D(const VectorType& vector, T defaultValue = 0) -> std::array<T, 3>;
 		};

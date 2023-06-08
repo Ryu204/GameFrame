@@ -12,7 +12,7 @@ namespace HJUIK
 	template <typename WrapperTrait>
 	class OpenGLWrapper
 	{
-	  public:
+	public:
 		using Handle						= typename WrapperTrait::HandleType;
 		static constexpr Handle NULL_HANDLE = static_cast<Handle>(0);
 
@@ -66,7 +66,7 @@ namespace HJUIK
 			return mHandle != NULL_HANDLE;
 		}
 
-	  private:
+	private:
 		Handle mHandle;
 	};
 } // namespace HJUIK
@@ -100,7 +100,7 @@ inline auto checkNonZero(Type&& value, const char* errorMessage) -> decltype(aut
 template <typename GLObjectType, typename... Args>
 class BindGuard
 {
-  public:
+public:
 	explicit BindGuard(const GLObjectType& object, Args... args)
 		: mCurrentBound{GLObjectType::getCurrentBound(args...)}, mArgs{args...}
 	{
@@ -126,7 +126,7 @@ class BindGuard
 		(void) tempObject.release();
 	}
 
-  private:
+private:
 	typename GLObjectType::Handle mCurrentBound;
 	std::tuple<Args...> mArgs;
 

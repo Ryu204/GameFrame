@@ -131,7 +131,7 @@ namespace HJUIK
 
 		class Buffer : public OpenGLWrapper<detail::BufferTrait>
 		{
-		  public:
+		public:
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
 			constexpr static BufferTarget TEMP_BUFFER_TARGET = BufferTarget::COPY_READ;
@@ -193,7 +193,7 @@ namespace HJUIK
 				memCopy(target, destOffset, container.data(), container.size() * sizeof(*container.data()));
 			}
 
-		  private:
+		private:
 			static auto getSize(BufferTarget target) -> std::size_t;
 			static auto checkRange(std::size_t offset, std::size_t size, BufferTarget target)
 				-> std::tuple<GLintptr, GLsizeiptr>;

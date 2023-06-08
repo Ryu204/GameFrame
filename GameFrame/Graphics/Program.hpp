@@ -22,7 +22,7 @@ namespace HJUIK
 
 		class Program : public OpenGLWrapper<detail::ProgramTrait>
 		{
-		  public:
+		public:
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
 
