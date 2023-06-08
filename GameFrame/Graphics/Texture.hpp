@@ -39,7 +39,7 @@ namespace HJUIK
       inline auto getTextureBindingType(TextureType type) -> GLenum;
 
       template <TextureType Type>
-      struct TextureDimensionType : std::integral_constant<size_t, 0> {
+      struct TextureDimensionType : std::integral_constant<std::size_t, 0> {
       };
 
       template <TextureType Type>
@@ -55,17 +55,17 @@ namespace HJUIK
       };
 
       // clang-format off
-      template <> struct TextureDimensionType<TextureType::E1D>                   : std::integral_constant<size_t, 1> {};
-      template <> struct TextureDimensionType<TextureType::E2D>                   : std::integral_constant<size_t, 2> {};
-      template <> struct TextureDimensionType<TextureType::E3D>                   : std::integral_constant<size_t, 3> {};
-      template <> struct TextureDimensionType<TextureType::RECTANGLE>             : std::integral_constant<size_t, 2> {};
-      template <> struct TextureDimensionType<TextureType::CUBE_MAP>              : std::integral_constant<size_t, 3> {};
-      template <> struct TextureDimensionType<TextureType::BUFFER>                : std::integral_constant<size_t, 1> {};
-      template <> struct TextureDimensionType<TextureType::E1D_ARRAY>             : std::integral_constant<size_t, 2> {};
-      template <> struct TextureDimensionType<TextureType::E2D_ARRAY>             : std::integral_constant<size_t, 3> {};
-      template <> struct TextureDimensionType<TextureType::CUBE_MAP_ARRAY>        : std::integral_constant<size_t, 3> {};
-      template <> struct TextureDimensionType<TextureType::E2D_MULTISAMPLE>       : std::integral_constant<size_t, 2> {};
-      template <> struct TextureDimensionType<TextureType::E2D_MULTISAMPLE_ARRAY> : std::integral_constant<size_t, 3> {};
+      template <> struct TextureDimensionType<TextureType::E1D>                   : std::integral_constant<std::size_t, 1> {};
+      template <> struct TextureDimensionType<TextureType::E2D>                   : std::integral_constant<std::size_t, 2> {};
+      template <> struct TextureDimensionType<TextureType::E3D>                   : std::integral_constant<std::size_t, 3> {};
+      template <> struct TextureDimensionType<TextureType::RECTANGLE>             : std::integral_constant<std::size_t, 2> {};
+      template <> struct TextureDimensionType<TextureType::CUBE_MAP>              : std::integral_constant<std::size_t, 3> {};
+      template <> struct TextureDimensionType<TextureType::BUFFER>                : std::integral_constant<std::size_t, 1> {};
+      template <> struct TextureDimensionType<TextureType::E1D_ARRAY>             : std::integral_constant<std::size_t, 2> {};
+      template <> struct TextureDimensionType<TextureType::E2D_ARRAY>             : std::integral_constant<std::size_t, 3> {};
+      template <> struct TextureDimensionType<TextureType::CUBE_MAP_ARRAY>        : std::integral_constant<std::size_t, 3> {};
+      template <> struct TextureDimensionType<TextureType::E2D_MULTISAMPLE>       : std::integral_constant<std::size_t, 2> {};
+      template <> struct TextureDimensionType<TextureType::E2D_MULTISAMPLE_ARRAY> : std::integral_constant<std::size_t, 3> {};
 
       template <> struct TextureSupportsMipmapping<TextureType::E1D>              : std::true_type {};
       template <> struct TextureSupportsMipmapping<TextureType::E2D>              : std::true_type {};
@@ -86,33 +86,33 @@ namespace HJUIK
       // clang-format on
 
       template <TextureType Type>
-      inline constexpr size_t TEXTURE_DIMENSION = TextureDimensionType<Type>::value;
+      inline constexpr std::size_t TEXTURE_DIMENSION = TextureDimensionType<Type>::value;
 
-      template <TextureType Type, size_t Dimension>
+      template <TextureType Type, std::size_t Dimension>
       inline constexpr bool AT_LEAST_DIMENSION = TEXTURE_DIMENSION<Type> >= Dimension;
 
       struct TextureSizeAtLeast1D {
-        size_t Width = 1;
+        std::size_t Width = 1;
       };
 
       struct TextureSizeAtLeast2D {
-        size_t Height = 1;
+        std::size_t Height = 1;
       };
 
       struct TextureSizeAtLeast3D {
-        size_t Depth = 1;
+        std::size_t Depth = 1;
       };
 
       struct TextureOffsetAtLeast1D {
-        size_t OffsetX = 0;
+        std::size_t OffsetX = 0;
       };
 
       struct TextureOffsetAtLeast2D {
-        size_t OffsetY = 0;
+        std::size_t OffsetY = 0;
       };
 
       struct TextureOffsetAtLeast3D {
-        size_t OffsetZ = 0;
+        std::size_t OffsetZ = 0;
       };
 
       struct Empty {
@@ -212,10 +212,10 @@ namespace HJUIK
       // immutable data means that the size of the texture will not change,
       // not the texel data could not be modified
       bool Immutable                       = true;
-      size_t MipmapLevels                  = 1;
+      std::size_t MipmapLevels                  = 1;
       TextureInternalFormat InternalFormat = TextureInternalFormats::RGBA8;
       // For E2D_MULTISAMPLE/E2D_MULTISAMPLE_ARRAY types only
-      size_t Samples            = 0;
+      std::size_t Samples            = 0;
       bool FixedSampleLocations = false;
     };
 
@@ -238,7 +238,7 @@ namespace HJUIK
       static auto getCurrentBound() -> GLuint;
 
       // get the texture dimension
-      auto getDimension(size_t mipLevel = 0) const -> DimensionType;
+      auto getDimension(std::size_t mipLevel = 0) const -> DimensionType;
 
       // set a label for this Texture via `glObjectLabel`.
       // this label may show up in debug callback or an external OpenGL
@@ -247,33 +247,33 @@ namespace HJUIK
       auto setLabel(const char* name) -> void;
 
       // bind a texture to the texture slot `slot`
-      auto bindActive(size_t slot) const -> void;
+      auto bindActive(std::size_t slot) const -> void;
 
       // texture memory-related methods
       // allocate texture image data
       static auto allocate(const TextureAllocationInfo& allocInfo, const DimensionType& dimensions) -> void;
       // copy image from client (CPU) to server (GPU)
-      static auto imageCopy(const OffsetType& offset, const DataType& data, size_t MipLevel = 0) -> void;
+      static auto imageCopy(const OffsetType& offset, const DataType& data, std::size_t MipLevel = 0) -> void;
       // generate mipmaps for the texture
       static auto generateMipmap() -> void;
       // TODO: add custom clear
       // clear the texture to a default color of black transparent
       // (this default color may be changed in the future)
-      auto imageClear(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
+      auto imageClear(const OffsetType& offset, const DimensionType& dimension, std::size_t mipLevel = 0) const -> void;
 
       // copy image from this texture to another texture
       template <TextureType DestType>
       auto imageCopyToTexture(const Texture<DestType>& dest, const TextureOffset<DestType>& destOffset,
-          const OffsetType& srcOffset, const DimensionType& srcDimension, size_t destMipLevel = 0,
-          size_t srcMipLevel = 0) const -> void;
+          const OffsetType& srcOffset, const DimensionType& srcDimension, std::size_t destMipLevel = 0,
+          std::size_t srcMipLevel = 0) const -> void;
 
       // invalidate texture, i.e., marking the texture data (in the specified region) as invalid
-      auto invalidate(const OffsetType& offset, const DimensionType& dimension, size_t mipLevel = 0) const -> void;
+      auto invalidate(const OffsetType& offset, const DimensionType& dimension, std::size_t mipLevel = 0) const -> void;
 
       // set data buffer for this TextureBuffer
       template <TextureType ThisType = Type, typename = std::enable_if_t<(ThisType == TextureType::BUFFER)>>
       auto setStorageBuffer(
-          TextureInternalFormat format, GLuint bufferHandle, size_t offset = 0, size_t size = SIZE_MAX) const -> void;
+          TextureInternalFormat format, GLuint bufferHandle, std::size_t offset = 0, std::size_t size = SIZE_MAX) const -> void;
     };
 
     // only aliasing the most frequently used texture types

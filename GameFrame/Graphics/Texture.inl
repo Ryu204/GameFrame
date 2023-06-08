@@ -101,20 +101,20 @@ namespace HJUIK
     }
 
     template <TextureType Type>
-    inline auto Texture<Type>::getDimension(size_t mipLevel) const -> DimensionType
+    inline auto Texture<Type>::getDimension(std::size_t mipLevel) const -> DimensionType
     {
       DimensionType dimensions;
       BindGuard guard{*this};
       if constexpr (NUM_DIMENSIONS >= 1) {
-        dimensions.Width = static_cast<size_t>(callGLGet<GLint>(
+        dimensions.Width = static_cast<std::size_t>(callGLGet<GLint>(
             glGetTexLevelParameteriv, static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_WIDTH));
       }
       if constexpr (NUM_DIMENSIONS >= 2) {
-        dimensions.Height = static_cast<size_t>(callGLGet<GLint>(
+        dimensions.Height = static_cast<std::size_t>(callGLGet<GLint>(
             glGetTexLevelParameteriv, static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_HEIGHT));
       }
       if constexpr (NUM_DIMENSIONS >= 3) {
-        dimensions.Depth = static_cast<size_t>(callGLGet<GLint>(
+        dimensions.Depth = static_cast<std::size_t>(callGLGet<GLint>(
             glGetTexLevelParameteriv, static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_DEPTH));
       }
       return dimensions;
@@ -130,7 +130,7 @@ namespace HJUIK
     }
 
     template <TextureType Type>
-    inline auto Texture<Type>::bindActive(size_t slot) const -> void
+    inline auto Texture<Type>::bindActive(std::size_t slot) const -> void
     {
       glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + slot));
       bind();
@@ -169,7 +169,7 @@ namespace HJUIK
           if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
             throw std::runtime_error("texture does not support mipmapping");
           }
-          for (size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
+          for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
             glTexImage1D(static_cast<GLenum>(Type), static_cast<GLint>(i),
                 static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.Width), 0, GL_R,
                 GL_UNSIGNED_BYTE, nullptr);
@@ -184,7 +184,7 @@ namespace HJUIK
           if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
             throw std::runtime_error("texture does not support mipmapping");
           }
-          for (size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
+          for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
             glTexImage2D(static_cast<GLenum>(Type), static_cast<GLint>(i),
                 static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.Width),
                 static_cast<GLsizei>(dimensions.Height), 0, GL_R, GL_UNSIGNED_BYTE, nullptr);
@@ -199,7 +199,7 @@ namespace HJUIK
           if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
             throw std::runtime_error("texture does not support mipmapping");
           }
-          for (size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
+          for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
             glTexImage3D(static_cast<GLenum>(Type), static_cast<GLint>(i),
                 static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.Width),
                 static_cast<GLsizei>(dimensions.Height), static_cast<GLsizei>(dimensions.Depth), 0, GL_R,
@@ -210,7 +210,7 @@ namespace HJUIK
     }
 
     template <TextureType Type>
-    inline auto Texture<Type>::imageCopy(const OffsetType& offset, const DataType& data, size_t MipLevel) -> void
+    inline auto Texture<Type>::imageCopy(const OffsetType& offset, const DataType& data, std::size_t MipLevel) -> void
     {
       if constexpr (NUM_DIMENSIONS == 1) {
         glTexSubImage1D(static_cast<GLenum>(Type), static_cast<GLint>(MipLevel), static_cast<GLint>(offset.OffsetX),
@@ -236,7 +236,7 @@ namespace HJUIK
 
     template <TextureType Type>
     inline auto Texture<Type>::imageClear(
-        const OffsetType& offset, const DimensionType& dimension, size_t mipLevel) const -> void
+        const OffsetType& offset, const DimensionType& dimension, std::size_t mipLevel) const -> void
     {
       auto [x, y, z]              = offset.toGLintTuple();
       auto [width, height, depth] = dimension.toGLsizeiTuple();
@@ -247,7 +247,7 @@ namespace HJUIK
 
     template <TextureType Type>
     inline auto Texture<Type>::invalidate(
-        const OffsetType& offset, const DimensionType& dimension, size_t mipLevel) const -> void
+        const OffsetType& offset, const DimensionType& dimension, std::size_t mipLevel) const -> void
     {
       auto [x, y, z]              = offset.toGLintTuple();
       auto [width, height, depth] = dimension.toGLsizeiTuple();
@@ -258,7 +258,7 @@ namespace HJUIK
     template <TextureType DestType>
     inline auto Texture<SrcType>::imageCopyToTexture(const Texture<DestType>& dest,
         const TextureOffset<DestType>& destOffset, const OffsetType& srcOffset, const DimensionType& srcDimension,
-        size_t destMipLevel, size_t srcMipLevel) const -> void
+        std::size_t destMipLevel, std::size_t srcMipLevel) const -> void
     {
       auto [srcX, srcY, srcZ]              = srcOffset.toGLintTuple();
       auto [destX, destY, destZ]           = destOffset.toGLintTuple();
@@ -272,7 +272,7 @@ namespace HJUIK
     template <TextureType Type>
     template <TextureType ThisType, typename>
     inline auto Texture<Type>::setStorageBuffer(
-        TextureInternalFormat format, GLuint bufferHandle, size_t offset, size_t size) const -> void
+        TextureInternalFormat format, GLuint bufferHandle, std::size_t offset, std::size_t size) const -> void
     {
       static_assert(Type == ThisType);
       if (offset == 0 && size == SIZE_MAX) {

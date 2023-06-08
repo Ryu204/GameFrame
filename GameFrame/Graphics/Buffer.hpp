@@ -139,7 +139,7 @@ namespace HJUIK
       auto bind(BufferTarget target) const -> void;
       static auto unbind(BufferTarget target) -> void;
 
-      auto getSize() const -> size_t;
+      auto getSize() const -> std::size_t;
 
       // wrapper for glBindBufferBase/glBindBufferRange
       // NOLINTNEXTLINE(*-easily-swappable-parameters)
@@ -194,9 +194,9 @@ namespace HJUIK
       }
 
     private:
-      static auto getSize(BufferTarget target) -> size_t;
-      static auto checkRange(size_t offset, size_t size, BufferTarget target) -> std::tuple<GLintptr, GLsizeiptr>;
-      auto checkRange(size_t offset, size_t size) const -> std::tuple<GLintptr, GLsizeiptr>;
+      static auto getSize(BufferTarget target) -> std::size_t;
+      static auto checkRange(std::size_t offset, std::size_t size, BufferTarget target) -> std::tuple<GLintptr, GLsizeiptr>;
+      auto checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>;
     };
 
   } // namespace Graphics

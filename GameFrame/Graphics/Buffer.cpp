@@ -104,7 +104,7 @@ namespace HJUIK
     {
       glBindBuffer(static_cast<GLenum>(target), 0);
     }
-    auto Buffer::getSize() const -> size_t
+    auto Buffer::getSize() const -> std::size_t
     {
       const BindGuard guard{*this, TEMP_BUFFER_TARGET};
       return getSize(TEMP_BUFFER_TARGET);
@@ -209,13 +209,13 @@ namespace HJUIK
           static_cast<GLenum>(srcTarget), static_cast<GLenum>(destTarget), glSrcOffset, glDestOffset, glDestSize);
     }
 
-    auto Buffer::getSize(BufferTarget target) -> size_t
+    auto Buffer::getSize(BufferTarget target) -> std::size_t
     {
-      return static_cast<size_t>(
+      return static_cast<std::size_t>(
           callGLGet<GLint64>(glGetBufferParameteri64v, static_cast<GLenum>(target), GL_BUFFER_SIZE));
     }
 
-    auto Buffer::checkRange(size_t offset, size_t size, BufferTarget target) -> std::tuple<GLintptr, GLsizeiptr>
+    auto Buffer::checkRange(std::size_t offset, std::size_t size, BufferTarget target) -> std::tuple<GLintptr, GLsizeiptr>
     {
       size                  = std::min(size, getSize(target));
       const auto bufferSize = getSize(target);
@@ -225,7 +225,7 @@ namespace HJUIK
       return {static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(std::min(bufferSize - offset, size))};
     }
 
-    auto Buffer::checkRange(size_t offset, size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
+    auto Buffer::checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
     {
       const BindGuard guard{*this, TEMP_BUFFER_TARGET};
       return checkRange(offset, size, TEMP_BUFFER_TARGET);

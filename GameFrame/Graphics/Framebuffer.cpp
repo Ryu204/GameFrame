@@ -48,7 +48,7 @@ namespace HJUIK
     }
 
     auto Renderbuffer::allocStorage(
-        TextureInternalFormat internalFormat, size_t width, size_t height, std::ptrdiff_t samples) -> void
+        TextureInternalFormat internalFormat, std::size_t width, std::size_t height, std::ptrdiff_t samples) -> void
     {
       if (samples >= 0) {
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, static_cast<GLsizei>(samples),

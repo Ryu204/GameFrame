@@ -32,7 +32,7 @@ namespace HJUIK
     };
 
     struct FramebufferColorAttachment {
-      size_t Index;
+      std::size_t Index;
 
       explicit operator GLenum() const
       {
@@ -91,7 +91,7 @@ namespace HJUIK
       auto setLabel(const char* name) const -> void;
 
       static auto allocStorage(
-          TextureInternalFormat internalFormat, size_t width, size_t height, std::ptrdiff_t samples = -1) -> void;
+          TextureInternalFormat internalFormat, std::size_t width, std::size_t height, std::ptrdiff_t samples = -1) -> void;
     };
 
     class Framebuffer : public OpenGLWrapper<detail::FramebufferTrait>
@@ -118,7 +118,7 @@ namespace HJUIK
       // TODO: add support for more niche uses of this
       template <TextureType Type>
       static auto setTextureAttachment(FramebufferTarget target, FramebufferAttachment attachment,
-          const Texture<Type>& texture, size_t mipLevel = 0) -> void
+          const Texture<Type>& texture, std::size_t mipLevel = 0) -> void
       {
         glFramebufferTexture(static_cast<GLenum>(target), framebufferAttachmentAsGLEnum(attachment), texture.get(),
             static_cast<GLint>(mipLevel));
