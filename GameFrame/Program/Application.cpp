@@ -1,7 +1,4 @@
 #include "Application.hpp"
-
-#include <iostream>
-
 #include "../Graphics/Color.hpp"
 #include "Properties.hpp"
 
@@ -10,7 +7,6 @@ namespace HJUIK
 	Application::Application() : mUpdateInterval(getUpdateInterval())
 	{
 		mWindow = std::make_unique<SFMLWindow>(getDefaultWindowSize(), getWindowTitle(), getWindowType());
-
 		mWindow->limitFrameRate(getFramerate());
 		mWindow->setKeyRepeatable(getKeyRepeatability());
 
@@ -36,6 +32,7 @@ namespace HJUIK
 
 	auto Application::update(Time deltaTime) -> void {}
 
+
 	auto Application::processInput() -> void
 	{
 		Event event;
@@ -46,9 +43,9 @@ namespace HJUIK
 
 	auto Application::render() -> void
 	{
-		mWindow->clear(mBackgroundColor);
-
-		mWindow->display();
+		auto &glContext = mWindow->getOpenGLContext();
+		glContext.clear(mBackgroundColor);
+		glContext.display();
 	}
 
 	auto Application::initEventCallback() -> void
