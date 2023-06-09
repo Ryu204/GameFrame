@@ -12,6 +12,10 @@ namespace HJUIK
 		mWindow->setKeyRepeatable(getKeyRepeatability());
 
 		initEventCallback();
+
+        // Currently our program will be in Wjbu mode
+        // NOLINTNEXTLINE(*-magic-numbers)
+        mWindow->getOpenGLContext().getBaseColor() = Graphics::Color{ 0xFFBCB3FF };
 	}
 
 	auto Application::run() -> void
@@ -45,7 +49,7 @@ namespace HJUIK
 	auto Application::render() -> void
 	{
 		auto& glContext = mWindow->getOpenGLContext();
-		glContext.clear(mBackgroundColor);
+		glContext.clear();
 		glContext.display();
 	}
 

@@ -30,6 +30,10 @@ namespace HJUIK
 			auto operator=(Color&& other) -> Color&		 = default;
 			explicit Color(Vector4u code);
 			explicit Color(Vector3u code);
+            // NOLINTNEXTLINE(*-easily-swappable-parameters)
+            explicit Color(val red, val green, val blue, val alpha = UINT8_MAX);
+            // For example: auto color = Color(0xABCDEFFF);
+            explicit Color(std::uint32_t hexacode);
 			// Get the RGBA format of the color in [0,1] range
 			auto getNormalizedColor() const -> Vector4f;
 		};

@@ -35,6 +35,18 @@ namespace HJUIK
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
+        auto IOpenGLContext::clear() -> void
+        {
+            const auto normalized = mBaseColor.getNormalizedColor();
+            glClearColor(normalized.r, normalized.g, normalized.b, normalized.a);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
+
+        auto IOpenGLContext::getBaseColor() -> Color &
+        {
+            return mBaseColor;
+        }
+
 		auto IOpenGLContext::setupDebugLogger() -> bool
 		{
 #ifndef NDEBUG

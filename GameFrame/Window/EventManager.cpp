@@ -1,4 +1,5 @@
 #include "EventManager.hpp"
+#include <iostream>
 
 namespace HJUIK
 {
@@ -13,6 +14,13 @@ namespace HJUIK
 	auto EventManager::deleteHandler(std::size_t ID) -> void // NOLINT
 	{
 		const auto index = mIDToTypeIndex[ID];
-		mHandlers[index].erase(ID);
+		try{
+            mHandlers[index].erase(ID);
+            mIDGenerator.erase(ID);
+        } catch (std::exception& e){
+            // TODO: Create a proper debug class to deal with exceptions
+            throw(std::runtime_error("HJUIK::EventManager: Cannot delete handler " +
+                std::to_string(ID) + ":\n\t" + e.what()));
+        }
 	}
 } // namespace HJUIK

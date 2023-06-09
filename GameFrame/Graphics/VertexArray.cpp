@@ -1,4 +1,5 @@
 #include "VertexArray.hpp"
+#include "../Utilize/CallAssert.hpp"
 
 namespace HJUIK
 {
@@ -6,7 +7,7 @@ namespace HJUIK
 	{
 		auto detail::VertexArrayTrait::create() -> GLuint
 		{
-			return checkNonZero(callGLGen<GLuint>(glGenVertexArrays), "unable to generate vertex arrays");
+			return Utilize::checkNonZero(callGLGen<GLuint>(glGenVertexArrays), "unable to generate vertex arrays");
 		}
 		auto detail::VertexArrayTrait::destroy(GLuint handle) -> void
 		{
