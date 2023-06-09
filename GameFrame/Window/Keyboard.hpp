@@ -2,7 +2,7 @@
 #define GAMEFRAME_WINDOW_KEYBOARD_HPP
 
 /*
-	Define keyboard keys. Use SFML scancode in SFML/Window/Keyboard.hpp.
+	Define keyboard keys. Use SFML scancode in SFML/Window/Keyboard.hpp (branch 2.6.x).
 */
 
 #include <SFML/Window.hpp>
