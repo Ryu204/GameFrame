@@ -69,75 +69,65 @@ namespace HJUIK
 	private:
 		Handle mHandle;
 	};
+
+    // reduce boilerplates in glGen*/glGet* calls
+    template <typename ReturnType, typename Func, typename... Args>
+    inline auto callGLGet(Func&& glGetFunc, Args&&... args) -> ReturnType
+    {
+        ReturnType value;
+        std::forward<Func>(glGetFunc)(std::forward<Args>(args)..., &value);
+        return value;
+    }
+
+    // reduce boilerplates in glGen* calls
+    template <typename ReturnType, typename Func, typename... Args>
+    inline auto callGLGen(Func&& glGenFunc, Args&&... args) -> ReturnType
+    {
+        return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
+    }
+
+    template <typename GLObjectType, typename... Args>
+    class BindGuard
+    {
+    public:
+        explicit BindGuard(const GLObjectType& object, Args... args)
+            : mCurrentBound{GLObjectType::getCurrentBound(args...)}, mArgs{args...}
+        {
+            if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
+                throw std::runtime_error("another bind guard already in effect");
+            }
+
+            mAlreadyBoundTargets().insert(mArgs);
+            object.bind(args...);
+        }
+
+        BindGuard(const BindGuard&)					   = delete;
+        auto operator=(const BindGuard&) -> BindGuard& = delete;
+
+        BindGuard(BindGuard&&) noexcept					   = default;
+        auto operator=(BindGuard&&) noexcept -> BindGuard& = default;
+
+        ~BindGuard()
+        {
+            mAlreadyBoundTargets().erase(mArgs);
+            auto tempObject = GLObjectType{mCurrentBound};
+            std::apply([&](auto... args) { tempObject.bind(args...); }, mArgs);
+            (void) tempObject.release();
+        }
+
+    private:
+        typename GLObjectType::Handle mCurrentBound;
+        std::tuple<Args...> mArgs;
+
+        static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
+        {
+            static std::set<std::tuple<Args...>> alreadyBoundTargets{};
+            return alreadyBoundTargets;
+        }
+    };
+
+    template <typename GLObjectType, typename... Args>
+    BindGuard(const GLObjectType&, Args...) -> BindGuard<GLObjectType, Args...>;
 } // namespace HJUIK
-
-// reduce boilerplates in glGen*/glGet* calls
-template <typename ReturnType, typename Func, typename... Args>
-inline auto callGLGet(Func&& glGetFunc, Args&&... args) -> ReturnType
-{
-	ReturnType value;
-	std::forward<Func>(glGetFunc)(std::forward<Args>(args)..., &value);
-	return value;
-}
-
-// reduce boilerplates in glGen* calls
-template <typename ReturnType, typename Func, typename... Args>
-inline auto callGLGen(Func&& glGenFunc, Args&&... args) -> ReturnType
-{
-	return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
-}
-
-template <typename Type>
-inline auto checkNonZero(Type&& value, const char* errorMessage) -> decltype(auto)
-{
-	if (value == 0) {
-		throw std::runtime_error(errorMessage);
-	}
-
-	return std::forward<Type>(value);
-}
-
-template <typename GLObjectType, typename... Args>
-class BindGuard
-{
-public:
-	explicit BindGuard(const GLObjectType& object, Args... args)
-		: mCurrentBound{GLObjectType::getCurrentBound(args...)}, mArgs{args...}
-	{
-		if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
-			throw std::runtime_error("another bind guard already in effect");
-		}
-
-		mAlreadyBoundTargets().insert(mArgs);
-		object.bind(args...);
-	}
-
-	BindGuard(const BindGuard&)					   = delete;
-	auto operator=(const BindGuard&) -> BindGuard& = delete;
-
-	BindGuard(BindGuard&&) noexcept					   = default;
-	auto operator=(BindGuard&&) noexcept -> BindGuard& = default;
-
-	~BindGuard()
-	{
-		mAlreadyBoundTargets().erase(mArgs);
-		auto tempObject = GLObjectType{mCurrentBound};
-		std::apply([&](auto... args) { tempObject.bind(args...); }, mArgs);
-		(void) tempObject.release();
-	}
-
-private:
-	typename GLObjectType::Handle mCurrentBound;
-	std::tuple<Args...> mArgs;
-
-	static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
-	{
-		static std::set<std::tuple<Args...>> alreadyBoundTargets{};
-		return alreadyBoundTargets;
-	}
-};
-
-template <typename GLObjectType, typename... Args>
-BindGuard(const GLObjectType&, Args...) -> BindGuard<GLObjectType, Args...>;
 
 #endif

@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "Texture.hpp"
+#include "../Utilize/CallAssert.hpp"
 
 namespace HJUIK
 {
@@ -10,7 +11,7 @@ namespace HJUIK
 
 		auto detail::TextureTrait::create() -> GLuint
 		{
-			return checkNonZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
+			return Utilize::checkNonZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
 		}
 
 		auto detail::TextureTrait::destroy(GLuint handle) -> void
