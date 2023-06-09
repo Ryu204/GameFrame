@@ -14,7 +14,7 @@ namespace HJUIK
     namespace Utilize
     {
         template <typename Type>
-        // Check and throw std::runtime_error
+        // Check if 'value' is non-zero or else throw std::runtime_error
         inline auto checkNonZero(Type&& value, const char* errorMessage) -> decltype(auto)
         {
             if (value == 0)
@@ -26,7 +26,7 @@ namespace HJUIK
         }
 
         template <typename Type>
-        // Check and throw std::runtime_error
+        // Check if 'value' is non-zero or else throw std::runtime_error
         inline auto checkNonZero(Type&& value, const std::string& errorMessage) -> decltype(auto)
         {
             if (value == 0)

@@ -13,12 +13,13 @@ namespace HJUIK
 	{
 		// Manage ID creation and deletion
 		// N is the number of maximum available IDs
+        // This class throw exception excessively if the parameters are faulty
 		template <std::size_t N>
 		class IDGenerator
 		{
 		public:
 			IDGenerator();
-			// Generate a new ID. Return 0 if all possible ID were generated and not erased.
+			// Generate a new ID.
 			auto generate() -> std::size_t;
 			// Erase an ID generated before
 			auto erase(std::size_t ID) -> void; // NOLINT
