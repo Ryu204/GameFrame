@@ -11,7 +11,7 @@ namespace HJUIK
 
 		auto detail::TextureTrait::create() -> GLuint
 		{
-			return Utilize::checkNonZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
+			return Utilize::throwIfZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
 		}
 
 		auto detail::TextureTrait::destroy(GLuint handle) -> void

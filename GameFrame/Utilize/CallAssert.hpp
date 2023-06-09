@@ -2,41 +2,40 @@
 #define GAMEFRAME_UTILIZE_CALL_ASSERT_HPP
 
 #include <string>
-#include <exception>
-#include <stdexcept>
+#include <iostream>
 
 /*
-    Utilize methods to check a conditions and execute corresponding actions
+	Utilize methods to check a conditions and execute corresponding actions
 */
-
 namespace HJUIK
 {
-    namespace Utilize
-    {
-        template <typename Type>
-        // Check if 'value' is non-zero or else throw std::runtime_error
-        inline auto checkNonZero(Type&& value, const char* errorMessage) -> decltype(auto)
+	namespace Utilize
+	{
+        namespace detail
         {
-            if (value == 0)
+            namespace Assert
             {
-                throw std::runtime_error(errorMessage);
-            }
+                template<typename T>
+                void recursivePrint(T arg1);
 
-            return std::forward<Type>(value);
-        }
+                template <typename T1, typename... Ts>
+                void recursivePrint(T1 arg1, Ts... args);
+            } // namespace Assert
+        } // namespace detail
 
-        template <typename Type>
-        // Check if 'value' is non-zero or else throw std::runtime_error
-        inline auto checkNonZero(Type&& value, const std::string& errorMessage) -> decltype(auto)
-        {
-            if (value == 0)
-            {
-                throw std::runtime_error(errorMessage);
-            }
+		// Check if 'value' is non-zero or else throw std::runtime_error
+		template <typename Type>
+		inline auto throwIfZero(Type&& value, const char* errorMessage) -> decltype(auto);
 
-            return std::forward<Type>(value);
-        }
-    } // namespace Utilize
+		// Check if 'value' is non-zero or else throw std::runtime_error
+		template <typename Type>
+		inline auto throwIfZero(Type&& value, const std::string& errorMessage) -> decltype(auto);
+
+        template <typename Type, typename LINE_TYPE, typename FILE_TYPE, typename... Args>
+        inline auto assertIfZero(Type&& value, LINE_TYPE line, FILE_TYPE file, Args&&... args) -> void;
+	} // namespace Utilize
 } // namespace HJUIK
+
+#include "CallAssert.inl"
 
 #endif

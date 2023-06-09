@@ -7,7 +7,7 @@ namespace HJUIK
 	{
 		auto detail::VertexArrayTrait::create() -> GLuint
 		{
-			return Utilize::checkNonZero(callGLGen<GLuint>(glGenVertexArrays), "unable to generate vertex arrays");
+			return Utilize::throwIfZero(callGLGen<GLuint>(glGenVertexArrays), "unable to generate vertex arrays");
 		}
 		auto detail::VertexArrayTrait::destroy(GLuint handle) -> void
 		{
