@@ -18,8 +18,13 @@ namespace HJUIK
 			auto operator=(const IOpenGLContext&) -> IOpenGLContext& = delete;
 			auto operator=(IOpenGLContext&&) -> IOpenGLContext&		 = delete;
 
-			// Clear the current framebuffer
+			// Clear the current framebuffer with a specified color
 			auto clear(Color color) -> void;
+            // Clear the current framebuffer with default color
+            auto clear() -> void;
+
+            // Get the default color
+            auto getBaseColor() -> Graphics::Color &;
 
 			// Display the content after finished rendering
 			virtual auto display() -> void = 0;
@@ -30,6 +35,9 @@ namespace HJUIK
 
 			// OpenGL status
 			static auto mOpenGLLoaded() -> bool&;
+
+            // Default color of the context
+            Graphics::Color mBaseColor;
 		};
 	} // namespace Graphics
 } // namespace HJUIK
