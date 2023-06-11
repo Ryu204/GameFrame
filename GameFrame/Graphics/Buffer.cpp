@@ -32,31 +32,31 @@ namespace HJUIK
 			case BufferTarget::ARRAY:
 				return GL_ARRAY_BUFFER_BINDING;
 			case BufferTarget::ATOMIC_COUNTER:
-				return GL_ATOMIC_COUNTER_BUFFER;
+				return GL_ATOMIC_COUNTER_BUFFER_BINDING;
 			case BufferTarget::COPY_READ:
-				return GL_COPY_READ_BUFFER;
+				return GL_COPY_READ_BUFFER_BINDING;
 			case BufferTarget::COPY_WRITE:
-				return GL_COPY_WRITE_BUFFER;
+				return GL_COPY_WRITE_BUFFER_BINDING;
 			case BufferTarget::DISPATCH_INDIRECT:
-				return GL_DISPATCH_INDIRECT_BUFFER;
+				return GL_DISPATCH_INDIRECT_BUFFER_BINDING;
 			case BufferTarget::DRAW_INDIRECT:
-				return GL_DRAW_INDIRECT_BUFFER;
+				return GL_DRAW_INDIRECT_BUFFER_BINDING;
 			case BufferTarget::ELEMENT_ARRAY:
-				return GL_ELEMENT_ARRAY_BUFFER;
+				return GL_ELEMENT_ARRAY_BUFFER_BINDING;
 			case BufferTarget::PIXEL_PACK:
-				return GL_PIXEL_PACK_BUFFER;
+				return GL_PIXEL_PACK_BUFFER_BINDING;
 			case BufferTarget::PIXEL_UNPACK:
-				return GL_PIXEL_UNPACK_BUFFER;
+				return GL_PIXEL_UNPACK_BUFFER_BINDING;
 			case BufferTarget::QUERY:
-				return GL_QUERY_BUFFER;
+				return GL_QUERY_BUFFER_BINDING;
 			case BufferTarget::SHADER_STORAGE:
-				return GL_SHADER_STORAGE_BUFFER;
+				return GL_SHADER_STORAGE_BUFFER_BINDING;
 			case BufferTarget::TEXTURE:
-				return GL_TEXTURE_BUFFER;
+				return GL_TEXTURE_BUFFER_BINDING;
 			case BufferTarget::TRANSFORM_FEEDBACK:
-				return GL_TRANSFORM_FEEDBACK_BUFFER;
+				return GL_TRANSFORM_FEEDBACK_BUFFER_BINDING;
 			case BufferTarget::UNIFORM:
-				return GL_UNIFORM_BUFFER;
+				return GL_UNIFORM_BUFFER_BINDING;
 			default:
 				throw std::runtime_error("invalid buffer type");
 			}
