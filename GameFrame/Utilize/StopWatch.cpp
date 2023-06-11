@@ -9,7 +9,7 @@ namespace HJUIK
 		auto StopWatch::restart() -> Time
 		{
 			const Point now								= std::chrono::steady_clock::now();
-			const std::chrono::duration<float> duration = (now - mStart);
+			const auto duration                         = (now - mStart);
 			mStart										= now;
 			const auto seconds = std::chrono::duration_cast<std::chrono::duration<float>>(duration).count();
 			return Time{seconds};

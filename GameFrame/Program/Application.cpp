@@ -35,6 +35,7 @@ namespace HJUIK
 		}
 	}
 
+    // NOLINTBEGIN
 	auto Application::update(Time deltaTime) -> void {}
 
 
