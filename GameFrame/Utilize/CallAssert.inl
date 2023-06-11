@@ -1,6 +1,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 /*
 	Utilize methods to check a conditions and execute corresponding actions
@@ -19,7 +20,7 @@ namespace HJUIK
 				void recursivePrint(Args&&... args)
 				{
 					// https://stackoverflow.com/questions/43070062/using-fold-expressions-to-print-all-variadic-arguments-with-newlines-inbetween
-					(std::cout << ... << args);
+					(std::cout << ... << std::forward<Args>(args));
 				}
 			} // namespace Assert
 		}	  // namespace detail
