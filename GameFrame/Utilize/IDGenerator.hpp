@@ -45,8 +45,7 @@ namespace HJUIK
 		template <std::size_t N>
 		auto IDGenerator<N>::generate() -> std::size_t
 		{
-            assertIfZero(!mAvailable.empty(), __LINE__, __FILE__,
-                "Max IDs number exceeded (", N, ")");
+            HJUIK_ASSERT(!mAvailable.empty(), "Max IDs number exceeded (", N, ")");
 
             const auto res = mAvailable.front();
             mAvailable.pop();
@@ -58,8 +57,7 @@ namespace HJUIK
 		auto IDGenerator<N>::erase(std::size_t ID) -> void // NOLINT
 		{
             checkInRange(ID);
-            assertIfZero(mAliveLists[ID], __LINE__, __FILE__,
-                "Erase non-existed ID (", ID, ")");
+            HJUIK_ASSERT(mAliveLists[ID], "Erase non-existed ID (", ID, ")");
 			mAliveLists[ID] = false;
 			mAvailable.push(ID);
 		}
@@ -74,8 +72,7 @@ namespace HJUIK
         template <std::size_t N>
         auto IDGenerator<N>::checkInRange(std::size_t ID) -> void // NOLINT
         {
-            assertIfZero(ID < N, __LINE__, __FILE__,
-                "ID query not in range (", ID, ")");
+            HJUIK_ASSERT(ID < N, "ID query not in range (", ID, ")");
         }
 	} // namespace Utilize
 } // namespace HJUIK
