@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "../Graphics/Buffer.hpp"
+#include "../Graphics/Program.hpp"
+#include "../Graphics/VertexArray.hpp"
 #include "../Utilize.hpp"
 #include "../Window.hpp"
 
@@ -28,6 +31,11 @@ namespace HJUIK
 		std::unique_ptr<IWindow> mWindow;
 		EventManager mEventManager;
 		const Time mUpdateInterval;
+
+		Graphics::VertexArray mVAO;
+		Graphics::Buffer mVBO;
+		Graphics::Buffer mUBO;
+		Graphics::Program mProgram;
 	};
 } // namespace HJUIK
 
