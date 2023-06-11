@@ -14,8 +14,10 @@ namespace HJUIK
 			struct VertexArrayTrait {
 				using HandleType = GLuint;
 				static auto create() -> GLuint;
-
 				static auto destroy(GLuint handle) -> void;
+
+				static auto getCurrentBound() -> GLuint;
+				static auto bind(GLuint handle) -> void;
 			};
 		} // namespace detail
 
@@ -38,45 +40,39 @@ namespace HJUIK
 			UNSIGNED_INT_10F_11F_11F_REV = GL_UNSIGNED_INT_10F_11F_11F_REV
 		};
 
-		class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait>
+		class BoundVertexArray : public BoundOpenGLWrapper<detail::VertexArrayTrait>
+		{
+		public:
+			using BoundOpenGLWrapper::BoundOpenGLWrapper;
+
+			// wraps glEnableVertexAttribArray/glDisableVertexAttribArray
+			auto enableAttrib(std::size_t index) const -> void;
+			auto disableAttrib(std::size_t index) const -> void;
+
+			// wraps glVertexAttrib*Pointer
+			// required a buffer to be already bound with target GL_ARRAY_BUFFER
+			auto floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type, bool normalize,
+				std::size_t stride, std::size_t offset) const -> void;
+			auto floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type, bool normalize,
+				std::size_t stride, std::size_t offset) const -> void;
+			auto intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type, std::size_t stride,
+				std::size_t offset) const -> void;
+			auto doubleAttribPointer(std::size_t index, std::size_t size, std::size_t stride, std::size_t offset) const
+				-> void;
+		};
+
+		class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait, BoundVertexArray>
 		{
 		public:
 			// inherits base constructors and assigments
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
 
-			auto bind() const -> void;
-			static auto unbind() -> void;
-
-			// get handle to currently bound VertexArray
-			// this can be used to restore binding state after
-			// temporarily binding a VertexArray
-			static auto getCurrentBound() -> GLuint;
-
 			// set a label for this VertexArray via `glObjectLabel`.
 			// this label may show up in debug callback or an external OpenGL
 			// debugger (e.g. RenderDoc)
 			// (only have effect in OpenGL 4.3+)
 			auto setLabel(const char* name) const -> void;
-
-			// operates on the current bound VAO
-			// if one prefers a more OOP-ish way of doing this,
-			// consider using DSA (OpenGL 4.5+)
-
-			// wraps glEnableVertexAttribArray/glDisableVertexAttribArray
-			static auto enableAttrib(std::size_t index) -> void;
-			static auto disableAttrib(std::size_t index) -> void;
-
-			// wraps glVertexAttrib*Pointer
-			// required a buffer to be already bound with target GL_ARRAY_BUFFER
-			static auto floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type,
-				bool normalize, std::size_t stride, std::size_t offset) -> void;
-			static auto floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
-				bool normalize, std::size_t stride, std::size_t offset) -> void;
-			static auto intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
-				std::size_t stride, std::size_t offset) -> void;
-			static auto doubleAttribPointer(std::size_t index, std::size_t size, std::size_t stride, std::size_t offset)
-				-> void;
 		};
 	} // namespace Graphics
 

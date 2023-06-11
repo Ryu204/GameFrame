@@ -30,13 +30,17 @@ namespace HJUIK
 
 		namespace detail
 		{
+			template <TextureType Type>
 			struct TextureTrait {
 				using HandleType = GLuint;
 				static auto create() -> GLuint;
 				static auto destroy(GLuint handle) -> void;
+
+				static auto getCurrentBound() -> GLuint;
+				static auto bind(GLuint handle) -> void;
 			};
 
-			inline auto getTextureBindingType(TextureType type) -> GLenum;
+			inline constexpr auto getTextureBindingType(TextureType type) -> GLenum;
 
 			template <TextureType Type>
 			struct TextureDimensionsType : std::integral_constant<std::size_t, 0> {
@@ -178,24 +182,48 @@ namespace HJUIK
 		};
 
 		template <TextureType Type>
-		class Texture : public OpenGLWrapper<detail::TextureTrait>
+		class BoundTexture : public BoundOpenGLWrapper<detail::TextureTrait<Type>>
 		{
+			using Base = BoundOpenGLWrapper<detail::TextureTrait<Type>>;
+
 		public:
-			using OpenGLWrapper::OpenGLWrapper;
-			using OpenGLWrapper::operator=;
+			// using BoundOpenGLWrapper::BoundOpenGLWrapper does not work here
+			using Base::Base;
+			using Base::operator=;
 			constexpr static std::size_t NUM_DIMENSIONS = detail::TEXTURE_DIMENSIONS<Type>;
 			using VectorType							= glm::vec<NUM_DIMENSIONS, size_t>;
 			using DataType								= TextureData<Type>;
 
-			// wrappers for glBindTexture
-			auto bind() const -> void;
-			static auto unbind() -> void;
-
-			// get the currently bound texture
-			static auto getCurrentBound() -> GLuint;
-
 			// get the texture dimensions
 			auto getDimensions(std::size_t mipLevel = 0) const -> VectorType;
+			// texture memory-related methods
+			// allocate texture image data
+			auto allocate(const TextureAllocationInfo& allocInfo, const VectorType& dimensions) const -> void;
+			// copy image from client (CPU) to server (GPU)
+			auto imageCopy(const VectorType& offset, const DataType& data, std::size_t MipLevel = 0) const -> void;
+			// generate mipmaps for the texture
+			auto generateMipmap() const -> void;
+
+			// copy image from this texture to another texture
+			template <TextureType DestType>
+			auto imageCopyToTexture(const BoundTexture<DestType>& dest,
+				const typename BoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
+				const VectorType& srcDimensions, std::size_t destMipLevel = 0, std::size_t srcMipLevel = 0) const
+				-> void;
+		};
+
+		template <TextureType Type>
+		class Texture : public OpenGLWrapper<detail::TextureTrait<Type>, BoundTexture<Type>>
+		{
+			using Base = OpenGLWrapper<detail::TextureTrait<Type>, BoundTexture<Type>>;
+
+		public:
+			// using BoundOpenGLWrapper::BoundOpenGLWrapper does not work here
+			using Base::Base;
+			using Base::operator=;
+			constexpr static std::size_t NUM_DIMENSIONS = BoundTexture<Type>::NUM_DIMENSIONS;
+			using VectorType							= typename BoundTexture<Type>::VectorType;
+			using DataType								= typename BoundTexture<Type>::DataType;
 
 			// set a label for this Texture via `glObjectLabel`.
 			// this label may show up in debug callback or an external OpenGL
@@ -204,26 +232,14 @@ namespace HJUIK
 			auto setLabel(const char* name) -> void;
 
 			// bind a texture to the texture slot `slot`
-			auto bindActive(std::size_t slot) const -> void;
+			// since this calls glBindTexture, it returns a `BoundTexture`
+			// it's okay to discard this btw
+			auto bindActive(std::size_t slot) const -> BoundTexture<Type>;
 
-			// texture memory-related methods
-			// allocate texture image data
-			static auto allocate(const TextureAllocationInfo& allocInfo, const VectorType& dimensions) -> void;
-			// copy image from client (CPU) to server (GPU)
-			static auto imageCopy(const VectorType& offset, const DataType& data, std::size_t MipLevel = 0) -> void;
-			// generate mipmaps for the texture
-			static auto generateMipmap() -> void;
 			// TODO: add custom clear
 			// clear the texture to a default color of black transparent
 			// (this default color may be changed in the future)
 			auto imageClear(const VectorType& offset, const VectorType& dimensions, std::size_t mipLevel = 0) const
-				-> void;
-
-			// copy image from this texture to another texture
-			template <TextureType DestType>
-			auto imageCopyToTexture(const Texture<DestType>& dest,
-				const typename Texture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
-				const VectorType& srcDimensions, std::size_t destMipLevel = 0, std::size_t srcMipLevel = 0) const
 				-> void;
 
 			// invalidate texture, i.e., marking the texture data (in the specified region) as invalid
@@ -238,6 +254,7 @@ namespace HJUIK
 		private:
 			template <typename T>
 			static auto padVectorTo3D(const VectorType& vector, T defaultValue = 0) -> std::array<T, 3>;
+			friend class BoundTexture<Type>;
 		};
 
 		// only aliasing the most frequently used texture types
