@@ -52,14 +52,14 @@ namespace HJUIK
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		static auto floatAttribPointer(std::size_t index, std::size_t size, GLenum type, bool normalize,
+		auto VertexArray::floatAttribPointer(std::size_t index, std::size_t size, GLenum type, bool normalize,
 			std::size_t stride, std::size_t offset) -> void
 		{
 			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		static auto doubleAttribPointer(
+		auto VertexArray::doubleAttribPointer(
 			std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void
 		{
 			glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,

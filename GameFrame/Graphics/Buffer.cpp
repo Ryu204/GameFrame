@@ -115,6 +115,7 @@ namespace HJUIK
 		{
 			if (offset == 0 && size == SIZE_MAX) {
 				glBindBufferBase(static_cast<GLenum>(target), index, get());
+                return;
 			}
 
 			const auto [glOffset, glSize] = checkRange(offset, size);

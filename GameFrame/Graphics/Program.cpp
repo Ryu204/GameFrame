@@ -41,7 +41,7 @@ namespace HJUIK
 
 		auto Program::detachShader(GLuint shaderHandle) const -> void
 		{
-			glAttachShader(get(), shaderHandle);
+			glDetachShader(get(), shaderHandle);
 		}
 
 		auto Program::getAllAttachedShaderHandles() const -> std::vector<GLuint>
