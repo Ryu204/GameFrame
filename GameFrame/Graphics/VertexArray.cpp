@@ -1,4 +1,5 @@
 #include "VertexArray.hpp"
+
 #include "../Utilize/CallAssert.hpp"
 
 namespace HJUIK
@@ -45,24 +46,32 @@ namespace HJUIK
 		}
 
 		// NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr)
-		auto VertexArray::intAttribPointer(
-			std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void
+		auto VertexArray::intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
+			std::size_t stride, std::size_t offset) -> void
 		{
-			glVertexAttribIPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,
+			glVertexAttribIPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		auto VertexArray::floatAttribPointer(std::size_t index, std::size_t size, GLenum type, bool normalize,
-			std::size_t stride, std::size_t offset) -> void
+		auto VertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
+			bool normalize, std::size_t stride, std::size_t offset) -> void
 		{
-			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,
+			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
+				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
+		}
+
+		auto VertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type,
+			bool normalize, std::size_t stride, std::size_t offset) -> void
+		{
+			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
 		auto VertexArray::doubleAttribPointer(
-			std::size_t index, std::size_t size, GLenum type, std::size_t stride, std::size_t offset) -> void
+			std::size_t index, std::size_t size, std::size_t stride, std::size_t offset) -> void
 		{
-			glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), type,
+			// `type` is always GL_DOUBLE according to specs
+			glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), GL_DOUBLE,
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 		// NOLINTEND(*-reinterpret-cast, *-no-int-to-ptr)
