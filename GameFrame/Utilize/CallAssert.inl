@@ -43,7 +43,6 @@ namespace HJUIK
 			if (value == 0) {
 				throw std::runtime_error(errorMessage);
 			}
-
 			return std::forward<Type>(value);
 		}
 #ifndef NDEBUG
