@@ -9,12 +9,13 @@
 namespace HJUIK
 {
 	// API based on std::unique_ptr
-	template <typename WrapperTrait>
+	template <typename WrapperTrait, typename BoundObjectType = void>
 	class OpenGLWrapper
 	{
 	public:
-		using Handle						= typename WrapperTrait::HandleType;
-		static constexpr Handle NULL_HANDLE = static_cast<Handle>(0);
+		using Handle						  = typename WrapperTrait::HandleType;
+		static constexpr Handle NULL_HANDLE	  = static_cast<Handle>(0);
+		static constexpr bool SUPPORT_BINDING = !std::is_same_v<BoundObjectType, void>;
 
 		// Create an OpenGL object
 		OpenGLWrapper() : mHandle{WrapperTrait::create()} {}
@@ -66,68 +67,83 @@ namespace HJUIK
 			return mHandle != NULL_HANDLE;
 		}
 
+		template <typename... BindArgs, bool Cond = SUPPORT_BINDING, typename = std::enable_if_t<Cond>>
+		auto bind(BindArgs... args) const -> BoundObjectType
+		{
+			static_assert(Cond == SUPPORT_BINDING);
+			return BoundObjectType{get(), args...};
+		}
+
+		template <typename... BindArgs, bool Cond = SUPPORT_BINDING, typename = std::enable_if_t<Cond>>
+		static auto getCurrentBound() -> GLuint
+		{
+			static_assert(Cond == SUPPORT_BINDING);
+			return WrapperTrait::getCurrentBound();
+		}
+
 	private:
 		Handle mHandle;
 	};
 
-    // reduce boilerplates in glGen*/glGet* calls
-    template <typename ReturnType, typename Func, typename... Args>
-    inline auto callGLGet(Func&& glGetFunc, Args&&... args) -> ReturnType
-    {
-        ReturnType value;
-        std::forward<Func>(glGetFunc)(std::forward<Args>(args)..., &value);
-        return value;
-    }
+	// reduce boilerplates in glGen*/glGet* calls
+	template <typename ReturnType, typename Func, typename... Args>
+	inline auto callGLGet(Func&& glGetFunc, Args&&... args) -> ReturnType
+	{
+		ReturnType value;
+		std::forward<Func>(glGetFunc)(std::forward<Args>(args)..., &value);
+		return value;
+	}
 
-    // reduce boilerplates in glGen* calls
-    template <typename ReturnType, typename Func, typename... Args>
-    inline auto callGLGen(Func&& glGenFunc, Args&&... args) -> ReturnType
-    {
-        return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
-    }
+	// reduce boilerplates in glGen* calls
+	template <typename ReturnType, typename Func, typename... Args>
+	inline auto callGLGen(Func&& glGenFunc, Args&&... args) -> ReturnType
+	{
+		return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
+	}
 
-    template <typename GLObjectType, typename... Args>
-    class BindGuard
-    {
-    public:
-        explicit BindGuard(const GLObjectType& object, Args... args)
-            : mCurrentBound{GLObjectType::getCurrentBound(args...)}, mArgs{args...}
-        {
-            if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
-                throw std::runtime_error("another bind guard already in effect");
-            }
+	template <typename WrapperTrait, typename... Args>
+	class BoundOpenGLWrapper
+	{
+	public:
+		using HandleType = typename WrapperTrait::HandleType;
+		explicit BoundOpenGLWrapper(HandleType handle, Args... args)
+			: mCurrentBound{WrapperTrait::getCurrentBound(args...)}, mArgs{args...}
+		{
+			if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
+				throw std::runtime_error("another bind guard already in effect");
+			}
 
-            mAlreadyBoundTargets().insert(mArgs);
-            object.bind(args...);
-        }
+			mAlreadyBoundTargets().insert(mArgs);
+			WrapperTrait::bind(handle, args...);
+		}
 
-        BindGuard(const BindGuard&)					   = delete;
-        auto operator=(const BindGuard&) -> BindGuard& = delete;
+		BoundOpenGLWrapper(const BoundOpenGLWrapper&)					 = delete;
+		auto operator=(const BoundOpenGLWrapper&) -> BoundOpenGLWrapper& = delete;
 
-        BindGuard(BindGuard&&) noexcept					   = default;
-        auto operator=(BindGuard&&) noexcept -> BindGuard& = default;
+		BoundOpenGLWrapper(BoundOpenGLWrapper&&) noexcept					 = default;
+		auto operator=(BoundOpenGLWrapper&&) noexcept -> BoundOpenGLWrapper& = default;
 
-        ~BindGuard()
-        {
-            mAlreadyBoundTargets().erase(mArgs);
-            auto tempObject = GLObjectType{mCurrentBound};
-            std::apply([&](auto... args) { tempObject.bind(args...); }, mArgs);
-            (void) tempObject.release();
-        }
+		~BoundOpenGLWrapper()
+		{
+			mAlreadyBoundTargets().erase(mArgs);
+			std::apply([&](auto... args) { WrapperTrait::bind(mCurrentBound, args...); }, mArgs);
+		}
 
-    private:
-        typename GLObjectType::Handle mCurrentBound;
-        std::tuple<Args...> mArgs;
+		auto getArgs() const -> const std::tuple<Args...>&
+		{
+			return mArgs;
+		}
 
-        static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
-        {
-            static std::set<std::tuple<Args...>> alreadyBoundTargets{};
-            return alreadyBoundTargets;
-        }
-    };
+	private:
+		HandleType mCurrentBound;
+		std::tuple<Args...> mArgs;
 
-    template <typename GLObjectType, typename... Args>
-    BindGuard(const GLObjectType&, Args...) -> BindGuard<GLObjectType, Args...>;
+		static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
+		{
+			static std::set<std::tuple<Args...>> alreadyBoundTargets{};
+			return alreadyBoundTargets;
+		}
+	};
 } // namespace HJUIK
 
 #endif
