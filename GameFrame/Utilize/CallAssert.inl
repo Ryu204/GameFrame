@@ -53,23 +53,5 @@ namespace HJUIK
 
             return std::forward<Type>(value);
         }
-#ifndef NDEBUG
-        template <typename Type, typename LINE_TYPE, typename FILE_TYPE, typename... Args>
-        inline auto assertIfZero(Type&& value, LINE_TYPE line, FILE_TYPE file, Args&&... args) -> void
-        {
-            if (value == 0)
-            {
-                Utilize::detail::Assert::recursivePrint(
-                    "HJUIK: Assertion failed at file:", file, ", line:", line, ". Details:\n", args..., '\n');
-                exit(-1);
-            }
-        }
-#else
-        template <typename Type, typename LINE_TYPE, typename FILE_TYPE, typename... Args>
-        inline auto assertIfZero(Type&& value, LINE_TYPE line, FILE_TYPE file, Args&&... args) -> void
-        {
-            // Literally does nothing
-        }
-#endif // NDEBUG
     } // namespace Utilize
 } // namespace HJUIK
