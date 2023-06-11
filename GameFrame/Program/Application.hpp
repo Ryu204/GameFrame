@@ -36,6 +36,10 @@ namespace HJUIK
 		Graphics::Buffer mVBO;
 		Graphics::Buffer mUBO;
 		Graphics::Program mProgram;
+
+        Graphics::BoundVertexArray mBoundVAO;
+        Graphics::BoundBuffer mBoundUBO;
+        Graphics::BoundProgram mBoundProgram;
 	};
 } // namespace HJUIK
 

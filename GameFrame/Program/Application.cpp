@@ -43,7 +43,8 @@ namespace HJUIK
                 )");
 
 			  return Graphics::Program::createVertexFragment(vertexShader, fragmentShader);
-		  }()}
+		  }()},
+		  mBoundVAO{mVAO.bind()}, mBoundProgram{mProgram.bind()}, mBoundUBO{mUBO.bind(Graphics::BufferTarget::UNIFORM)}
 	{
 		mWindow->limitFrameRate(getFramerate());
 		mWindow->setKeyRepeatable(getKeyRepeatability());
@@ -54,34 +55,31 @@ namespace HJUIK
 		// NOLINTNEXTLINE(*-magic-numbers)
 		mWindow->getOpenGLContext().getBaseColor() = Graphics::Color{0xFFBCB3FF};
 
-		mVAO.bind();
 		const auto index = mProgram.getUniformBlockIndex("Uniform");
 		if (index >= 0) {
 			mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
 		}
 
-		struct Vertex {
-			Vector2f Position;
-		};
-		mVBO.bind(Graphics::BufferTarget::ARRAY);
-		mProgram.bind();
+		// init VBO
+		{
+			struct Vertex {
+				Vector2f Position;
+			};
+			const auto boundVBO = mVBO.bind(Graphics::BufferTarget::ARRAY);
+			const std::array<Vertex, 4> vboContent{// NOLINTNEXTLINE(*-magic-numbers)
+				Vertex{{0.5F, 0.5F}}, {{-0.5F, 0.5F}}, {{0.5F, -0.5F}}, {{-0.5F, -0.5F}}};
+			boundVBO.allocate(Graphics::BufferUsage{}, vboContent);
+			mBoundVAO.floatAttribPointer(
+				0, 2, Graphics::VertexAttribFloatType::FLOAT, /*normalize*/ false, sizeof(Vertex), 0);
+			mBoundVAO.enableAttrib(0);
+		}
 
-		const std::array<Vertex, 4> vboContent{// NOLINTNEXTLINE(*-magic-numbers)
-			Vertex{{0.5F, 0.5F}}, {{-0.5F, 0.5F}}, {{0.5F, -0.5F}}, {{-0.5F, -0.5F}}};
-		Graphics::BufferUsage usage{};
-		// no need to configure `usage` because its default behavior already fits what we needed
-		Graphics::Buffer::allocate(Graphics::BufferTarget::ARRAY, usage, vboContent);
-
-		Graphics::VertexArray::floatAttribPointer(
-			0, 2, Graphics::VertexAttribFloatType::FLOAT, /*normalize*/ false, sizeof(Vertex), 0);
-		Graphics::VertexArray::enableAttrib(0);
-
-
-		mUBO.bind(Graphics::BufferTarget::UNIFORM);
+		// init UBO
 		mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
+		Graphics::BufferUsage usage;
 		usage.Frequency		 = Graphics::BufferAccessFrequency::DYNAMIC;
 		usage.DynamicStorage = true;
-		Graphics::Buffer::allocate(Graphics::BufferTarget::UNIFORM, usage, sizeof(Uniform));
+		mBoundUBO.allocate(usage, sizeof(Uniform));
 	}
 
 	auto Application::run() -> void
@@ -122,8 +120,7 @@ namespace HJUIK
 		Uniform uniform{};
 		// NOLINTNEXTLINE(*-magic-numbers)
 		uniform.Transform = glm::rotate(glm::mat4{1.0F}, clock.total().toSecond(), glm::vec3{0, 0, 1});
-		std::cout << clock.total().toSecond() << std::endl;
-		Graphics::Buffer::memCopy(Graphics::BufferTarget::UNIFORM, 0, std::array<Uniform, 1>{uniform});
+		mBoundUBO.memCopy(0, std::array<Uniform, 1>{uniform});
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glContext.display();
 	}
