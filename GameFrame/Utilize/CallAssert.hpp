@@ -18,11 +18,8 @@ namespace HJUIK
         {
             namespace Assert
             {
-                template<typename T>
-                void recursivePrint(T arg1);
-
-                template <typename T1, typename... Ts>
-                void recursivePrint(T1 arg1, Ts... args);
+                template<typename... Args>
+                void recursivePrint(Args&&... args);
             } // namespace Assert
         } // namespace detail
 
