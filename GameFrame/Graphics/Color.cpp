@@ -30,7 +30,7 @@ namespace HJUIK
 		auto Color::getNormalizedColor() const -> Vector4f
 		{
 			const Vector4f res(Red, Green, Blue, Alpha);
-			return res / static_cast<float> UINT8_MAX;
+			return res / static_cast<float> (UINT8_MAX);
 		}
 
 		auto operator==(const Color& left, const Color& right) -> bool
