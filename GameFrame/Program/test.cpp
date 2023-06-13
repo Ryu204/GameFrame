@@ -5,15 +5,19 @@
 
 auto main() -> int
 {
-	try {
+	try
+    {
 		HJUIK::Application app1;
 		app1.run();
-
 		return 0;
-	} catch (std::exception& e) {
+	}
+    catch (std::exception& e)
+    {
 		std::cerr << e.what() << '\n';
 		return -1;
-	} catch (...) {
+	}
+    catch (...)
+    {
 		return -2;
 	}
 }

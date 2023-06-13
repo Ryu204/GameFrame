@@ -15,7 +15,8 @@ Checks: "*,\
   -misc-non-private-member-variables-in-classes,\
   -modernize-concat-nested-namespaces,\
   -modernize-use-nodiscard,\
-  -cppcoreguidelines-pro-bounds-constant-array-index"
+  -cppcoreguidelines-pro-bounds-constant-array-index,\
+  -cppcoreguidelines-avoid-const-or-ref-data-members"
 WarningsAsErrors: '*'
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'
