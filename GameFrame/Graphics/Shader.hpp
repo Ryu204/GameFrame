@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_SHADER_HPP
 #define GAMEFRAME_GRAPHICS_SHADER_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 
 #include "OpenGLWrapper.hpp"
 

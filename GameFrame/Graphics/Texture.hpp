@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_TEXTURE_HPP
 #define GAMEFRAME_GRAPHICS_TEXTURE_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <array>
 #include <type_traits>
 
