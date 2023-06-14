@@ -3,7 +3,7 @@
 #include "../Utilize/ResourceHolder.hpp"
 #include "Application.hpp"
 
-auto main1() -> int
+auto main() -> int
 {
 	try
     {
