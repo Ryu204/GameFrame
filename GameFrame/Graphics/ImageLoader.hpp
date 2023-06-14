@@ -2,7 +2,7 @@
 #define GAMEFRAME_GRAPHICS_IMAGE_LOADER_HPP
 
 /*
-    Static class for loading a 2D image from files.
+    Static class for loading a 2D image from files or memory
 */
 
 #include <filesystem>
@@ -37,7 +37,7 @@ namespace HJUIK
 			static constexpr ImageFormat DEFAULT_FORMAT{ImageFormat::RGBA};
 
             // NOLINTBEGIN(*-member-init)
-			struct Data
+			struct RawData
             {
 				std::vector<std::uint8_t> Value;
 				Vector2u Dimensions;
@@ -45,16 +45,19 @@ namespace HJUIK
 			};
 			// NOLINTEND(*-member-init)
 
-			// load the image from 'filename' and return its information including color array
-            // if the load failed, set value of `succeeded()` and return default image data
-			static auto loadFromFile(const std::string& filename) -> Data;
-            // query the latest `loadFromFile()` status
+			// load the image from 'filename'
+            // if the load failed, return default image data
+			static auto loadFromFile(const std::string& filename) -> RawData;
+            // TODO: add loadFromMemory(...)
+			// query the latest `load*()` status
 			static auto succeeded() -> bool;
-            // create a white image data, can be used in case of load failure
-			static auto create(Vector2u dimensions = DEFAULT_DIMENSION, ImageFormat format = DEFAULT_FORMAT) -> Data;
+            // query the error if last `load*()` failed
+			static auto getErrLog() -> const std::string&;
+			// create a white image data, can be used in case of load failure
+			static auto create(Vector2u dimensions = DEFAULT_DIMENSION, ImageFormat format = DEFAULT_FORMAT) -> RawData;
         private:
-            static auto mLogInfo() -> std::string&;
 			static auto mInternalStatus() -> bool&;
+			static auto mErrLog() -> std::string&;
 			Image2DLoader() = default;
 		};
 	} // namespace Graphics

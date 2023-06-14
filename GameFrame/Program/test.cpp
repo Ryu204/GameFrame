@@ -30,14 +30,18 @@ auto main() -> int
 {
     try
     {
-		auto data = HJUIK::Graphics::Image2DLoader::loadFromFile("hello.pg");
+		auto data = HJUIK::Graphics::Image2DLoader::loadFromFile("hello.jpg");
 
         if (!HJUIK::Graphics::Image2DLoader::succeeded())
         {
 			// throw std::runtime_error("cannot load image");
+            std::cout << HJUIK::Graphics::Image2DLoader::getErrLog() << '\n';
 		}
         else
+		{
+			// HJUIK::Graphics::Image2DLoader::getErrLog();
 			std::cout << "Image loaded!\n";
+		}
 
 		int i	  = 0;
 		for (auto row = 0; row < data.Dimensions.y; ++row) {

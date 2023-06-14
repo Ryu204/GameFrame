@@ -1,7 +1,10 @@
 #include "ImageLoader.hpp"
+#include "../Utilize/CallAssert.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_SIMD
 #include "deps/stb_image.h"
+
 #include <cstring>
 #include <iterator>
 #include <iostream>
@@ -40,7 +43,7 @@ namespace HJUIK
 		} // namespace detail
 
         // load the image from 'filename' and return its information including color array
-		auto Image2DLoader::loadFromFile(const std::string& filename) -> Data
+		auto Image2DLoader::loadFromFile(const std::string& filename) -> RawData
         {
 			int width = 0;
 			int height	= 0;
@@ -52,13 +55,14 @@ namespace HJUIK
             if (arr == nullptr || width <= 0 || height <= 0 ||
                 channelNum <= 0 || channelNum > 4)
             {
+				("HJUIK: stb_image.h: " + std::string(stbi_failure_reason())).swap(mErrLog());
 				mInternalStatus() = false;
 				return create();
 			}
             // NOLINTEND(clang-analyzer-unix.Malloc)
 
 			// Now we are sure the load is successful
-            Data result;
+            RawData result;
 			result.Dimensions  = Vector2u{width, height};
 			result.Format	   = detail::numToImageFormat(channelNum);
             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -75,17 +79,30 @@ namespace HJUIK
 			return mInternalStatus();
 		}
 
+        // query the error if last `loadFromFile()` failed
+		auto Image2DLoader::getErrLog() -> const std::string&
+        {
+			HJUIK_ASSERT(!succeeded(), "Last operation was successful");
+			return mErrLog();
+		}
+
 		// create a white image data, can be used in case of load failure
-        auto Image2DLoader::create(Vector2u dimensions, ImageFormat format) -> Data
+        auto Image2DLoader::create(Vector2u dimensions, ImageFormat format) -> RawData
         {
 			std::size_t size = detail::imageFormatToNum(format) * dimensions.x * dimensions.y;
-			return Data{std::vector<std::uint8_t>(size, UINT8_MAX), dimensions, format};
+			return RawData{std::vector<std::uint8_t>(size, UINT8_MAX), dimensions, format};
 		}
 
         auto Image2DLoader::mInternalStatus() -> bool&
         {
 			static bool status = false;
 			return status;
+		}
+
+        auto Image2DLoader::mErrLog() -> std::string&
+        {
+			static std::string log;
+			return log;
 		}
 	} // namespace Graphics
 } // namespace HJUIK
