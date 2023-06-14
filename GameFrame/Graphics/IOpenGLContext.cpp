@@ -1,6 +1,6 @@
 #include "IOpenGLContext.hpp"
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <iostream>
 
 namespace HJUIK
