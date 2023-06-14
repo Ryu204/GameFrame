@@ -45,9 +45,9 @@ namespace HJUIK
 			};
 			// NOLINTEND(*-member-init)
 
-			// load the image from 'filename'
-            // if the load failed, return default image data
-			static auto loadFromFile(const std::string& filename) -> RawData;
+			// load the image from 'filename' and return its data
+            // if the load failed, return default image data (and throw exception if specified)
+			static auto loadFromFile(const std::string& filename, bool throwAtFail = false) -> RawData;
             // TODO: add loadFromMemory(...)
 			// query the latest `load*()` status
 			static auto succeeded() -> bool;

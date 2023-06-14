@@ -2,7 +2,6 @@
 #include "../Utilize/CallAssert.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#define STBI_NO_SIMD
 #include "deps/stb_image.h"
 
 #include <cstring>
@@ -43,7 +42,7 @@ namespace HJUIK
 		} // namespace detail
 
         // load the image from 'filename' and return its information including color array
-		auto Image2DLoader::loadFromFile(const std::string& filename) -> RawData
+		auto Image2DLoader::loadFromFile(const std::string& filename, bool throwAtFail) -> RawData
         {
 			int width = 0;
 			int height	= 0;
@@ -57,6 +56,10 @@ namespace HJUIK
             {
 				("HJUIK: stb_image.h: " + std::string(stbi_failure_reason())).swap(mErrLog());
 				mInternalStatus() = false;
+				if (throwAtFail)
+                {
+                    throw std::runtime_error(mErrLog());
+                }
 				return create();
 			}
             // NOLINTEND(clang-analyzer-unix.Malloc)
