@@ -2,12 +2,12 @@
 #define GAMEFRAME_GRAPHICS_IMAGE_LOADER_HPP
 
 /*
-    Static class for loading a 2D image from files or memory
+    Static class for loading a 2D image from files
 */
 
-#include <filesystem>
 #include <cstdint>
 #include <vector>
+#include <string>
 #include "deps/glad/glad.h"
 #include "../Utilize/GLMTypedef.hpp"
 
@@ -15,13 +15,12 @@ namespace HJUIK
 {
     namespace Graphics
     {
-		enum class ImageFormat // != Image extension
+		enum class ImageFormat
 		{
-			R = GL_R,
-            RG = GL_RG,
-            RGB = GL_RGB,
-            RGBA = GL_RGBA
-			// I don't know why we would need more than this
+			GRAY        = 1, // STBI_grey,
+            GRAY_ALPHA  = 2, // STBI_grey_alpha
+            RGB         = 3, // STBI_rgb
+            RGBA        = 4  // STBI_rgb_alpha
 		};
 
         namespace detail

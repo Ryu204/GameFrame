@@ -1,12 +1,9 @@
 #include "ImageLoader.hpp"
 #include "../Utilize/CallAssert.hpp"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "deps/stb_image.h"
 
-#include <cstring>
 #include <iterator>
-#include <iostream>
 
 namespace HJUIK
 {
@@ -16,28 +13,12 @@ namespace HJUIK
         {
             auto imageFormatToNum(ImageFormat format) -> std::size_t
             {
-                switch (format)
-                {
-                case ImageFormat::R: return 1;
-                case ImageFormat::RG: return 2;
-                case ImageFormat::RGB: return 3;
-                case ImageFormat::RGBA: return 4;
-                default: return 0;
-				}
+				return static_cast<std::size_t>(format);
 			}
 
-            auto numToImageFormat(std::size_t num) -> ImageFormat
+			auto numToImageFormat(std::size_t num) -> ImageFormat
             {
-                switch (num)
-                {
-                case 1: return ImageFormat::R;
-                case 2: return ImageFormat::RG;
-                case 3: return ImageFormat::RGB;
-                case 4: return ImageFormat::RGBA;
-                default:
-					throw std::runtime_error("HJUIK: Invalid image format dimension");
-					return ImageFormat::RGBA;
-				}
+				return static_cast<ImageFormat>(num);
 			}
 		} // namespace detail
 
@@ -49,7 +30,7 @@ namespace HJUIK
 			int channelNum = 0;
 			// Encourage RGBA format
             // NOLINTBEGIN(clang-analyzer-unix.Malloc)
-			std::uint8_t* arr = stbi_load(filename.c_str(), &width, &height, &channelNum, 4);
+			std::uint8_t* arr = stbi_load(filename.c_str(), &width, &height, &channelNum, 0);
 
             if (arr == nullptr || width <= 0 || height <= 0 ||
                 channelNum <= 0 || channelNum > 4)
