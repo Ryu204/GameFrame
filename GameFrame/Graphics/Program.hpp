@@ -17,10 +17,20 @@ namespace HJUIK
 				using HandleType = GLuint;
 				static auto create() -> GLuint;
 				static auto destroy(GLuint handle) -> void;
+
+				static auto getCurrentBound() -> GLuint;
+				static auto bind(GLuint handle) -> void;
 			};
 		} // namespace detail
 
-		class Program : public OpenGLWrapper<detail::ProgramTrait>
+		class BoundProgram : public BoundOpenGLWrapper<detail::ProgramTrait>
+		{
+		public:
+			using BoundOpenGLWrapper::BoundOpenGLWrapper;
+			using BoundOpenGLWrapper::operator=;
+		};
+
+		class Program : public OpenGLWrapper<detail::ProgramTrait, BoundProgram>
 		{
 		public:
 			using OpenGLWrapper::OpenGLWrapper;
@@ -64,23 +74,15 @@ namespace HJUIK
 			// wrapper for glGetProgramInfoLog
 			auto getInfoLog() const -> std::string;
 
-			// wrappers for glUseProgram
-			auto use() const -> void;
-			static auto unuse() -> void;
-			static auto getCurrentUsed() -> GLuint;
-
-			// same API but with standardized naming
-			auto bind() const -> void
+			// same API but with OpenGL's naming
+			auto use() const -> decltype(auto)
 			{
-				use();
+				return bind();
 			}
-			static auto unbind() -> void
+			// same API but with OpenGL's naming
+			static auto getCurrentUsing() -> decltype(auto)
 			{
-				unuse();
-			}
-			static auto getCurrentBound() -> GLuint
-			{
-				return getCurrentUsed();
+				return getCurrentBound();
 			}
 
 			// -1 if attribute/uniform is not present

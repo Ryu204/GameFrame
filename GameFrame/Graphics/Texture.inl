@@ -1,25 +1,38 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "Texture.hpp"
 #include "../Utilize/CallAssert.hpp"
+#include "Texture.hpp"
 
 namespace HJUIK
 {
 	namespace Graphics
 	{
-
-		auto detail::TextureTrait::create() -> GLuint
+		template <TextureType Type>
+		auto detail::TextureTrait<Type>::create() -> GLuint
 		{
 			return Utilize::throwIfZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
 		}
 
-		auto detail::TextureTrait::destroy(GLuint handle) -> void
+		template <TextureType Type>
+		auto detail::TextureTrait<Type>::destroy(GLuint handle) -> void
 		{
 			glDeleteTextures(1, &handle);
 		}
 
-		inline auto detail::getTextureBindingType(TextureType type) -> GLenum
+		template <TextureType Type>
+		inline auto detail::TextureTrait<Type>::getCurrentBound() -> GLuint
+		{
+			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, detail::getTextureBindingType(Type)));
+		}
+
+		template <TextureType Type>
+		inline auto detail::TextureTrait<Type>::bind(GLuint handle) -> void
+		{
+			glBindTexture(static_cast<GLenum>(Type), handle);
+		}
+
+		inline constexpr auto detail::getTextureBindingType(TextureType type) -> GLenum
 		{
 			switch (type) {
 			case TextureType::E1D:
@@ -50,28 +63,9 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::bind() const -> void
-		{
-			glBindTexture(static_cast<GLenum>(Type), get());
-		}
-
-		template <TextureType Type>
-		inline auto Texture<Type>::unbind() -> void
-		{
-			glBindTexture(static_cast<GLenum>(Type), 0);
-		}
-
-		template <TextureType Type>
-		inline auto Texture<Type>::getCurrentBound() -> GLuint
-		{
-			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, detail::getTextureBindingType(Type)));
-		}
-
-		template <TextureType Type>
-		inline auto Texture<Type>::getDimensions(std::size_t mipLevel) const -> VectorType
+		inline auto BoundTexture<Type>::getDimensions(std::size_t mipLevel) const -> VectorType
 		{
 			VectorType dimensions;
-			BindGuard guard{*this};
 			if constexpr (NUM_DIMENSIONS >= 1) {
 				dimensions.x = static_cast<std::size_t>(callGLGet<GLint>(glGetTexLevelParameteriv,
 					static_cast<GLenum>(Type), static_cast<GLint>(mipLevel), GL_TEXTURE_WIDTH));
@@ -91,21 +85,21 @@ namespace HJUIK
 		inline auto Texture<Type>::setLabel(const char* name) -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				BindGuard guard{*this};
-				glObjectLabel(GL_TEXTURE, get(), -1, name);
+				const auto guard = this->bind();
+				glObjectLabel(GL_TEXTURE, this->get(), -1, name);
 			}
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::bindActive(std::size_t slot) const -> void
+		inline auto Texture<Type>::bindActive(std::size_t slot) const -> BoundTexture<Type>
 		{
 			glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + slot));
-			bind();
+			return this->bind();
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::allocate(const TextureAllocationInfo& allocInfo, const VectorType& dimensions)
-			-> void
+		inline auto BoundTexture<Type>::allocate(
+			const TextureAllocationInfo& allocInfo, const VectorType& dimensions) const -> void
 		{
 			if constexpr (Type == TextureType::E2D_MULTISAMPLE) {
 				if (GLAD_GL_VERSION_4_3 != 0 && allocInfo.Immutable) {
@@ -178,8 +172,8 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::imageCopy(const VectorType& offset, const DataType& data, std::size_t MipLevel)
-			-> void
+		inline auto BoundTexture<Type>::imageCopy(
+			const VectorType& offset, const DataType& data, std::size_t MipLevel) const -> void
 		{
 			if constexpr (NUM_DIMENSIONS == 1) {
 				glTexSubImage1D(static_cast<GLenum>(Type), static_cast<GLint>(MipLevel), static_cast<GLint>(offset.x),
@@ -199,7 +193,7 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::generateMipmap() -> void
+		inline auto BoundTexture<Type>::generateMipmap() const -> void
 		{
 			glGenerateMipmap(static_cast<GLenum>(Type));
 		}
@@ -211,8 +205,8 @@ namespace HJUIK
 			auto [x, y, z]				= padVectorTo3D<GLint>(offset);
 			auto [width, height, depth] = padVectorTo3D<GLsizei>(dimensions, 1);
 			std::uint32_t color			= 0;
-			glClearTexSubImage(
-				get(), static_cast<GLint>(mipLevel), x, y, z, width, height, depth, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+			glClearTexSubImage(this->get(), static_cast<GLint>(mipLevel), x, y, z, width, height, depth, GL_RGBA,
+				GL_UNSIGNED_BYTE, &color);
 		}
 
 		template <TextureType Type>
@@ -221,21 +215,21 @@ namespace HJUIK
 		{
 			auto [x, y, z]				= padVectorTo3D<GLint>(offset);
 			auto [width, height, depth] = padVectorTo3D<GLsizei>(dimensions, 1);
-			glInvalidateTexSubImage(get(), static_cast<GLint>(mipLevel), x, y, z, width, height, depth);
+			glInvalidateTexSubImage(this->get(), static_cast<GLint>(mipLevel), x, y, z, width, height, depth);
 		}
 
 		template <TextureType SrcType>
 		template <TextureType DestType>
-		inline auto Texture<SrcType>::imageCopyToTexture(const Texture<DestType>& dest,
-			const typename Texture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
+		inline auto BoundTexture<SrcType>::imageCopyToTexture(const BoundTexture<DestType>& dest,
+			const typename BoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
 			const VectorType& srcDimensions, std::size_t destMipLevel, std::size_t srcMipLevel) const -> void
 		{
-			auto [srcX, srcY, srcZ]	   = padVectorTo3D<GLint>(srcOffset);
-			auto [destX, destY, destZ] = padVectorTo3D<GLint>(destOffset);
-			auto [srcx, srcy, srcz]	   = padVectorTo3D<GLint>(srcDimensions, 1);
-			glCopyImageSubData(get(), static_cast<GLenum>(SrcType), static_cast<GLint>(srcMipLevel), srcX, srcY, srcZ,
-				dest.get(), static_cast<GLenum>(DestType), static_cast<GLint>(destMipLevel), destX, destY, destZ, srcx,
-				srcy, srcz);
+			auto [srcX, srcY, srcZ]	   = Texture<SrcType>::template padVectorTo3D<GLint>(srcOffset);
+			auto [destX, destY, destZ] = Texture<DestType>::template padVectorTo3D<GLint>(destOffset);
+			auto [srcx, srcy, srcz]	   = Texture<SrcType>::template padVectorTo3D<GLint>(srcDimensions, 1);
+			glCopyImageSubData(this->get(), static_cast<GLenum>(SrcType), static_cast<GLint>(srcMipLevel), srcX, srcY,
+				srcZ, dest.get(), static_cast<GLenum>(DestType), static_cast<GLint>(destMipLevel), destX, destY, destZ,
+				srcx, srcy, srcz);
 		}
 
 		// TODO: add buffer range checking
@@ -246,9 +240,9 @@ namespace HJUIK
 		{
 			static_assert(Type == ThisType);
 			if (offset == 0 && size == SIZE_MAX) {
-				glTextureBuffer(get(), static_cast<GLenum>(format), bufferHandle);
+				glTextureBuffer(this->get(), static_cast<GLenum>(format), bufferHandle);
 			} else {
-				glTextureBufferRange(get(), static_cast<GLenum>(format), bufferHandle, offset, size);
+				glTextureBufferRange(this->get(), static_cast<GLenum>(format), bufferHandle, offset, size);
 			}
 		}
 		template <TextureType Type>
