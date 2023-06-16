@@ -2,6 +2,7 @@
 #define GAMEFRAME_PROGRAM_FSM_STACK_HPP
 
 #include "FSMState.hpp"
+#include "../Utilize/CallAssert.hpp"
 #include <stack>
 #include <queue>
 #include <variant>
@@ -22,9 +23,10 @@ namespace HJUIK
             struct PopCall {};
             struct ClearCall {};
             using Request = std::variant<PushCall, PopCall, ClearCall>;
-            
+
             // https://en.cppreference.com/w/cpp/utility/variant/visit
             template <typename... Fs>
+            // NOLINTNEXTLINE(*-multiple-inheritance)
             struct Visitor : Fs... {using Fs::operator ()...;};
             template <typename... Fs>
             Visitor(Fs...) -> Visitor<Fs...>;
@@ -40,13 +42,25 @@ namespace HJUIK
             auto update(Utilize::Time deltaTime) -> void;
             auto processInput(const Event& event) -> void;
             auto render(Graphics::IOpenGLContext& context) -> void;
+			auto isEmpty() -> bool;
 
-        private:            
+			template <typename StateType, typename... Args>
+			auto registerState(const IState::ID& identifier, const Args&... args) -> void;
+
+		private:
             auto flushRequests() -> void;
             std::vector<detail::Request> mPendingChanges;
             std::vector<Ptr> mStack;
             std::unordered_map<IState::ID, CreatorFn> mRegistered;
         };
+
+        template <typename StateType, typename... Args>
+        auto StateStack::registerState(const IState::ID& identifier, const Args&... args) -> void
+        {
+			HJUIK_ASSERT(mRegistered.find(identifier) == mRegistered.end(), "Registered state id");
+            mRegistered.emplace(identifier, [this, &args...]() -> Ptr {
+                    return std::make_unique<StateType>(this, args...); });
+		}
     } // namespace FSM
 } // namespace HJUIK
 

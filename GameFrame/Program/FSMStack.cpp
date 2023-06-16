@@ -10,7 +10,12 @@ namespace HJUIK
             mPendingChanges.push_back(request);
         }
 
-        auto StateStack::flushRequests() -> void
+        auto StateStack::isEmpty() -> bool
+        {
+			return mStack.empty();
+		}
+
+		auto StateStack::flushRequests() -> void
         {
             static const auto visitor = detail::Visitor{
                 // Push a new state

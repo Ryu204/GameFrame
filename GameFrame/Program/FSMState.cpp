@@ -5,9 +5,9 @@ namespace HJUIK
 {
     namespace FSM
     {
-        auto IState::requestStackPush(ID id) -> void
+        auto IState::requestStackPush(const ID& identifier) -> void
         {
-            mStack->getRequest(detail::Request(detail::PushCall{id}));
+            mStack->getRequest(detail::Request(detail::PushCall{identifier}));
         }
 
         auto IState::requestStackPop() -> void
