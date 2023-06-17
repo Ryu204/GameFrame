@@ -16,37 +16,47 @@ namespace HJUIK
 			glDeleteBuffers(1, &handle);
 		}
 
+		auto detail::BufferTrait::bind(GLuint handle, BufferTarget target) -> void
+		{
+			glBindBuffer(static_cast<GLenum>(target), handle);
+		}
+
+		auto detail::BufferTrait::getCurrentBound(BufferTarget target) -> GLuint
+		{
+			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, getBufferBindingTarget(target)));
+		}
+
 		auto getBufferBindingTarget(BufferTarget target) -> GLenum
 		{
 			switch (target) {
 			case BufferTarget::ARRAY:
 				return GL_ARRAY_BUFFER_BINDING;
 			case BufferTarget::ATOMIC_COUNTER:
-				return GL_ATOMIC_COUNTER_BUFFER;
+				return GL_ATOMIC_COUNTER_BUFFER_BINDING;
 			case BufferTarget::COPY_READ:
-				return GL_COPY_READ_BUFFER;
+				return GL_COPY_READ_BUFFER_BINDING;
 			case BufferTarget::COPY_WRITE:
-				return GL_COPY_WRITE_BUFFER;
+				return GL_COPY_WRITE_BUFFER_BINDING;
 			case BufferTarget::DISPATCH_INDIRECT:
-				return GL_DISPATCH_INDIRECT_BUFFER;
+				return GL_DISPATCH_INDIRECT_BUFFER_BINDING;
 			case BufferTarget::DRAW_INDIRECT:
-				return GL_DRAW_INDIRECT_BUFFER;
+				return GL_DRAW_INDIRECT_BUFFER_BINDING;
 			case BufferTarget::ELEMENT_ARRAY:
-				return GL_ELEMENT_ARRAY_BUFFER;
+				return GL_ELEMENT_ARRAY_BUFFER_BINDING;
 			case BufferTarget::PIXEL_PACK:
-				return GL_PIXEL_PACK_BUFFER;
+				return GL_PIXEL_PACK_BUFFER_BINDING;
 			case BufferTarget::PIXEL_UNPACK:
-				return GL_PIXEL_UNPACK_BUFFER;
+				return GL_PIXEL_UNPACK_BUFFER_BINDING;
 			case BufferTarget::QUERY:
-				return GL_QUERY_BUFFER;
+				return GL_QUERY_BUFFER_BINDING;
 			case BufferTarget::SHADER_STORAGE:
-				return GL_SHADER_STORAGE_BUFFER;
+				return GL_SHADER_STORAGE_BUFFER_BINDING;
 			case BufferTarget::TEXTURE:
-				return GL_TEXTURE_BUFFER;
+				return GL_TEXTURE_BUFFER_BINDING;
 			case BufferTarget::TRANSFORM_FEEDBACK:
-				return GL_TRANSFORM_FEEDBACK_BUFFER;
+				return GL_TRANSFORM_FEEDBACK_BUFFER_BINDING;
 			case BufferTarget::UNIFORM:
-				return GL_UNIFORM_BUFFER;
+				return GL_UNIFORM_BUFFER_BINDING;
 			default:
 				throw std::runtime_error("invalid buffer type");
 			}
@@ -96,65 +106,73 @@ namespace HJUIK
 			}
 			return flags;
 		}
-		auto Buffer::bind(BufferTarget target) const -> void
-		{
-			glBindBuffer(static_cast<GLenum>(target), get());
-		}
-		auto Buffer::unbind(BufferTarget target) -> void
-		{
-			glBindBuffer(static_cast<GLenum>(target), 0);
-		}
-		auto Buffer::getSize() const -> std::size_t
-		{
-			const BindGuard guard{*this, TEMP_BUFFER_TARGET};
-			return getSize(TEMP_BUFFER_TARGET);
-		}
 		// NOLINTNEXTLINE(*-easily-swappable-parameters)a
 		auto Buffer::bindBase(BufferTarget target, std::size_t index, std::size_t offset, std::size_t size) const
 			-> void
 		{
 			if (offset == 0 && size == SIZE_MAX) {
 				glBindBufferBase(static_cast<GLenum>(target), index, get());
+				return;
 			}
 
-			const auto [glOffset, glSize] = checkRange(offset, size);
+			const BoundBuffer bound{get(), TEMP_BUFFER_TARGET};
+			const auto [glOffset, glSize] = bound.checkRange(offset, size);
 			glBindBufferRange(static_cast<GLenum>(target), index, get(), glOffset, glSize);
 		}
 		auto Buffer::unbindBase(BufferTarget target, std::size_t index) -> void
 		{
 			glBindBufferBase(static_cast<GLenum>(target), index, 0);
 		}
-		auto Buffer::getCurrentBound(BufferTarget target) -> GLuint
-		{
-			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, getBufferBindingTarget(target)));
-		}
 		auto Buffer::setLabel(const char* name) const -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const BindGuard guard{*this, TEMP_BUFFER_TARGET};
+				const BoundBuffer guard = this->bind(TEMP_BUFFER_TARGET);
 				glObjectLabel(GL_BUFFER, get(), -1, name);
 			}
 		}
-		auto Buffer::allocate(BufferTarget target, const BufferUsage& usage, std::size_t size, const void* initialData)
-			-> void
+		auto Buffer::invalidate(std::size_t offset, std::size_t size) const -> void
+		{
+			if (offset == 0 && size == SIZE_MAX) {
+				glInvalidateBufferData(get());
+			}
+
+			const BoundBuffer bound		  = this->bind(TEMP_BUFFER_TARGET);
+			const auto [glOffset, glSize] = bound.checkRange(offset, size);
+			glInvalidateBufferSubData(get(), glOffset, glSize);
+		}
+
+		auto BoundBuffer::getTarget() const -> BufferTarget
+		{
+			return std::get<0>(getArgs());
+		}
+
+		auto BoundBuffer::getTargetEnum() const -> GLenum
+		{
+			return static_cast<GLenum>(getTarget());
+		}
+
+		auto BoundBuffer::getSize() const -> std::size_t
+		{
+			return getSize(getTarget());
+		}
+
+		auto BoundBuffer::allocate(const BufferUsage& usage, std::size_t size, const void* initialData) const -> void
 		{
 			if (usage.Immutable && GLAD_GL_VERSION_4_4 != 0) {
-				glBufferStorage(static_cast<GLenum>(target), static_cast<GLsizeiptr>(size), initialData,
-					usage.asBufferStorageFlags());
+				glBufferStorage(
+					getTargetEnum(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferStorageFlags());
 			} else {
-				glBufferData(
-					static_cast<GLenum>(target), static_cast<GLsizeiptr>(size), initialData, usage.asBufferDataUsage());
+				glBufferData(getTargetEnum(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferDataUsage());
 			}
 		}
-		auto Buffer::map(BufferTarget target, const BufferMapAccess& access, std::size_t offset, std::size_t size)
-			-> void*
+		auto BoundBuffer::map(const BufferMapAccess& access, std::size_t offset, std::size_t size) const -> void*
 		{
 			void* pointer = nullptr;
 			if (offset == 0 && size == SIZE_MAX && !access.isAdvancedAccess()) {
-				pointer = glMapBuffer(static_cast<GLenum>(target), access.asEnum());
+				pointer = glMapBuffer(getTargetEnum(), access.asEnum());
 			} else {
-				const auto [glOffset, glSize] = checkRange(offset, size, target);
-				pointer = glMapBufferRange(static_cast<GLenum>(target), glOffset, glSize, access.asBitfield());
+				const auto [glOffset, glSize] = checkRange(offset, size);
+				pointer = glMapBufferRange(getTargetEnum(), glOffset, glSize, access.asBitfield());
 			}
 
 			if (pointer == nullptr) {
@@ -163,78 +181,61 @@ namespace HJUIK
 
 			return pointer;
 		}
-		auto Buffer::unmap(BufferTarget target) -> bool
+		auto BoundBuffer::unmap() const -> bool
 		{
-			return glUnmapBuffer(static_cast<GLenum>(target)) != GL_FALSE;
+			return glUnmapBuffer(getTargetEnum()) != GL_FALSE;
 		}
-		auto Buffer::flushMappedRange(BufferTarget target, std::size_t offset, std::size_t size) -> void
+		auto BoundBuffer::flushMappedRange(std::size_t offset, std::size_t size) const -> void
 		{
-			const auto [glOffset, glSize] = checkRange(offset, size, target);
-			glFlushMappedBufferRange(static_cast<GLenum>(target), glOffset, glSize);
+			const auto [glOffset, glSize] = checkRange(offset, size);
+			glFlushMappedBufferRange(getTargetEnum(), glOffset, glSize);
 		}
-		auto Buffer::invalidate(std::size_t offset, std::size_t size) const -> void
+
+		auto BoundBuffer::memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void
+		{
+			const auto [glOffset, glSize] = checkRange(destOffset, size);
+			glBufferSubData(getTargetEnum(), glOffset, glSize, src);
+		}
+
+		auto BoundBuffer::memClear(std::size_t offset, std::size_t size) const -> void
 		{
 			if (offset == 0 && size == SIZE_MAX) {
-				glInvalidateBufferData(get());
+				glClearBufferData(getTargetEnum(), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 			}
 
 			const auto [glOffset, glSize] = checkRange(offset, size);
-			glInvalidateBufferSubData(get(), glOffset, glSize);
+			glClearBufferSubData(getTargetEnum(), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		}
 
-		auto Buffer::memCopy(BufferTarget target, std::size_t destOffset, const void* src, std::size_t size) -> void
-		{
-			const auto [glOffset, glSize] = checkRange(destOffset, size, target);
-			glBufferSubData(static_cast<GLenum>(target), glOffset, glSize, src);
-		}
-
-		auto Buffer::memClear(BufferTarget target, std::size_t offset, std::size_t size) -> void
-		{
-			if (offset == 0 && size == SIZE_MAX) {
-				glClearBufferData(static_cast<GLenum>(target), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-			}
-
-			const auto [glOffset, glSize] = checkRange(offset, size, target);
-			glClearBufferSubData(
-				static_cast<GLenum>(target), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		}
-
-		auto Buffer::memCopyFromBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
-			std::size_t srcOffset, std::size_t size) -> void
+		auto BoundBuffer::memCopyFromBuffer(
+			BufferTarget srcTarget, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void
 		{
 			const auto [glSrcOffset, glSrcSize]	  = checkRange(srcOffset, size, srcTarget);
-			const auto [glDestOffset, glDestSize] = checkRange(destOffset, size, destTarget);
+			const auto [glDestOffset, glDestSize] = checkRange(destOffset, size);
 			if (glSrcSize != glDestSize) {
 				throw std::runtime_error("buffer size mismatch");
 			}
 
-			glCopyBufferSubData(
-				static_cast<GLenum>(srcTarget), static_cast<GLenum>(destTarget), glSrcOffset, glDestOffset, glDestSize);
+			glCopyBufferSubData(static_cast<GLenum>(srcTarget), getTargetEnum(), glSrcOffset, glDestOffset, glDestSize);
 		}
 
-		auto Buffer::getSize(BufferTarget target) -> std::size_t
+		auto BoundBuffer::getSize(BufferTarget target) -> std::size_t
 		{
 			return static_cast<std::size_t>(
 				callGLGet<GLint64>(glGetBufferParameteri64v, static_cast<GLenum>(target), GL_BUFFER_SIZE));
 		}
 
-		auto Buffer::checkRange(std::size_t offset, std::size_t size, BufferTarget target)
+		// NOLINTNEXTLINE(*-member-functions-to-static)
+		auto BoundBuffer::checkRange(std::size_t offset, std::size_t size, std::optional<BufferTarget> target) const
 			-> std::tuple<GLintptr, GLsizeiptr>
 		{
-			size				  = std::min(size, getSize(target));
-			const auto bufferSize = getSize(target);
+			const auto bufTarget  = target.value_or(getTarget());
+			size				  = std::min(size, getSize(bufTarget));
+			const auto bufferSize = getSize(bufTarget);
 			if (offset >= bufferSize) {
 				throw std::runtime_error("offset out of bounds");
 			}
 			return {static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(std::min(bufferSize - offset, size))};
 		}
-
-		auto Buffer::checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
-		{
-			const BindGuard guard{*this, TEMP_BUFFER_TARGET};
-			return checkRange(offset, size, TEMP_BUFFER_TARGET);
-		}
-
 	} // namespace Graphics
-
 } // namespace HJUIK

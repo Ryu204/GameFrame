@@ -1,8 +1,9 @@
 #ifndef GAMEFRAME_GRAPHICS_BUFFER_HPP
 #define GAMEFRAME_GRAPHICS_BUFFER_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <algorithm>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -13,14 +14,6 @@ namespace HJUIK
 {
 	namespace Graphics
 	{
-		namespace detail
-		{
-			struct BufferTrait {
-				using HandleType = GLuint;
-				static auto create() -> GLuint;
-				static auto destroy(GLuint handle) -> void;
-			};
-		} // namespace detail
 
 		enum class BufferTarget {
 			ARRAY			   = GL_ARRAY_BUFFER,
@@ -40,6 +33,18 @@ namespace HJUIK
 		};
 
 		auto getBufferBindingTarget(BufferTarget target) -> GLenum;
+
+		namespace detail
+		{
+			struct BufferTrait {
+				using HandleType = GLuint;
+				static auto create() -> GLuint;
+				static auto destroy(GLuint handle) -> void;
+
+				static auto getCurrentBound(BufferTarget target) -> GLuint;
+				static auto bind(GLuint handle, BufferTarget target) -> void;
+			};
+		} // namespace detail
 
 		// these values are picked in a way that `BufferAccess` and
 		// `BufferAccessFrequency` add up to the glBufferData's usage arg
@@ -129,17 +134,66 @@ namespace HJUIK
 			auto asBitfield() const -> GLbitfield;
 		};
 
-		class Buffer : public OpenGLWrapper<detail::BufferTrait>
+		class Buffer;
+
+		class BoundBuffer : public BoundOpenGLWrapper<detail::BufferTrait, BufferTarget>
+		{
+		public:
+			using BoundOpenGLWrapper::BoundOpenGLWrapper;
+
+			auto getTarget() const -> BufferTarget;
+
+			auto getSize() const -> std::size_t;
+
+			// allocate memory on the GPU
+			// set the `initialData` arg to nullptr to skip uploading initial data
+			// set the `immutable` arg to false to force the allocation to use glBufferData API instead of
+			// glBufferStorage. Even if `immutable` is true, if glBufferStorage is not supported (OpenGL
+			// version <= 4.1), it will fallback to glBufferData
+			auto allocate(const BufferUsage& usage, std::size_t size, const void* initialData = nullptr) const -> void;
+
+			// depending on what you specified `usage` when allocating the buffer,
+			// these APIs may not be available
+			auto map(const BufferMapAccess& access, std::size_t offset = 0, std::size_t size = SIZE_MAX) const -> void*;
+			// the return value of `unmap` is false if some sort of buffer corruption happened
+			// see here: https://www.khronos.org/opengl/wiki/Buffer_Object#Buffer_Corruption
+			auto unmap() const -> bool;
+			auto flushMappedRange(std::size_t offset, std::size_t size) const -> void;
+			auto memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void;
+			// TODO: add support for custom clearing
+			auto memClear(std::size_t offset = 0, std::size_t size = SIZE_MAX) const -> void;
+			auto memCopyFromBuffer(
+				BufferTarget srcTarget, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void;
+
+			auto memCopyFromBuffer(const BoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset,
+				std::size_t size) const -> void;
+
+			template <typename Container>
+			auto allocate(const BufferUsage& usage, const Container& container) const -> void
+			{
+				allocate(usage, container.size() * sizeof(*container.data()), container.data());
+			}
+
+			template <typename Container>
+			auto memCopy(std::size_t destOffset, const Container& container) const -> void
+			{
+				memCopy(destOffset, container.data(), container.size() * sizeof(*container.data()));
+			}
+
+		private:
+			static auto getSize(BufferTarget target) -> std::size_t;
+			auto checkRange(std::size_t offset, std::size_t size,
+				std::optional<BufferTarget> target = std::nullopt) const -> std::tuple<GLintptr, GLsizeiptr>;
+			auto getTargetEnum() const -> GLenum;
+			friend class Buffer;
+		};
+
+		class Buffer : public OpenGLWrapper<detail::BufferTrait, BoundBuffer>
 		{
 		public:
 			using OpenGLWrapper::OpenGLWrapper;
 			using OpenGLWrapper::operator=;
 			constexpr static BufferTarget TEMP_BUFFER_TARGET = BufferTarget::COPY_READ;
-
-			auto bind(BufferTarget target) const -> void;
-			static auto unbind(BufferTarget target) -> void;
-
-			auto getSize() const -> std::size_t;
 
 			// wrapper for glBindBufferBase/glBindBufferRange
 			// NOLINTNEXTLINE(*-easily-swappable-parameters)
@@ -147,59 +201,13 @@ namespace HJUIK
 				std::size_t size = SIZE_MAX) const -> void;
 			static auto unbindBase(BufferTarget target, std::size_t index) -> void;
 
-			// get handle to currently bound Buffer
-			// this can be used to restore binding state after
-			// temporarily binding a Buffer
-			static auto getCurrentBound(BufferTarget target) -> GLuint;
-
 			// set a label for this Buffer via `glObjectLabel`.
 			// this label may show up in debug callback or an external OpenGL
 			// debugger (e.g. RenderDoc)
 			// (only have effect in OpenGL 4.3+)
 			auto setLabel(const char* name) const -> void;
-
-			// allocate memory on the GPU
-			// set the `initialData` arg to nullptr to skip uploading initial data
-			// set the `immutable` arg to false to force the allocation to use glBufferData API instead of
-			// glBufferStorage. Even if `immutable` is true, if glBufferStorage is not supported (OpenGL
-			// version <= 4.1), it will fallback to glBufferData
-			static auto allocate(BufferTarget target, const BufferUsage& usage, std::size_t size,
-				const void* initialData = nullptr) -> void;
-
-			// depending on what you specified `usage` when allocating the buffer,
-			// these APIs may not be available
-			static auto map(BufferTarget target, const BufferMapAccess& access, std::size_t offset = 0,
-				std::size_t size = SIZE_MAX) -> void*;
-			// the return value of `unmap` is false if some sort of buffer corruption happened
-			// see here: https://www.khronos.org/opengl/wiki/Buffer_Object#Buffer_Corruption
-			static auto unmap(BufferTarget target) -> bool;
-			static auto flushMappedRange(BufferTarget target, std::size_t offset, std::size_t size) -> void;
 			auto invalidate(std::size_t offset, std::size_t size) const -> void;
-			static auto memCopy(BufferTarget target, std::size_t destOffset, const void* src, std::size_t size) -> void;
-			// TODO: add support for custom clearing
-			static auto memClear(BufferTarget target, std::size_t offset = 0, std::size_t size = SIZE_MAX) -> void;
-			static auto memCopyFromBuffer(BufferTarget destTarget, BufferTarget srcTarget, std::size_t destOffset,
-				std::size_t srcOffset, std::size_t size) -> void;
-
-			template <typename Container>
-			static auto allocate(BufferTarget target, const BufferUsage& usage, const Container& container) -> void
-			{
-				allocate(target, usage, container.size() * sizeof(*container.data()), container.data());
-			}
-
-			template <typename Container>
-			static auto memCopy(BufferTarget target, std::size_t destOffset, const Container& container) -> void
-			{
-				memCopy(target, destOffset, container.data(), container.size() * sizeof(*container.data()));
-			}
-
-		private:
-			static auto getSize(BufferTarget target) -> std::size_t;
-			static auto checkRange(std::size_t offset, std::size_t size, BufferTarget target)
-				-> std::tuple<GLintptr, GLsizeiptr>;
-			auto checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>;
 		};
-
 	} // namespace Graphics
 
 } // namespace HJUIK

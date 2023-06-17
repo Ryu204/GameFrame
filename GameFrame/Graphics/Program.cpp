@@ -14,6 +14,16 @@ namespace HJUIK
 			glDeleteProgram(handle);
 		}
 
+		auto detail::ProgramTrait::getCurrentBound() -> GLuint
+		{
+			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, GL_CURRENT_PROGRAM));
+		}
+
+		auto detail::ProgramTrait::bind(GLuint handle) -> void
+		{
+			glUseProgram(handle);
+		}
+
 		auto Program::createVertexFragment(const VertexShader& vertexShader, const FragmentShader& fragmentShader)
 			-> Program
 		{
@@ -41,7 +51,7 @@ namespace HJUIK
 
 		auto Program::detachShader(GLuint shaderHandle) const -> void
 		{
-			glAttachShader(get(), shaderHandle);
+			glDetachShader(get(), shaderHandle);
 		}
 
 		auto Program::getAllAttachedShaderHandles() const -> std::vector<GLuint>
@@ -83,21 +93,6 @@ namespace HJUIK
 
 			glGetProgramInfoLog(get(), static_cast<GLsizei>(length + 1), nullptr, infoLog.data());
 			return infoLog;
-		}
-
-		auto Program::use() const -> void
-		{
-			glUseProgram(get());
-		}
-
-		auto Program::unuse() -> void
-		{
-			glUseProgram(0);
-		}
-
-		auto Program::getCurrentUsed() -> GLuint
-		{
-			return static_cast<GLuint>(callGLGet<GLint>(glGetIntegerv, GL_CURRENT_PROGRAM));
 		}
 
 		auto Program::getAttribLocation(const char* name) const -> std::ptrdiff_t
