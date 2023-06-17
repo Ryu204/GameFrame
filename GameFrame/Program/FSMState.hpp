@@ -8,7 +8,8 @@
 
     The return type of each method is `bool`. At each operation of the stack
     (i.e update, process inputs and render), if the processed state returns false,
-    the stack will stop processing.
+    the stack will stop processing, i.e some of the topmost states get access
+    to events and handle them.
 */
 
 #include "../Utilize/Time.hpp"
@@ -39,8 +40,9 @@ namespace HJUIK
             auto requestStackPush(const ID& identifier) -> void;
             auto requestStackPop() -> void;
             auto requestStackClear() -> void;
-        private:
-            StateStack* mStack;
+
+		private:
+			StateStack* mStack;
         };
     } // namespace FSM
 } // namespace HJUIK

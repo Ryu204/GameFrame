@@ -10,7 +10,12 @@ namespace HJUIK
             mPendingChanges.push_back(request);
         }
 
-        auto StateStack::isEmpty() -> bool
+        auto StateStack::pushState(const IState::ID& identifier) -> void
+        {
+			mPendingChanges.emplace_back(detail::PushCall{identifier});
+		}
+
+		auto StateStack::isEmpty() -> bool
         {
 			return mStack.empty();
 		}

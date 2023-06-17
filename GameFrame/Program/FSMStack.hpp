@@ -8,6 +8,7 @@
 #include <variant>
 #include <unordered_map>
 #include <functional>
+#include <tuple>
 
 namespace HJUIK
 {
@@ -39,8 +40,10 @@ namespace HJUIK
             using CreatorFn = std::function<Ptr()>;
             StateStack() = default;
             auto getRequest(const detail::Request& request) -> void;
-            auto update(Utilize::Time deltaTime) -> void;
-            auto processInput(const Event& event) -> void;
+            // Easy binder for getRequest
+			auto pushState(const IState::ID& identifier) -> void;
+			auto update(Utilize::Time deltaTime) -> void;
+			auto processInput(const Event& event) -> void;
             auto render(Graphics::IOpenGLContext& context) -> void;
 			auto isEmpty() -> bool;
 
@@ -49,17 +52,20 @@ namespace HJUIK
 
 		private:
             auto flushRequests() -> void;
-            std::vector<detail::Request> mPendingChanges;
-            std::vector<Ptr> mStack;
+
+			std::vector<detail::Request> mPendingChanges;
+			std::vector<Ptr> mStack;
             std::unordered_map<IState::ID, CreatorFn> mRegistered;
         };
 
         template <typename StateType, typename... Args>
         auto StateStack::registerState(const IState::ID& identifier, const Args&... args) -> void
         {
-			HJUIK_ASSERT(mRegistered.find(identifier) == mRegistered.end(), "Registered state id");
-            mRegistered.emplace(identifier, [this, &args...]() -> Ptr {
-                    return std::make_unique<StateType>(this, args...); });
+			HJUIK_ASSERT(mRegistered.find(identifier) == mRegistered.end(), "State ID already registered: ", identifier);
+
+			mRegistered.emplace(identifier, [this, identifier, args...]() -> Ptr {
+				return std::make_unique<StateType>(this, args...);
+            });
 		}
     } // namespace FSM
 } // namespace HJUIK
