@@ -1,5 +1,5 @@
-#include "FSMState.hpp"
-#include "FSMVector.hpp"
+#include "State.hpp"
+#include "Vector.hpp"
 
 namespace HJUIK
 {

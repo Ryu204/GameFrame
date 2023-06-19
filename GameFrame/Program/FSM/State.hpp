@@ -12,9 +12,9 @@
     render and process events.
 */
 
-#include "../Utilize/Time.hpp"
-#include "../Window/Event.hpp"
-#include "../Graphics/IOpenGLContext.hpp"
+#include "../../Utilize/Time.hpp"
+#include "../../Window/Event.hpp"
+#include "../../Graphics/IOpenGLContext.hpp"
 
 namespace HJUIK
 {

@@ -1,8 +1,8 @@
 #ifndef GAMEFRAME_PROGRAM_FSM_STACK_HPP
 #define GAMEFRAME_PROGRAM_FSM_STACK_HPP
 
-#include "FSMState.hpp"
-#include "../Utilize/CallAssert.hpp"
+#include "State.hpp"
+#include "../../Utilize/CallAssert.hpp"
 #include <vector>
 #include <variant>
 #include <unordered_map>

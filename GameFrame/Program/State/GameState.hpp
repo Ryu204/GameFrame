@@ -5,7 +5,7 @@
     Mock up state derived class. FSM needs at least one available state run.
 */
 
-#include "../FSMState.hpp"
+#include "../FSM/State.hpp"
 #include "../../Window/Keyboard.hpp"
 #include "../../Window/EventManager.hpp"
 #include <string>
