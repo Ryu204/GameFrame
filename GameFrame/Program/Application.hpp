@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "../Graphics/Buffer.hpp"
-#include "../Graphics/Program.hpp"
+#include "../Assets/ShaderProgramAsset.hpp"
 #include "../Graphics/VertexArray.hpp"
 #include "../Utilize.hpp"
 #include "../Window.hpp"
@@ -35,11 +35,10 @@ namespace HJUIK
 		Graphics::VertexArray mVAO;
 		Graphics::Buffer mVBO;
 		Graphics::Buffer mUBO;
-		Graphics::Program mProgram;
+        std::shared_ptr<Assets::ShaderProgramAsset> mProgram;
 
         Graphics::BoundVertexArray mBoundVAO;
         Graphics::BoundBuffer mBoundUBO;
-        Graphics::BoundProgram mBoundProgram;
 	};
 } // namespace HJUIK
 

@@ -14,8 +14,8 @@ namespace HJUIK
 	Application::Application()
 		: mUpdateInterval(getUpdateInterval()), mWindow{std::make_unique<SFMLWindow>(
 													getDefaultWindowSize(), getWindowTitle(), getWindowType())},
-		  mProgram{[] {
-			  const auto vertexShader = Graphics::VertexShader::createAndCompile(R"(
+		  mProgram{Assets::ShaderProgramAssetBuilder{}
+					   .shaderSource(Graphics::ShaderType::VERTEX, R"(
                     #version 330
                     in vec2 position;
 
@@ -29,22 +29,11 @@ namespace HJUIK
                         gl_Position = transform * vec4(position, 0.0, 1.0);
                         color = vec4(position + 0.5, 1.0, 1.0);
                     }
-                )");
-
-			  const auto fragmentShader = Graphics::FragmentShader::createAndCompile(R"(
-                    #version 330
-                    in vec4 color;
-
-                    out vec4 outColor;
-
-                    void main() {
-                        outColor = color;
-                    }
-                )");
-
-			  return Graphics::Program::createVertexFragment(vertexShader, fragmentShader);
-		  }()},
-		  mBoundVAO{mVAO.bind()}, mBoundProgram{mProgram.bind()}, mBoundUBO{mUBO.bind(Graphics::BufferTarget::UNIFORM)}
+                )")
+					   .shaderFile(Graphics::ShaderType::FRAGMENT,
+						   "/home/torani/dev/diamond/GameFrame/Resources/Shaders/triangle.frag")
+					   .build()},
+		  mBoundVAO{mVAO.bind()}, mBoundUBO{mUBO.bind(Graphics::BufferTarget::UNIFORM)}
 	{
 		mWindow->limitFrameRate(getFramerate());
 		mWindow->setKeyRepeatable(getKeyRepeatability());
@@ -54,11 +43,6 @@ namespace HJUIK
 		// Currently our program will be in Wjbu mode
 		// NOLINTNEXTLINE(*-magic-numbers)
 		mWindow->getOpenGLContext().getBaseColor() = Graphics::Color{0xFFBCB3FF};
-
-		const auto index = mProgram.getUniformBlockIndex("Uniform");
-		if (index >= 0) {
-			mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
-		}
 
 		// init VBO
 		{
@@ -121,6 +105,14 @@ namespace HJUIK
 		// NOLINTNEXTLINE(*-magic-numbers)
 		uniform.Transform = glm::rotate(glm::mat4{1.0F}, clock.total().toSecond(), glm::vec3{0, 0, 1});
 		mBoundUBO.memCopy(0, std::array<Uniform, 1>{uniform});
+		const auto programGuard = mProgram->lock();
+		if (programGuard.Invalidated) {
+			const auto index = programGuard.Program->getUniformBlockIndex("Uniform");
+			if (index >= 0) {
+				mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
+			}
+		}
+		const auto programUseGuard = programGuard.Program->use();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glContext.display();
 	}
