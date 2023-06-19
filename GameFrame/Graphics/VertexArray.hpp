@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_VERTEX_ARRAY_HPP
 #define GAMEFRAME_GRAPHICS_VERTEX_ARRAY_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 
 #include "OpenGLWrapper.hpp"
 

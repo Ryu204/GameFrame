@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_BUFFER_HPP
 #define GAMEFRAME_GRAPHICS_BUFFER_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <algorithm>
 #include <optional>
 #include <tuple>

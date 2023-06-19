@@ -44,7 +44,7 @@ namespace HJUIK
 			glDisableVertexAttribArray(static_cast<GLuint>(index));
 		}
 
-		// NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr)
+		// NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr, *-anonymous-namespace)
 		auto BoundVertexArray::intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
 			std::size_t stride, std::size_t offset) const -> void
 		{
@@ -73,7 +73,7 @@ namespace HJUIK
 			glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), GL_DOUBLE,
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
-		// NOLINTEND(*-reinterpret-cast, *-no-int-to-ptr)
+		// NOLINTEND(*-reinterpret-cast, *-no-int-to-ptr, *-anonymous-namespace)
 		// NOLINTEND(*-member-functions-to-static)
 	} // namespace Graphics
 

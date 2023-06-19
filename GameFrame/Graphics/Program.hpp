@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_PROGRAM_HPP
 #define GAMEFRAME_GRAPHICS_PROGRAM_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <vector>
 
 #include "OpenGLWrapper.hpp"

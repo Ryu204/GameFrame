@@ -17,6 +17,5 @@
             "inherits": ["clang-tidy"],
             "binaryDir": "build"
         }
-        
     ]
 }

@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_FRAMEBUFFER_HPP
 #define GAMEFRAME_FRAMEBUFFER_HPP
 
-#include "glad/glad.h"
+#include "deps/glad/glad.h"
 #include <variant>
 
 #include "OpenGLWrapper.hpp"
