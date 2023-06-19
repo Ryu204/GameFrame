@@ -18,16 +18,14 @@ namespace HJUIK
         class GameState : public IState
         {
         public:
-			explicit GameState(StateStack* stack, int order, std::string name)
-            : IState(stack)
+			explicit GameState(StateVector* vector, int order, std::string name)
+            : IState(vector)
             , mOrder(order)
             , mContent(std::move(name))
             {
-				std::cout << "You are in game state number " << order << '\n';
-				std::cout << "Press /? to query state content\nPress Enter to switch to another state\n"
-                             "Press P to pause\n";
+				std::cout << "Game state created!\n";
 				initEventCallback();
-            }
+			}
 			GameState(const GameState&) = delete;
 			GameState(GameState&&)		= delete;
 			auto operator=(GameState&&) -> GameState& = delete;
@@ -50,13 +48,13 @@ namespace HJUIK
                             || keyData.Code == Window::Keyboard::Key::NUMPAD_ENTER)
                         {
 							std::cout << "You will be directed to a state with ID \"Menu 2\"\n";
-							requestStackPop();		  // Pop this state first
-							requestStackPush("Menu 2"); // Switch to Game
+							requestSelfPop();		  // Pop this state first
+							requestPush("Menu 2"); // Switch to Game
 						}
                         else if (keyData.Code == Window::Keyboard::Key::P)
                         {
                             // No pop because pause state is an overlay
-							requestStackPush("Pause");
+							requestPush("Pause");
 						}
                     }
                 );

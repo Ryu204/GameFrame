@@ -9,7 +9,7 @@
 
 #include "../Utilize.hpp"
 #include "../Window.hpp"
-#include "FSMStack.hpp"
+#include "FSMVector.hpp"
 
 namespace HJUIK
 {
@@ -31,7 +31,7 @@ namespace HJUIK
 		EventManager mEventManager;
 		const Time mUpdateInterval;
 
-		FSM::StateStack mStateStack;
+		FSM::StateVector mStateVector;
 	};
 } // namespace HJUIK
 

@@ -18,15 +18,14 @@ namespace HJUIK
         class MenuState : public IState
         {
         public:
-			explicit MenuState(StateStack* stack, int order, std::string name)
-            : IState(stack)
+			explicit MenuState(StateVector* vector, int order, std::string name)
+            : IState(vector)
             , mOrder(order)
             , mContent(std::move(name))
             {
-				std::cout << "You are in menu state number " << order << '\n';
-				std::cout << "Press Q to query state content\nPress S to switch to another state\n";
+				std::cout << "Menu State created!\n";
 				initEventCallback();
-            }
+			}
 			MenuState(const MenuState&) = delete;
 			MenuState(MenuState&&)		= delete;
 			auto operator=(MenuState&&) -> MenuState& = delete;
@@ -47,8 +46,8 @@ namespace HJUIK
 						}
                         else if (keyData.Code == Window::Keyboard::Key::S)
                         {
-							requestStackPop(); // Pop this state first
-							requestStackPush("Game"); // Switch to Game
+							requestErase(-1); // Pop this state first
+							requestPush("Game"); // Switch to Game
 						}
                     }
                 );

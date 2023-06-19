@@ -1,5 +1,5 @@
-#ifndef GAMEFRAME_UTILIZE_VARIANT_HELPER_HPP
-#define GAMEFRAME_UTILIZE_VARIANT_HELPER_HPP
+#ifndef GAMEFRAME_UTILIZE_VARIANT_HPP
+#define GAMEFRAME_UTILIZE_VARIANT_HPP
 
 /*
 	Defines method to get a std::variant index by type (via templates)
@@ -30,7 +30,7 @@ namespace HJUIK
 					: std::integral_constant<std::size_t, std::variant<Tag<Ts>...>(Tag<Type>()).index()> {
 				};
 			} // namespace Variant
-		}	  // namespace detail
+		} // namespace detail
 
 		template <typename T, typename V>
 		class VariantHelper
@@ -51,6 +51,14 @@ namespace HJUIK
 		{
 			return detail::Variant::IndexGetter<Type, std::variant<Ts...>>::value;
 		}
+
+
+        // https://en.cppreference.com/w/cpp/utility/variant/visit
+        template <typename... Fs>
+        // NOLINTNEXTLINE(*-multiple-inheritance)
+        struct VariantVisitor : Fs... {using Fs::operator ()...;};
+        template <typename... Fs>
+        VariantVisitor(Fs...) -> VariantVisitor<Fs...>;
 	} // namespace Utilize
 } // namespace HJUIK
 

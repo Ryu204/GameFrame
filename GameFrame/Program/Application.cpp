@@ -37,7 +37,7 @@ namespace HJUIK
 				processInput();
 				update(mUpdateInterval);
 
-                if (mStateStack.isEmpty())
+                if (mStateVector.isEmpty())
 				{
                     mWindow->close();
                 }
@@ -49,7 +49,7 @@ namespace HJUIK
 
 	auto Application::update(Time deltaTime) -> void
     {
-		mStateStack.update(deltaTime);
+		mStateVector.update(deltaTime);
 	}
 
 
@@ -60,7 +60,7 @@ namespace HJUIK
 			// I think I must let each state have their own event manager. The reason being
             // the blocking mechanism (in `FSMState.hpp`). I couldn't think of a possible way
             // if all handler is equivalent inside `mEventManager`
-            mStateStack.processInput(event);
+            mStateVector.processInput(event);
 			mEventManager.processEvent(event);
 		}
 	}
@@ -70,7 +70,7 @@ namespace HJUIK
 		auto& glContext = mWindow->getOpenGLContext();
 		glContext.clear();
 
-		mStateStack.render(glContext);
+		mStateVector.render(glContext);
 
 		glContext.display();
 	}
@@ -83,14 +83,14 @@ namespace HJUIK
     auto Application::initStateMachine() -> void
     {
         // NOLINTBEGIN(*-magic-numbers)
-		mStateStack.registerState<FSM::MenuState>( "Menu",
+		mStateVector.registerState<FSM::MenuState>( "Menu",
 			1003, "This is a place holder content. In pratice, the content is displayed as graphics");
-        mStateStack.registerState<FSM::MenuState>( "Menu 2",
+        mStateVector.registerState<FSM::MenuState>( "Menu 2",
 			1234, "This is not the first menu state you saw");
-        mStateStack.registerState<FSM::GameState>( "Game",
+        mStateVector.registerState<FSM::GameState>( "Game",
 			12344234, "This is the beginning of the game state (this text is `mContent`)");
-        mStateStack.registerState<FSM::PauseState>( "Pause", 9234);
+        mStateVector.registerState<FSM::PauseState>( "Pause", 9234);
+		mStateVector.push("Menu");
         // NOLINTEND(*-magic-numbers)
-		mStateStack.pushState("Menu");
 	}
 } // namespace HJUIK

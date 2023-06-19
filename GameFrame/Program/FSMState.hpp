@@ -6,10 +6,10 @@
     and present different things. For example: Settings State, Menu State,
     GameOver State, Pause State, InGame State, etc.
 
-    The return type of each method is `bool`. At each operation of the stack
+    The return type of each method is `bool`. At each operation of the vector
     (i.e update, process inputs and render), if the processed state returns false,
-    the stack will stop processing, i.e some of the topmost states get access
-    to events and handle them.
+    the vector will stop processing, i.e some of the last states get to update,
+    render and process events.
 */
 
 #include "../Utilize/Time.hpp"
@@ -20,14 +20,14 @@ namespace HJUIK
 {
     namespace FSM
     {
-        class StateStack;
+        class StateVector;
 
         class IState
         {
         public:
             using ID = std::string;
 
-            constexpr explicit IState(StateStack* stack) : mStack{stack} {}
+            constexpr explicit IState(StateVector* vector) : mVector{vector} {}
 			IState(const IState&) = delete;
 			IState(IState&&)	  = delete;
 			auto operator=(IState&&) -> IState& = delete;
@@ -37,12 +37,15 @@ namespace HJUIK
             virtual auto processInput(const Event&) -> bool {return false;}
             virtual auto render(Graphics::IOpenGLContext&) -> bool {return false;}
 
-            auto requestStackPush(const ID& identifier) -> void;
-            auto requestStackPop() -> void;
-            auto requestStackClear() -> void;
+            // Pend change to the vector
+            auto requestPush(const ID& identifier) -> void;
+            auto requestErase(int index) -> void;
+			auto requestErase(const ID& identifier, bool onlyLast = false);
+			auto requestSelfPop() -> void;
+			auto requestClear() -> void;
 
 		private:
-			StateStack* mStack;
+			StateVector* mVector;
         };
     } // namespace FSM
 } // namespace HJUIK

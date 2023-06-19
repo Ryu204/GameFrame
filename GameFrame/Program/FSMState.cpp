@@ -1,23 +1,34 @@
 #include "FSMState.hpp"
-#include "FSMStack.hpp"
+#include "FSMVector.hpp"
 
 namespace HJUIK
 {
     namespace FSM
     {
-        auto IState::requestStackPush(const ID& identifier) -> void
+        auto IState::requestPush(const ID& identifier) -> void
         {
-            mStack->getRequest(detail::Request(detail::PushCall{identifier}));
+            mVector->getRequest(Request::Push{identifier});
         }
 
-        auto IState::requestStackPop() -> void
+        auto IState::requestErase(int index) -> void
         {
-            mStack->getRequest(detail::Request(detail::PopCall()));
+			mVector->getRequest(Request::EraseIndex{index});
+		}
+
+		auto IState::requestErase(const ID& identifier, bool onlyLast)
+        {
+			mVector->getRequest(Request::EraseIdentifier{identifier,
+                onlyLast ? Request::EraseIdentifier::LAST : Request::EraseIdentifier::ALL});
+		}
+
+		auto IState::requestSelfPop() -> void
+        {
+            mVector->getRequest(Request::ErasePtr{this});
         }
 
-        auto IState::requestStackClear() -> void
+        auto IState::requestClear() -> void
         {
-            mStack->getRequest(detail::Request(detail::ClearCall()));
+            mVector->getRequest(Request::Clear{});
         }
     } // namespace FSM
 } // namespace HJUIK

@@ -18,12 +18,11 @@ namespace HJUIK
         class PauseState : public IState
         {
         public:
-			explicit PauseState(StateStack* stack, int order)
-            : IState(stack)
+			explicit PauseState(StateVector* vector, int order)
+            : IState(vector)
             , mOrder(order)
             {
-				std::cout << "You are in Pause state number " << order << '\n';
-				std::cout << "Press ECS to get back to game state\n";
+				std::cout << "Pause state created!\n";
 				initEventCallback();
 			}
 			PauseState(const PauseState&) = delete;
@@ -42,7 +41,7 @@ namespace HJUIK
                     [this](const EventType::KeyPress& keyData){
                         if (keyData.Code == Window::Keyboard::Key::ESCAPE)
                         {
-							requestStackPop();
+							requestSelfPop();
 						}
                     }
                 );
