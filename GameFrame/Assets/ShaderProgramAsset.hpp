@@ -72,12 +72,12 @@ namespace HJUIK
 		public:
 			ShaderProgramAssetBuilder() = default;
 
-			auto shaderSource(Graphics::ShaderType type, std::string source) -> ShaderProgramAssetBuilder&;
-			auto shaderFile(Graphics::ShaderType type, Path path) -> ShaderProgramAssetBuilder&;
-			auto shaderFile(Graphics::ShaderType type, std::shared_ptr<FileAsset> file) -> ShaderProgramAssetBuilder&;
+			auto shaderSource(Graphics::ShaderType type, std::string source) && -> ShaderProgramAssetBuilder;
+			auto shaderFile(Graphics::ShaderType type, Path path) && -> ShaderProgramAssetBuilder;
+			auto shaderFile(Graphics::ShaderType type, std::shared_ptr<FileAsset> file) && -> ShaderProgramAssetBuilder;
 
 			// NOTE: this invalidates the builder, so one can't use a builder twice
-			auto build() -> ShaderProgramAsset;
+			auto build() && -> std::shared_ptr<ShaderProgramAsset>;
 
 		private:
 			std::map<Graphics::ShaderType, detail::Shader> mShaders;

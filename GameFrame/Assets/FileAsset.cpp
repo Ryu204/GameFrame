@@ -9,7 +9,7 @@ namespace HJUIK
 		FileAsset::FileAsset(Path path, bool watchFile)
 			: mPath(std::move(path)), mFileWatcher{[&]() -> std::optional<Utilize::FileWatch> {
 				  if (watchFile) {
-					  return std::make_optional<Utilize::FileWatch>(path, [&]() { this->assetUpdated(); });
+					  return std::make_optional<Utilize::FileWatch>(mPath, [&]() { this->assetUpdated(); });
 				  }
 
 				  return std::nullopt;

@@ -14,6 +14,7 @@ namespace HJUIK
 		{
 			HJUIK_ASSERT(path.has_parent_path(), "cannot watch file without parent path: ", path);
 			mWatcher.addWatch(path.parent_path(), mCallback.get());
+            mWatcher.watch();
 		}
 
 		FileWatch::FileWatcherCallback::FileWatcherCallback(const Path& path, WatchFunc callback)
