@@ -9,7 +9,7 @@
 
 #include "../Utilize.hpp"
 #include "../Window.hpp"
-#include "FSMVector.hpp"
+#include "FSM/Vector.hpp"
 
 namespace HJUIK
 {
