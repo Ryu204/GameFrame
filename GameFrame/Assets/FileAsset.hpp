@@ -21,17 +21,18 @@ namespace HJUIK
 			~FileAsset() override = default;
 
 			FileAsset(const FileAsset&) = delete;
-			FileAsset(FileAsset&&)		= default;
+			FileAsset(FileAsset&&)		= delete;
 
 			auto operator=(const FileAsset&) -> FileAsset& = delete;
-			auto operator=(FileAsset&&) -> FileAsset&	   = default;
+			auto operator=(FileAsset&&) -> FileAsset&	   = delete;
 
 			auto getPath() const -> const Path&;
 
 			template <typename CharT = char>
 			auto open(bool binary = false) -> std::basic_ifstream<CharT>
 			{
-				return std::basic_ifstream<CharT>{mPath, binary ? std::ios_base::binary : 0};
+				return std::basic_ifstream<CharT>{
+					mPath, binary ? std::ios_base::binary : static_cast<std::ios_base::openmode>(0)};
 			}
 
 			template <typename CharT = char>

@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "CallAssert.hpp"
-#include <efsw/efsw.hpp>
 
 namespace HJUIK
 {
@@ -22,8 +21,9 @@ namespace HJUIK
 		{
 		}
 
-		auto FileWatch::FileWatcherCallback::handleFileAction(efsw::WatchID watchid, const std::string& dir,
-			const std::string& filename, efsw::Action action, std::string oldFilename) -> void
+		// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+		auto FileWatch::FileWatcherCallback::handleFileAction(efsw::WatchID /*watchid*/, const std::string& /*dir*/,
+			const std::string& filename, efsw::Action /*action*/, std::string /*oldFilename*/) -> void
 		{
 			if (filename == mFilename) {
 				mCallback();

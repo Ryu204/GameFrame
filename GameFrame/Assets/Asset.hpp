@@ -15,13 +15,16 @@ namespace HJUIK
 		class UpdateHandle
 		{
 		public:
+			UpdateHandle();
 			UpdateHandle(std::weak_ptr<Asset> asset, std::size_t id);
 			~UpdateHandle();
 
-			UpdateHandle::UpdateHandle(UpdateHandle&&)			 = default;
-			UpdateHandle::UpdateHandle(const UpdateHandle&)		 = delete;
+			UpdateHandle(UpdateHandle&&)						 = default;
+			UpdateHandle(const UpdateHandle&)					 = delete;
 			auto operator=(UpdateHandle&&) -> UpdateHandle&		 = default;
 			auto operator=(const UpdateHandle&) -> UpdateHandle& = delete;
+
+			auto isValid() const -> bool;
 
 		private:
 			std::weak_ptr<Asset> mAsset;
@@ -48,7 +51,7 @@ namespace HJUIK
 			static constexpr size_t MAX_UPDATE_HANDLERS = 100;
 			std::unordered_map<std::size_t, std::function<void()>> mAssetUpdatedHandlers;
 			Utilize::IDGenerator<MAX_UPDATE_HANDLERS> mUpdateHandlerIDGenerator;
-            friend class UpdateHandle;
+			friend class UpdateHandle;
 		};
 	} // namespace Assets
 } // namespace HJUIK

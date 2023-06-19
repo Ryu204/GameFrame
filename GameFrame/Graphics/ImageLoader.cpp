@@ -73,7 +73,7 @@ namespace HJUIK
 		// create a white image data, can be used in case of load failure
         auto Image2DLoader::create(Vector2u dimensions, ImageFormat format) -> RawData
         {
-			std::size_t size = detail::imageFormatToNum(format) * dimensions.x * dimensions.y;
+			const std::size_t size = detail::imageFormatToNum(format) * dimensions.x * dimensions.y;
 			return RawData{std::vector<std::uint8_t>(size, UINT8_MAX), dimensions, format};
 		}
 
