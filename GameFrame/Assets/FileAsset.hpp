@@ -38,16 +38,27 @@ namespace HJUIK
 			template <typename CharT = char>
 			auto readBytes() -> std::vector<CharT>
 			{
-				auto stream = open(/*binary*/ true);
-				return std::vector<CharT>{std::istreambuf_iterator<CharT>{stream}, std::istreambuf_iterator<CharT>{}};
+				try {
+					auto stream = open(/*binary*/ true);
+					stream.exceptions(std::ios_base::failbit);
+					return std::vector<CharT>{
+						std::istreambuf_iterator<CharT>{stream}, std::istreambuf_iterator<CharT>{}};
+				} catch (...) {
+					std::throw_with_nested(std::runtime_error("couldn't read bytes from file."));
+				}
 			}
 
 			template <typename CharT = char>
 			auto readText() -> std::basic_string<CharT>
 			{
-				auto stream = open(/*binary*/ false);
-				return std::basic_string<CharT>{
-					std::istreambuf_iterator<CharT>{stream}, std::istreambuf_iterator<CharT>{}};
+				try {
+					auto stream = open(/*binary*/ false);
+					stream.exceptions(std::ios_base::failbit);
+					return std::basic_string<CharT>{
+						std::istreambuf_iterator<CharT>{stream}, std::istreambuf_iterator<CharT>{}};
+				} catch (...) {
+					std::throw_with_nested(std::runtime_error("couldn't read text from file."));
+				}
 			}
 
 		private:

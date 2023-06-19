@@ -72,7 +72,7 @@ namespace HJUIK
 			auto program = std::make_shared<Graphics::Program>();
 			std::vector<GenericShader> shaders;
 			for (const auto& [type, shader] : mShaders) {
-				const auto source		  = std::visit([](const auto& shader) { return shader.source(); }, shader);
+				const auto source	= std::visit([](const auto& shader) { return shader.source(); }, shader);
 				auto compiledShader = compileShader(type, source.c_str());
 				std::visit([&](const auto& shader) { program->attachShader(shader); }, compiledShader);
 				shaders.push_back(std::move(compiledShader));
@@ -120,23 +120,28 @@ namespace HJUIK
 			mInvalidated = true;
 		}
 
-		auto ShaderProgramAssetBuilder::shaderSource(Graphics::ShaderType type, std::string source)
-			-> ShaderProgramAssetBuilder&
+		auto ShaderProgramAssetBuilder::shaderSource(
+			Graphics::ShaderType type, std::string source) && -> ShaderProgramAssetBuilder
 		{
 			mShaders.insert_or_assign(type, detail::ShaderSource{std::move(source)});
-			return *this;
+			return std::move(*this);
 		}
 
-		auto ShaderProgramAssetBuilder::shaderFile(Graphics::ShaderType type, Path path) -> ShaderProgramAssetBuilder&
+		auto ShaderProgramAssetBuilder::shaderFile(Graphics::ShaderType type, Path path) && -> ShaderProgramAssetBuilder
 		{
-			return shaderFile(type, std::make_shared<FileAsset>(std::move(path)));
+			return std::move(*this).shaderFile(type, std::make_shared<FileAsset>(std::move(path)));
 		}
 
-		auto ShaderProgramAssetBuilder::shaderFile(Graphics::ShaderType type, std::shared_ptr<FileAsset> file)
-			-> ShaderProgramAssetBuilder&
+		auto ShaderProgramAssetBuilder::shaderFile(
+			Graphics::ShaderType type, std::shared_ptr<FileAsset> file) && -> ShaderProgramAssetBuilder
 		{
 			mShaders.insert_or_assign(type, detail::ShaderFile{std::move(file)});
-			return *this;
+			return std::move(*this);
+		}
+
+		auto ShaderProgramAssetBuilder::build() && -> std::shared_ptr<ShaderProgramAsset>
+		{
+			return std::make_shared<ShaderProgramAsset>(std::move(*this));
 		}
 
 	} // namespace Assets

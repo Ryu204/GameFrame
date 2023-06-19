@@ -33,6 +33,7 @@ namespace HJUIK
 		{
 			for (const auto& [id, updateHandler] : mAssetUpdatedHandlers) {
 				updateHandler();
+                std::cerr << "aayay\n";
 			}
 		}
 	} // namespace Assets
