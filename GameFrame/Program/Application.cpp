@@ -105,14 +105,14 @@ namespace HJUIK
 		// NOLINTNEXTLINE(*-magic-numbers)
 		uniform.Transform = glm::rotate(glm::mat4{1.0F}, clock.total().toSecond(), glm::vec3{0, 0, 1});
 		mBoundUBO.memCopy(0, std::array<Uniform, 1>{uniform});
-		const auto programGuard = mProgram->lock();
-		if (programGuard.Invalidated) {
-			const auto index = programGuard.Program->getUniformBlockIndex("Uniform");
+		const auto&& [program, invalidated] = mProgram->get();
+		if (invalidated) {
+			const auto index = program->getUniformBlockIndex("Uniform");
 			if (index >= 0) {
 				mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
 			}
 		}
-		const auto programUseGuard = programGuard.Program->use();
+		const auto programUseGuard = program->use();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glContext.display();
 	}
