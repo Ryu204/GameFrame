@@ -2,6 +2,7 @@
 #define GAMEFRAME_PROGRAM_FSM_STACK_HPP
 
 #include "IState.hpp"
+#include "StateManager.hpp"
 #include "../../Utilize/CallAssert.hpp"
 #include <vector>
 #include <variant>
@@ -25,8 +26,7 @@ namespace HJUIK
 			struct EraseIndex {
 				int Index;
 			};
-			struct EraseIdentifier
-            {
+			struct EraseIdentifier{
 				IState::ID Identifier;
 				enum Modifier { ALL, LAST } Modifier;
 			};
@@ -37,9 +37,6 @@ namespace HJUIK
 		class StateVector
         {
         public:
-            using UPtr = std::unique_ptr<IState>;
-            using CreatorFn = std::function<UPtr()>;
-
             // Elements management...
 
             auto clear() -> void;
@@ -61,27 +58,54 @@ namespace HJUIK
 			auto processInput(const Event& event) -> void;
             auto render(Graphics::IOpenGLContext& context) -> void;
 
+            // Register a StateType object with corresponding identifier
+            // `poolTime` is how long (in seconds) the state will be kept in the pool before destroyed
+            // `args...` are StateType's constructor parameters
 			template <typename StateType, typename... Args>
-			auto registerState(const IState::ID& identifier, const Args&... args) -> void;
+			auto registerState(const IState::ID& identifier, Utilize::Time poolTime, const Args&... args) -> void;
 
 		private:
             auto flushRequests() -> void;
+			auto eraseAtIndex(std::size_t index) -> void;
+
+			struct Pack
+            {
+				IState::ID Identifier;
+				std::size_t ID;
+				IState* State;
+				StateManager* Manager;
+
+				Pack(IState::ID identifier, StateManager* manager)
+                    : Identifier(std::move(identifier))
+                    , Manager(manager)
+                {
+					auto newState = Manager->create(Identifier);
+					State		  = newState.first;
+					ID			  = newState.second;
+				}
+				Pack(Pack&&) = default;
+				Pack(const Pack&) = default;
+				auto operator=(Pack&&) -> Pack& = default;
+				auto operator=(const Pack&) -> Pack& = default;
+				~Pack()								 = default;
+
+				auto returnID() const -> void
+                {
+					Manager->retrieve(ID);
+				}
+			};
 
 			std::vector<Request::Type> mPendingChanges;
-			std::vector<std::pair<IState::ID, UPtr>> mVector;
-            std::unordered_map<IState::ID, CreatorFn> mRegistered;
-        };
+			std::vector<Pack> mVector;
+			StateManager mManager;
+		};
 
-        template <typename StateType, typename... Args>
-        auto StateVector::registerState(const IState::ID& identifier, const Args&... args) -> void
+		template <typename StateType, typename... Args>
+        auto StateVector::registerState(const IState::ID& identifier, Utilize::Time poolTime, const Args&... args) -> void
         {
-			HJUIK_ASSERT(mRegistered.find(identifier) == mRegistered.end(), "State ID already registered: ", identifier);
-
-			mRegistered.emplace(identifier, [this, identifier, args...]() -> UPtr {
-				return std::make_unique<StateType>(this, args...);
-            });
+			mManager.registerState<StateType, StateVector*, Args...>(identifier, poolTime, this, args...);
 		}
-    } // namespace FSM
+	} // namespace FSM
 } // namespace HJUIK
 
 #endif

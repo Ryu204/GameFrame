@@ -66,6 +66,16 @@ namespace HJUIK
 				return false;
 			}
 
+            auto load() -> void override
+            {
+				std::cout << "Game state loaded\n";
+			}
+
+            auto unload() -> void override
+            {
+				std::cout << "Game state unloaded\n";
+			}
+
 		private:
 			int mOrder;
 			std::string mContent;

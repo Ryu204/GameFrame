@@ -42,8 +42,11 @@
 
 #include "IState.hpp"
 #include "../../Utilize/Time.hpp"
+#include "../../Utilize/CallAssert.hpp"
+#include "../../Utilize/IDGenerator.hpp"
 #include <queue>
 #include <unordered_map>
+#include <unordered_set>
 #include <set>
 #include <memory>
 
@@ -53,31 +56,42 @@ namespace HJUIK
     {
         namespace detail
         {
+            // NOLINTBEGIN(*-transparent-functors)
             // State ID, expiration time and the state itself
             struct Info
             {
 				IState::ID Identifier;
 				std::unique_ptr<IState> State;
-				Utilize::Time Removal;
-				Utilize::Time Duration;
+				Utilize::Time Removal; // Life expectancy
+				Utilize::Time Duration; // The time the state lives in inactive mode
+				std::size_t HashID; // Used for sorting those with same `Removal`
+
+				Info(IState::ID identifier, Utilize::Time duration, std::unique_ptr<IState> state, std::size_t hashID)
+                    : Identifier(std::move(identifier))
+                    , State(std::move(state))
+                    , Duration(duration)
+                    , HashID(hashID)
+                {}
+
+                auto operator < (const Info& right) const -> bool
+                {
+                    if (Removal != right.Removal)
+                    {
+						return Removal < right.Removal;
+					}
+					return HashID < right.HashID;
+				}
 			};
 
 			// Comparer according to time
-            struct PtrCmpLess
+            struct SPtrCmpLess
             {
                 auto operator() (const std::shared_ptr<Info>& first, const std::shared_ptr<Info>& last) const -> bool
                 {
-                    // NOLINTBEGIN
-                    // Two pointers are the same if they point to an object
-                    if (first == last)
-						return false;
-					// Object removed earlier will be closer to the top
-					if (first->Removal != last->Removal)
-						return first->Removal < last->Removal;
-                    return std::less<decltype(first)>()(first, last);
-                    // NOLINTEND
+					return (*first) < (*last);
 				}
 			};
+            // NOLINTEND(*-transparent-functors)
 		} // namespace detail
 
 		class StateManager
@@ -85,23 +99,34 @@ namespace HJUIK
         public:
 			using SPtr		= std::shared_ptr<detail::Info>;
 			using CreatorFn = std::function<SPtr()>;
-			using CustomSet = std::set<SPtr, detail::PtrCmpLess>;
+			using CustomSet = std::set<SPtr, detail::SPtrCmpLess>;
+			static constexpr std::size_t MAX_STATE_AVAILABLE = 200;
 
 			auto update(Utilize::Time deltaTime) -> void;
-			auto create(const IState::ID& identifier) -> IState*;
+			auto create(const IState::ID& identifier) -> std::pair<IState*, std::size_t>;
 			// DONOT use the pointer after calling this function
-            auto retrieve(IState* state) -> void;
+            auto retrieve(std::size_t ID) -> void; // NOLINT
 
 			template <typename StateType, typename... Args>
-			auto registerState(const IState::ID& identifier, Utilize::Time exprTime, const Args&... args) -> void;
+			auto registerState(const IState::ID& identifier, Utilize::Time exprTime, const Args&... args) -> void
+            {
+				HJUIK_ASSERT(mCreators.find(identifier) == mCreators.end(), "ID \"", identifier, "\" registered twice");
+				mCreators.emplace(identifier, [=] {
+					std::unique_ptr<IState> state = std::make_unique<StateType>(args...);
+					return std::make_shared<detail::Info>(identifier, exprTime, std::move(state), mIDGenerator.generate());
+				});
+			}
 
 		private:
 			Utilize::Time mTotalTime;
 
 			std::unordered_map<IState::ID, CreatorFn> mCreators;
-			std::unordered_map<IState::ID, CustomSet> mActive;
-			std::unordered_map<IState::ID, CustomSet> mInactive;
-			std::unordered_map<IState*, SPtr> mActiveHash;
+			Utilize::IDGenerator<MAX_STATE_AVAILABLE> mIDGenerator;
+
+			std::unordered_map<IState::ID, std::unordered_set<SPtr>> mActive;
+			std::unordered_map<std::size_t, SPtr> mActiveHash;
+
+            std::unordered_map<IState::ID, CustomSet> mInactive;
 			CustomSet mTimeline;
 		};
 	} // namespace FSM

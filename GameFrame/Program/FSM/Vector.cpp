@@ -6,15 +6,23 @@ namespace HJUIK
 {
     namespace FSM
     {
-        auto StateVector::clear() -> void
+        auto StateVector::eraseAtIndex(std::size_t index) -> void
         {
-			mVector.clear();
+			mVector[index].returnID();
+			mVector.erase(mVector.begin() + static_cast<ptrdiff_t>(index));
+		}
+
+		auto StateVector::clear() -> void
+        {
+			while (!isEmpty())
+            {
+				eraseAtIndex(0);
+			}
 		}
 
         auto StateVector::push(const IState::ID& identifier) -> void
         {
-            HJUIK_ASSERT(mRegistered.find(identifier) != mRegistered.end(), "Unregistered FSM state");
-			mVector.emplace_back(std::pair<IState::ID, UPtr>{identifier, mRegistered[identifier]()});
+			mVector.emplace_back(Pack(identifier, &mManager));
 		}
 
         auto StateVector::erase(int index) -> void
@@ -22,24 +30,24 @@ namespace HJUIK
             HJUIK_ASSERT(!mVector.empty(), "Cannot erase element from empty vector");
 			int newIndex = index < 0 ? index + static_cast<int>(mVector.size()) : index;
 			HJUIK_ASSERT(0 <= newIndex && newIndex < mVector.size(), "Vector index out of range: ", index);
-			mVector.erase(mVector.begin() + newIndex);
+			eraseAtIndex(newIndex);
 		}
 
-        auto StateVector::erase(IState* element) -> void
+		auto StateVector::erase(IState* element) -> void
         {
             HJUIK_ASSERT(!mVector.empty(), "Cannot erase element from empty vector");
 			bool found = false;
 			int index = 0;
 			for ( ; index < mVector.size(); ++index)
             {
-                if (mVector[index].second.get() == element)
+                if (mVector[index].State == element)
                 {
 					found = true;
 					break;
 				}
 			}
 			HJUIK_ASSERT(found, "Element to erase with pointer not found");
-			mVector.erase(mVector.begin() + index);
+			eraseAtIndex(index);
 		}
 
 		auto StateVector::erase(const IState::ID& identifier, bool all) -> void
@@ -48,7 +56,7 @@ namespace HJUIK
 			std::vector<int> erasedIndices;
 			for (int i = 0; i < mVector.size(); ++i)
             {
-				if (mVector[i].first == identifier)
+				if (mVector[i].Identifier == identifier)
                 {
 					erasedIndices.push_back(i);
 				}
@@ -57,14 +65,14 @@ namespace HJUIK
             // Delete last element
             if (!all)
             {
-				mVector.erase(mVector.begin() + erasedIndices.back());
+				eraseAtIndex(erasedIndices.back());
 			}
             // Delete all element
             else
             {
                 for (auto i = erasedIndices.rbegin(); i != erasedIndices.rend(); ++i)
                 {
-					mVector.erase(mVector.begin() + (*i));
+					eraseAtIndex(*i);
 				}
 			}
 		}
@@ -121,13 +129,14 @@ namespace HJUIK
 
         auto StateVector::update(Utilize::Time deltaTime) -> void
         {
+			mManager.update(deltaTime);
 			for (auto itr = mVector.rbegin(); itr != mVector.rend(); itr++) {
 				// If the current state blocks update of underneath state
-                if (!(itr->second->update(deltaTime)))
+                if (!(itr->State->update(deltaTime)))
                 {
                     break;
                 }
-		    }
+			}
 			flushRequests();
         }
 
@@ -136,7 +145,7 @@ namespace HJUIK
             for (auto itr = mVector.rbegin(); itr != mVector.rend(); itr++)
             {
                 // If the current state blocks events for lower state
-                if (!(itr->second->processInput(event)))
+                if (!(itr->State->processInput(event)))
                 {
                     break;
                 }
@@ -149,7 +158,7 @@ namespace HJUIK
             for (auto itr = mVector.rbegin(); itr != mVector.rend(); itr++)
             {
                 // If the current state is the last state that should be drawn
-                if (!(itr->second->render(context)))
+                if (!(itr->State->render(context)))
                 {
                     break;
                 }

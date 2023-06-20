@@ -33,9 +33,12 @@ namespace HJUIK
 			auto operator=(IState&&) -> IState& = delete;
 			auto operator=(const IState&) -> IState& = delete;
 			virtual ~IState()						 = default;
+
 			virtual auto update(Utilize::Time) -> bool {return false;}
             virtual auto processInput(const Event&) -> bool {return false;}
             virtual auto render(Graphics::IOpenGLContext&) -> bool {return false;}
+            virtual auto load() -> void {}
+            virtual auto unload() -> void {}
 
             // Pend change to the vector
             auto requestPush(const ID& identifier) -> void;

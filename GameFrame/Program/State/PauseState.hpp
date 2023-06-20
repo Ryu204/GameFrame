@@ -53,6 +53,16 @@ namespace HJUIK
 				return false;
 			}
 
+            auto load() -> void override
+            {
+				std::cout << "Pause state loaded\n";
+			}
+
+            auto unload() -> void override
+            {
+				std::cout << "Pause state unloaded\n";
+			}
+
 		private:
 			int mOrder;
 			EventManager mEventManager;

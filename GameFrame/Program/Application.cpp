@@ -83,13 +83,13 @@ namespace HJUIK
     auto Application::initStateMachine() -> void
     {
         // NOLINTBEGIN(*-magic-numbers)
-		mStateVector.registerState<FSM::MenuState>( "Menu",
+		mStateVector.registerState<FSM::MenuState>( "Menu", Time(5.F),
 			1003, "This is a place holder content. In pratice, the content is displayed as graphics");
-        mStateVector.registerState<FSM::MenuState>( "Menu 2",
+        mStateVector.registerState<FSM::MenuState>( "Menu 2", Time(2.F),
 			1234, "This is not the first menu state you saw");
-        mStateVector.registerState<FSM::GameState>( "Game",
+        mStateVector.registerState<FSM::GameState>( "Game", Time(4.F),
 			12344234, "This is the beginning of the game state (this text is `mContent`)");
-        mStateVector.registerState<FSM::PauseState>( "Pause", 9234);
+        mStateVector.registerState<FSM::PauseState>( "Pause", Time(10.F), 9234);
 		mStateVector.push("Menu");
         // NOLINTEND(*-magic-numbers)
 	}
