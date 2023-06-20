@@ -3,6 +3,7 @@
 #include "../Utilize/CallAssert.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "deps/stb_image.h"
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -31,7 +32,7 @@ namespace HJUIK
 			int channelNum = 0;
 			// No longer encourage RGBA format
 			// NOLINTBEGIN(clang-analyzer-unix.Malloc)
-            // NOLINTNEXTLINE(*-avoid-c-arrays)
+			// NOLINTNEXTLINE(*-avoid-c-arrays)
 			std::unique_ptr<uint8_t[]> data{stbi_load(filename.c_str(), &width, &height, &channelNum, 0)};
 
 			if (data == nullptr || width <= 0 || height <= 0 || channelNum <= 0 || channelNum > 4) {
@@ -71,8 +72,8 @@ namespace HJUIK
 		auto Image2DLoader::create(Vector2u dimensions, ImageFormat format) -> RawData
 		{
 			const auto size = detail::imageFormatToNum(format) * dimensions.x * dimensions.y;
-            // NOLINTNEXTLINE(*-avoid-c-arrays)
-			auto data		= std::make_unique<uint8_t[]>(size);
+			// NOLINTNEXTLINE(*-avoid-c-arrays)
+			auto data = std::make_unique<uint8_t[]>(size);
 			std::fill_n(data.get(), size, UINT8_MAX);
 			return RawData{std::move(data), dimensions, format};
 		}
