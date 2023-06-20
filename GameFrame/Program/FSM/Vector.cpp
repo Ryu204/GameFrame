@@ -2,6 +2,8 @@
 #include "../../Utilize/CallAssert.hpp"
 #include "../../Utilize/Variant.hpp"
 
+#include <algorithm>
+
 namespace HJUIK
 {
     namespace FSM
@@ -28,7 +30,7 @@ namespace HJUIK
         auto StateVector::erase(int index) -> void
         {
             HJUIK_ASSERT(!mVector.empty(), "Cannot erase element from empty vector");
-			int newIndex = index < 0 ? index + static_cast<int>(mVector.size()) : index;
+			const auto newIndex = index < 0 ? index + static_cast<int>(mVector.size()) : index;
 			HJUIK_ASSERT(0 <= newIndex && newIndex < mVector.size(), "Vector index out of range: ", index);
 			eraseAtIndex(newIndex);
 		}
@@ -36,18 +38,10 @@ namespace HJUIK
 		auto StateVector::erase(IState* element) -> void
         {
             HJUIK_ASSERT(!mVector.empty(), "Cannot erase element from empty vector");
-			bool found = false;
-			int index = 0;
-			for ( ; index < mVector.size(); ++index)
-            {
-                if (mVector[index].State == element)
-                {
-					found = true;
-					break;
-				}
-			}
-			HJUIK_ASSERT(found, "Element to erase with pointer not found");
-			eraseAtIndex(index);
+			const auto iterator = std::find_if(
+                mVector.begin(), mVector.end(), [=](const auto& pack) { return pack.State == element; });
+			HJUIK_ASSERT(iterator != mVector.end(), "Element to erase with pointer not found (", element, ")");
+			eraseAtIndex(iterator - mVector.begin());
 		}
 
 		auto StateVector::erase(const IState::ID& identifier, bool all) -> void
@@ -97,28 +91,15 @@ namespace HJUIK
             static const auto visitor = Utilize::VariantVisitor
             {
                 // Push a new state
-                [this](const Request::Push& call)
-                {
-                    push(call.Identifier);
-                },
+                [this](const Request::Push& call) { push(call.Identifier); },
                 // Erase a state
-                [this](const Request::ErasePtr& call)
-                {
-                    erase(call.Pointer);
-                },
-                [this](const Request::EraseIndex& call)
-                {
-                    erase(call.Index);
-                },
-                [this](const Request::EraseIdentifier& call)
-                {
+                [this](const Request::ErasePtr& call) { erase(call.Pointer); },
+                [this](const Request::EraseIndex& call) { erase(call.Index); },
+                [this](const Request::EraseIdentifier& call) {
                     erase(call.Identifier, call.Modifier == Request::EraseIdentifier::ALL);
                 },
                 // Clear the stack
-                [this](const Request::Clear&)
-                {
-                    clear();
-                }
+                [this](const Request::Clear&) { clear(); }
             };
             for (const auto& req : mPendingChanges)
             {
