@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "../Utilize/GLMTypedef.hpp"
+#include "ImageLoader.hpp"
 #include "OpenGLWrapper.hpp"
 namespace HJUIK
 {
@@ -261,6 +262,8 @@ namespace HJUIK
 		using Texture2D		 = Texture<TextureType::E2D>;
 		using Texture2DArray = Texture<TextureType::E2D_ARRAY>;
 		using TextureCubeMap = Texture<TextureType::CUBE_MAP>;
+
+		auto load2DTexture(const Image2DLoader::RawData& data) -> Texture2D;
 	} // namespace Graphics
 } // namespace HJUIK
 
