@@ -169,11 +169,6 @@ namespace HJUIK
 			return mBound;
 		}
 
-		static auto supportsDSA() -> bool
-		{
-			return GLAD_GL_VERSION_4_5 != 0;
-		}
-
 	private:
 		HandleType mHandle;
 		std::tuple<Args...> mArgs;
@@ -186,6 +181,11 @@ namespace HJUIK
 			return alreadyBoundTargets;
 		}
 	};
+
+	inline auto supportsDSA() -> bool
+	{
+		return GLAD_GL_VERSION_4_5 != 0;
+	}
 } // namespace HJUIK
 
 #endif

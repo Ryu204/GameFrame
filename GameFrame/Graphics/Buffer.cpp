@@ -1,5 +1,6 @@
 #include "Buffer.hpp"
 
+#include <optional>
 #include <stdexcept>
 
 #include "../Utilize/CallAssert.hpp"
@@ -10,7 +11,9 @@ namespace HJUIK
 	{
 		auto detail::BufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenBuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateBuffers) : callGLGen<GLuint>(glGenBuffers),
+				"unable to create buffer");
 		}
 
 		auto detail::BufferTrait::destroy(GLuint handle) -> void
@@ -128,7 +131,13 @@ namespace HJUIK
 		auto Buffer::setLabel(const char* name) const -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const BoundBuffer guard = this->bind(TEMP_BUFFER_TARGET);
+				// only binds if this is not created with glCreate*
+				// i.e. DSA is not supported
+				std::optional<BoundBuffer> guard;
+				if (supportsDSA()) {
+					guard = bind(TEMP_BUFFER_TARGET);
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_BUFFER, get(), -1, name);
 			}
 		}
