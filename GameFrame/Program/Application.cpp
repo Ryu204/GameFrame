@@ -53,6 +53,7 @@ namespace HJUIK
 			const std::array<Vertex, 4> vboContent{// NOLINTNEXTLINE(*-magic-numbers)
 				Vertex{{0.5F, 0.5F}}, {{-0.5F, 0.5F}}, {{0.5F, -0.5F}}, {{-0.5F, -0.5F}}};
 			boundVBO.allocate(Graphics::BufferUsage{}, vboContent);
+			boundVBO.forceBind();
 			mBoundVAO.floatAttribPointer(
 				0, 2, Graphics::VertexAttribFloatType::FLOAT, /*normalize*/ false, sizeof(Vertex), 0);
 			mBoundVAO.enableAttrib(0);
