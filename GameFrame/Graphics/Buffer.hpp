@@ -162,9 +162,6 @@ namespace HJUIK
 			auto memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void;
 			// TODO: add support for custom clearing
 			auto memClear(std::size_t offset = 0, std::size_t size = SIZE_MAX) const -> void;
-			auto memCopyFromBuffer(
-				BufferTarget srcTarget, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void;
-
 			auto memCopyFromBuffer(const BoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset,
 				std::size_t size) const -> void;
 
@@ -181,9 +178,7 @@ namespace HJUIK
 			}
 
 		private:
-			static auto getSize(BufferTarget target) -> std::size_t;
-			auto checkRange(std::size_t offset, std::size_t size,
-				std::optional<BufferTarget> target = std::nullopt) const -> std::tuple<GLintptr, GLsizeiptr>;
+			auto checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>;
 			auto getTargetEnum() const -> GLenum;
 			friend class Buffer;
 		};

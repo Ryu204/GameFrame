@@ -59,9 +59,21 @@ namespace HJUIK
 			std::size_t height, std::ptrdiff_t samples) const -> void
 		{
 			if (samples >= 0) {
+				if (supportsDSA()) {
+					glNamedRenderbufferStorageMultisample(getHandle(), static_cast<GLsizei>(samples),
+						static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+				}
+
+				forceBind();
 				glRenderbufferStorageMultisample(GL_RENDERBUFFER, static_cast<GLsizei>(samples),
 					static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 			} else {
+				if (supportsDSA()) {
+					glNamedRenderbufferStorage(getHandle(), static_cast<GLenum>(internalFormat),
+						static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+				}
+
+				forceBind();
 				glRenderbufferStorage(GL_RENDERBUFFER, static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width),
 					static_cast<GLsizei>(height));
 			}
@@ -79,6 +91,12 @@ namespace HJUIK
 		auto BoundFramebuffer::setRenderbufferAttachment(
 			FramebufferAttachment attachment, const Renderbuffer& renderbuffer) const -> void
 		{
+			if (supportsDSA()) {
+				glNamedFramebufferRenderbuffer(
+					getHandle(), framebufferAttachmentAsGLEnum(attachment), GL_RENDERBUFFER, renderbuffer.get());
+			}
+
+			forceBind();
 			glFramebufferRenderbuffer(
 				getTargetEnum(), framebufferAttachmentAsGLEnum(attachment), GL_RENDERBUFFER, renderbuffer.get());
 		}

@@ -101,6 +101,49 @@ namespace HJUIK
 		inline auto BoundTexture<Type>::allocate(
 			const TextureAllocationInfo& allocInfo, const VectorType& dimensions) const -> void
 		{
+			if (this->supportsDSA() && allocInfo.Immutable) {
+				// else branches are unsupported by OpenGL (in order to discourage non-immutable textures idk)
+				// one must use `glTexImage*` (not DSA)
+				// the version checks are kinda unimportant (`supportsDSA` needs GL4.5), but maybe we will
+				// switch to the extension condition (`GL_ARB_direct_state_access` so I'm keeping that here)
+				if constexpr (Type == TextureType::E2D_MULTISAMPLE) {
+					if (GLAD_GL_VERSION_4_3 != 0) {
+						glTextureStorage2DMultisample(this->getHandle(), static_cast<GLsizei>(allocInfo.Samples),
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
+							static_cast<GLsizei>(dimensions.y), static_cast<GLboolean>(allocInfo.FixedSampleLocations));
+						return;
+					}
+				} else if constexpr (Type == TextureType::E2D_MULTISAMPLE_ARRAY) {
+					if (GLAD_GL_VERSION_4_3 != 0) {
+						glTextureStorage3DMultisample(this->getHandle(), static_cast<GLsizei>(allocInfo.Samples),
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
+							static_cast<GLsizei>(dimensions.y), static_cast<GLsizei>(dimensions.z),
+							static_cast<GLboolean>(allocInfo.FixedSampleLocations));
+					}
+				} else if constexpr (NUM_DIMENSIONS == 1) {
+					if (GLAD_GL_VERSION_4_2 != 0) {
+						glTextureStorage1D(this->getHandle(), static_cast<GLsizei>(allocInfo.MipmapLevels),
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x));
+						return;
+					}
+				} else if constexpr (NUM_DIMENSIONS == 2) {
+					if (GLAD_GL_VERSION_4_2 != 0) {
+						glTextureStorage2D(this->getHandle(), static_cast<GLsizei>(allocInfo.MipmapLevels),
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
+							static_cast<GLsizei>(dimensions.y));
+						return;
+					}
+				} else if constexpr (NUM_DIMENSIONS == 3) {
+					if (GLAD_GL_VERSION_4_2 != 0 && allocInfo.Immutable) {
+						glTextureStorage3D(this->getHandle(), static_cast<GLsizei>(allocInfo.MipmapLevels),
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
+							static_cast<GLsizei>(dimensions.y), static_cast<GLsizei>(dimensions.z));
+						return;
+					}
+				}
+			}
+
+			this->forceBind();
 			if constexpr (Type == TextureType::E2D_MULTISAMPLE) {
 				if (GLAD_GL_VERSION_4_3 != 0 && allocInfo.Immutable) {
 					glTexStorage2DMultisample(static_cast<GLenum>(Type), static_cast<GLsizei>(allocInfo.Samples),
@@ -195,6 +238,12 @@ namespace HJUIK
 		template <TextureType Type>
 		inline auto BoundTexture<Type>::generateMipmap() const -> void
 		{
+			if (this->supportsDSA()) {
+				glGenerateTextureMipmap(this->getHandle());
+				return;
+			}
+
+			this->forceBind();
 			glGenerateMipmap(static_cast<GLenum>(Type));
 		}
 
@@ -227,6 +276,7 @@ namespace HJUIK
 			auto [srcX, srcY, srcZ]	   = Texture<SrcType>::template padVectorTo3D<GLint>(srcOffset);
 			auto [destX, destY, destZ] = Texture<DestType>::template padVectorTo3D<GLint>(destOffset);
 			auto [srcx, srcy, srcz]	   = Texture<SrcType>::template padVectorTo3D<GLint>(srcDimensions, 1);
+			// just checked, there's no need to bind
 			glCopyImageSubData(this->get(), static_cast<GLenum>(SrcType), static_cast<GLint>(srcMipLevel), srcX, srcY,
 				srcZ, dest.get(), static_cast<GLenum>(DestType), static_cast<GLint>(destMipLevel), destX, destY, destZ,
 				srcx, srcy, srcz);
@@ -235,14 +285,23 @@ namespace HJUIK
 		// TODO: add buffer range checking
 		template <TextureType Type>
 		template <TextureType ThisType, typename>
-		inline auto Texture<Type>::setStorageBuffer(
+		inline auto BoundTexture<Type>::setStorageBuffer(
 			TextureInternalFormat format, GLuint bufferHandle, std::size_t offset, std::size_t size) const -> void
 		{
 			static_assert(Type == ThisType);
+			if (this->supportsDSA()) {
+				if (offset == 0 && size == SIZE_MAX) {
+					glTextureBuffer(this->getHandle(), static_cast<GLenum>(format), bufferHandle);
+				} else {
+					glTextureBufferRange(this->getHandle(), static_cast<GLenum>(format), bufferHandle, offset, size);
+				}
+			}
+
+			this->forceBind();
 			if (offset == 0 && size == SIZE_MAX) {
-				glTextureBuffer(this->get(), static_cast<GLenum>(format), bufferHandle);
+				glTexBuffer(static_cast<GLenum>(Type), static_cast<GLenum>(format), bufferHandle);
 			} else {
-				glTextureBufferRange(this->get(), static_cast<GLenum>(format), bufferHandle, offset, size);
+				glTexBufferRange(static_cast<GLenum>(Type), static_cast<GLenum>(format), bufferHandle, offset, size);
 			}
 		}
 		template <TextureType Type>

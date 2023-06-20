@@ -210,6 +210,11 @@ namespace HJUIK
 				const typename BoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
 				const VectorType& srcDimensions, std::size_t destMipLevel = 0, std::size_t srcMipLevel = 0) const
 				-> void;
+
+			// set data buffer for this TextureBuffer
+			template <TextureType ThisType = Type, typename = std::enable_if_t<(ThisType == TextureType::BUFFER)>>
+			auto setStorageBuffer(TextureInternalFormat format, GLuint bufferHandle, std::size_t offset = 0,
+				std::size_t size = SIZE_MAX) const -> void;
 		};
 
 		template <TextureType Type>
@@ -245,11 +250,6 @@ namespace HJUIK
 			// invalidate texture, i.e., marking the texture data (in the specified region) as invalid
 			auto invalidate(const VectorType& offset, const VectorType& dimensions, std::size_t mipLevel = 0) const
 				-> void;
-
-			// set data buffer for this TextureBuffer
-			template <TextureType ThisType = Type, typename = std::enable_if_t<(ThisType == TextureType::BUFFER)>>
-			auto setStorageBuffer(TextureInternalFormat format, GLuint bufferHandle, std::size_t offset = 0,
-				std::size_t size = SIZE_MAX) const -> void;
 
 		private:
 			template <typename T>
