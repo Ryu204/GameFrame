@@ -53,7 +53,7 @@ namespace HJUIK
 		}
 
 		ShaderProgramAsset::ShaderProgramAsset(ShaderProgramAssetBuilder&& builder)
-			: mShaders{std::move(builder.mShaders)}, mProgram{nullptr}
+			: mShaders{std::move(builder.mShaders)}, mProgram{nullptr}, mInvalidated{true}
 		{
 			for (auto& [type, shader] : mShaders) {
 				if (std::holds_alternative<detail::ShaderFile>(shader)) {
@@ -86,37 +86,28 @@ namespace HJUIK
 			return program;
 		}
 
-		auto ShaderProgramAsset::lock() -> ShaderProgramAssetInUse
+		auto ShaderProgramAsset::get() -> ShaderProgramAssetValue
 		{
-			std::unique_lock lock{mMutex};
-			const auto wasInvalidated = mInvalidated;
-			if (mInvalidated) {
+			const auto wasInvalidated = mInvalidated.load(std::memory_order_relaxed);
+			if (wasInvalidated) {
 				try {
 					mProgram = load();
-					assetUpdated();
 				} catch (std::runtime_error& err) {
 					// error compiling/linking shader program
 					std::cout << "error while hot-reloading shader program: " << err.what() << '\n';
 				}
 
-				mInvalidated = false;
+				assetUpdated();
+				mInvalidated.store(false, std::memory_order_relaxed);
 			}
-			return ShaderProgramAssetInUse{
+			return ShaderProgramAssetValue{
 				mProgram,
-				std::move(lock),
 				wasInvalidated,
 			};
 		}
 
 		auto ShaderProgramAsset::update() -> void
 		{
-			// in a multithreaded context, this may be called while the
-			// program is already in use
-			// hence, one should use some kind of locking mechanism to
-			// prevent this overriding behavior
-			// also this will cause deadlock if we are in a singlethreaded
-			// context (which i think is not used by efsw idk)
-			const std::scoped_lock lock{mMutex};
 			mInvalidated = true;
 		}
 
@@ -127,9 +118,10 @@ namespace HJUIK
 			return std::move(*this);
 		}
 
-		auto ShaderProgramAssetBuilder::shaderFile(Graphics::ShaderType type, Path path) && -> ShaderProgramAssetBuilder
+		auto ShaderProgramAssetBuilder::shaderFile(
+			Graphics::ShaderType type, Path path, bool watchFile) && -> ShaderProgramAssetBuilder
 		{
-			return std::move(*this).shaderFile(type, std::make_shared<FileAsset>(std::move(path)));
+			return std::move(*this).shaderFile(type, std::make_shared<FileAsset>(std::move(path), watchFile));
 		}
 
 		auto ShaderProgramAssetBuilder::shaderFile(

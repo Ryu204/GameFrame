@@ -1,10 +1,10 @@
 #ifndef GAMEFRAME_ASSETS_SHADER_PROGRAM_ASSET_HPP
 #define GAMEFRAME_ASSETS_SHADER_PROGRAM_ASSET_HPP
 
+#include <atomic>
 #include <filesystem>
 #include <functional>
 #include <map>
-#include <mutex>
 #include <string>
 #include <variant>
 
@@ -38,9 +38,18 @@ namespace HJUIK
 
 		class ShaderProgramAssetBuilder;
 
-		struct ShaderProgramAssetInUse {
+		struct ShaderProgramAssetValue {
+			// A shared_ptr to the current program.
+			// The user can reuse this program as much as they want
+			// (provided that they kept a reference to this), but they
+			// would miss out on the newly hot-reloaded program
+			// Hence, it's advisable for one not to put this into any
+			// long-term storage.
 			std::shared_ptr<Graphics::Program> Program;
-			std::unique_lock<std::mutex> MutexGuard;
+			// If this is true, the `Program` has been recreated since
+			// the last call to `ShaderProgramAsset::get()`
+			// Also, `registerUpdateHandler` can also be used to achieve
+			// somewhat similar functionalities.
 			bool Invalidated;
 		};
 
@@ -49,13 +58,13 @@ namespace HJUIK
 		public:
 			explicit ShaderProgramAsset(ShaderProgramAssetBuilder&& builder);
 			~ShaderProgramAsset() override;
-
 			ShaderProgramAsset(const ShaderProgramAsset&)					 = delete;
 			ShaderProgramAsset(ShaderProgramAsset&&)						 = delete;
 			auto operator=(const ShaderProgramAsset&) -> ShaderProgramAsset& = delete;
 			auto operator=(ShaderProgramAsset&&) -> ShaderProgramAsset&		 = delete;
 
-			auto lock() -> ShaderProgramAssetInUse;
+			// get current shader program
+			auto get() -> ShaderProgramAssetValue;
 
 		private:
 			auto update() -> void;
@@ -63,20 +72,24 @@ namespace HJUIK
 
 			std::map<Graphics::ShaderType, detail::Shader> mShaders;
 			std::shared_ptr<Graphics::Program> mProgram;
-			std::mutex mMutex;
-			bool mInvalidated{true};
+			std::atomic_bool mInvalidated;
+			friend class ShaderProgramAssetBuilder;
 		};
 
+		// rvalue-based builder: one builder can only `build` one `ShaderProgramAsset`
+		// (motivated by implementations of the builder pattern in Rust libraries)
+		// this will make the `build` process a little bit more efficient
 		class ShaderProgramAssetBuilder
 		{
 		public:
 			ShaderProgramAssetBuilder() = default;
 
+			// supports both shader source and shader files (with optional hot-reloading for shader files)
 			auto shaderSource(Graphics::ShaderType type, std::string source) && -> ShaderProgramAssetBuilder;
-			auto shaderFile(Graphics::ShaderType type, Path path) && -> ShaderProgramAssetBuilder;
+			auto shaderFile(
+				Graphics::ShaderType type, Path path, bool watchFile = true) && -> ShaderProgramAssetBuilder;
 			auto shaderFile(Graphics::ShaderType type, std::shared_ptr<FileAsset> file) && -> ShaderProgramAssetBuilder;
 
-			// NOTE: this invalidates the builder, so one can't use a builder twice
 			auto build() && -> std::shared_ptr<ShaderProgramAsset>;
 
 		private:

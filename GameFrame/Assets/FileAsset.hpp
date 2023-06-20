@@ -35,6 +35,7 @@ namespace HJUIK
 					mPath, binary ? std::ios_base::binary : static_cast<std::ios_base::openmode>(0)};
 			}
 
+            // utility functions
 			template <typename CharT = char>
 			auto readBytes() -> std::vector<CharT>
 			{
