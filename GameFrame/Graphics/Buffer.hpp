@@ -3,7 +3,6 @@
 
 #include "deps/glad/glad.h"
 #include <algorithm>
-#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>

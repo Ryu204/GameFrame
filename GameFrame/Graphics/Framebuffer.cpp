@@ -1,12 +1,16 @@
 #include "Framebuffer.hpp"
 
+#include <optional>
+
 namespace HJUIK
 {
 	namespace Graphics
 	{
 		auto detail::FramebufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenFramebuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateFramebuffers) : callGLGen<GLuint>(glGenFramebuffers),
+				"unable to create framebuffer");
 		}
 
 		auto detail::FramebufferTrait::destroy(GLuint handle) -> void
@@ -28,7 +32,9 @@ namespace HJUIK
 
 		auto detail::RenderbufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenRenderbuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateRenderbuffers) : callGLGen<GLuint>(glGenRenderbuffers),
+				"unable to create renderbuffer");
 		}
 
 		auto detail::RenderbufferTrait::destroy(GLuint handle) -> void
@@ -49,7 +55,13 @@ namespace HJUIK
 		auto Renderbuffer::setLabel(const char* name) const -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const auto guard = bind();
+                // only binds if this is not created with glCreate*
+                // i.e. DSA is not supported
+				std::optional<BoundRenderbuffer> guard;
+				if (supportsDSA()) {
+					guard = bind();
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_RENDERBUFFER, get(), -1, name);
 			}
 		}
@@ -83,7 +95,13 @@ namespace HJUIK
 		{
 			static constexpr auto tempTarget = FramebufferTarget::READ;
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const auto guard = bind(tempTarget);
+                // only binds if this is not created with glCreate*
+                // i.e. DSA is not supported
+				std::optional<BoundFramebuffer> guard;
+				if (supportsDSA()) {
+					guard = bind(tempTarget);
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_VERTEX_ARRAY, get(), -1, name);
 			}
 		}

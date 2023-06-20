@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <optional>
 #include <stdexcept>
 
 #include "../Utilize/CallAssert.hpp"
@@ -11,7 +12,9 @@ namespace HJUIK
 		template <TextureType Type>
 		auto detail::TextureTrait<Type>::create() -> GLuint
 		{
-			return Utilize::throwIfZero(callGLGen<GLuint>(glGenTextures), "unable to create texture");
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateTextures, Type) : callGLGen<GLuint>(glGenTextures),
+				"unable to create texture");
 		}
 
 		template <TextureType Type>
@@ -85,7 +88,13 @@ namespace HJUIK
 		inline auto Texture<Type>::setLabel(const char* name) -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const auto guard = this->bind();
+				// only binds if this is not created with glCreate*
+				// i.e. DSA is not supported
+				std::optional<BoundTexture<Type>> guard;
+				if (supportsDSA()) {
+					guard = this->bind();
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_TEXTURE, this->get(), -1, name);
 			}
 		}
@@ -101,7 +110,7 @@ namespace HJUIK
 		inline auto BoundTexture<Type>::allocate(
 			const TextureAllocationInfo& allocInfo, const VectorType& dimensions) const -> void
 		{
-			if (this->supportsDSA() && allocInfo.Immutable) {
+			if (supportsDSA() && allocInfo.Immutable) {
 				// else branches are unsupported by OpenGL (in order to discourage non-immutable textures idk)
 				// one must use `glTexImage*` (not DSA)
 				// the version checks are kinda unimportant (`supportsDSA` needs GL4.5), but maybe we will
@@ -238,7 +247,7 @@ namespace HJUIK
 		template <TextureType Type>
 		inline auto BoundTexture<Type>::generateMipmap() const -> void
 		{
-			if (this->supportsDSA()) {
+			if (supportsDSA()) {
 				glGenerateTextureMipmap(this->getHandle());
 				return;
 			}
@@ -289,7 +298,7 @@ namespace HJUIK
 			TextureInternalFormat format, GLuint bufferHandle, std::size_t offset, std::size_t size) const -> void
 		{
 			static_assert(Type == ThisType);
-			if (this->supportsDSA()) {
+			if (supportsDSA()) {
 				if (offset == 0 && size == SIZE_MAX) {
 					glTextureBuffer(this->getHandle(), static_cast<GLenum>(format), bufferHandle);
 				} else {
