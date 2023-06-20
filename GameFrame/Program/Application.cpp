@@ -113,6 +113,8 @@ namespace HJUIK
 			}
 		}
 		const auto programUseGuard = program->use();
+		programUseGuard.forceBind();
+		mBoundVAO.forceBind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glContext.display();
 	}
