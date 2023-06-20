@@ -1,7 +1,7 @@
 #ifndef GAMEFRAME_PROGRAM_FSM_STACK_HPP
 #define GAMEFRAME_PROGRAM_FSM_STACK_HPP
 
-#include "State.hpp"
+#include "IState.hpp"
 #include "../../Utilize/CallAssert.hpp"
 #include <vector>
 #include <variant>
