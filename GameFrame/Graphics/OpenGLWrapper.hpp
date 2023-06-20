@@ -101,20 +101,16 @@ namespace HJUIK
 		return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
 	}
 
+	// TODO: Rename this to MaybeBoundOpenGLWrapper or something,
+	// because it does not necessarily mean bound
 	template <typename WrapperTrait, typename... Args>
 	class BoundOpenGLWrapper
 	{
 	public:
 		using HandleType = typename WrapperTrait::HandleType;
-		explicit BoundOpenGLWrapper(HandleType handle, Args... args)
-			: mCurrentBound{WrapperTrait::getCurrentBound(args...)}, mArgs{args...}
-		{
-			if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
-				throw std::runtime_error("another bind guard already in effect");
-			}
 
-			mAlreadyBoundTargets().insert(mArgs);
-			WrapperTrait::bind(handle, args...);
+		explicit BoundOpenGLWrapper(HandleType handle, Args... args) : mHandle{handle}, mArgs{args...}, mCurrentBound{}
+		{
 		}
 
 		BoundOpenGLWrapper(const BoundOpenGLWrapper&)					 = delete;
@@ -125,8 +121,9 @@ namespace HJUIK
 
 		~BoundOpenGLWrapper()
 		{
-			mAlreadyBoundTargets().erase(mArgs);
-			std::apply([&](auto... args) { WrapperTrait::bind(mCurrentBound, args...); }, mArgs);
+			if (mBound) {
+				forceUnbind();
+			}
 		}
 
 		auto getArgs() const -> const std::tuple<Args...>&
@@ -134,9 +131,54 @@ namespace HJUIK
 			return mArgs;
 		}
 
+		auto getHandle() const -> HandleType
+		{
+			return mHandle;
+		}
+
+		auto forceBind() const -> void
+		{
+			if (mBound) {
+				return;
+			}
+
+			mCurrentBound = std::apply(WrapperTrait::getCurrentBound, mArgs);
+
+			if (mAlreadyBoundTargets().find(mArgs) != mAlreadyBoundTargets().end()) {
+				throw std::runtime_error("another bind guard already in effect");
+			}
+
+			mAlreadyBoundTargets().insert(mArgs);
+			std::apply([&](auto... args) { WrapperTrait::bind(mHandle, args...); }, mArgs);
+			mBound = true;
+		}
+
+		auto forceUnbind() const -> void
+		{
+			if (!mBound) {
+				return;
+			}
+
+			mAlreadyBoundTargets().erase(mArgs);
+			std::apply([&](auto... args) { WrapperTrait::bind(mCurrentBound, args...); }, mArgs);
+			mBound = false;
+		}
+
+		auto isBound() const -> bool
+		{
+			return mBound;
+		}
+
+		static auto supportsDSA() -> bool
+		{
+			return GLAD_GL_VERSION_4_5 != 0;
+		}
+
 	private:
-		HandleType mCurrentBound;
+		HandleType mHandle;
 		std::tuple<Args...> mArgs;
+		mutable HandleType mCurrentBound{static_cast<HandleType>(0)};
+		mutable bool mBound{false};
 
 		static auto mAlreadyBoundTargets() -> std::set<std::tuple<Args...>>&
 		{

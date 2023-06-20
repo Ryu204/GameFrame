@@ -110,6 +110,12 @@ namespace HJUIK
 			auto setTextureAttachment(
 				FramebufferAttachment attachment, const Texture<Type>& texture, std::size_t mipLevel = 0) const -> void
 			{
+				if (supportsDSA()) {
+					glNamedFramebufferTexture(getHandle(), framebufferAttachmentAsGLEnum(attachment), texture.get(),
+						static_cast<GLint>(mipLevel));
+				}
+
+				forceBind();
 				glFramebufferTexture(getTargetEnum(), framebufferAttachmentAsGLEnum(attachment), texture.get(),
 					static_cast<GLint>(mipLevel));
 			}

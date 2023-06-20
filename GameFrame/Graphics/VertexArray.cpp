@@ -36,18 +36,30 @@ namespace HJUIK
 		// NOLINTBEGIN(*-member-functions-to-static)
 		auto BoundVertexArray::enableAttrib(std::size_t index) const -> void
 		{
+			if (supportsDSA()) {
+				glEnableVertexArrayAttrib(getHandle(), static_cast<GLuint>(index));
+			}
+
+            forceBind();
 			glEnableVertexAttribArray(static_cast<GLuint>(index));
 		}
 
 		auto BoundVertexArray::disableAttrib(std::size_t index) const -> void
 		{
+			if (supportsDSA()) {
+				glDisableVertexArrayAttrib(getHandle(), static_cast<GLuint>(index));
+			}
+
+            forceBind();
 			glDisableVertexAttribArray(static_cast<GLuint>(index));
 		}
 
+        // maybe use the newer glVertexAttribFormat/glVertexAttribBinding API
 		// NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr, *-anonymous-namespace)
 		auto BoundVertexArray::intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
 			std::size_t stride, std::size_t offset) const -> void
 		{
+            forceBind();
 			glVertexAttribIPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
@@ -55,6 +67,7 @@ namespace HJUIK
 		auto BoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
 			bool normalize, std::size_t stride, std::size_t offset) const -> void
 		{
+            forceBind();
 			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
@@ -62,6 +75,7 @@ namespace HJUIK
 		auto BoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type,
 			bool normalize, std::size_t stride, std::size_t offset) const -> void
 		{
+            forceBind();
 			glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), static_cast<GLenum>(type),
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
@@ -69,6 +83,7 @@ namespace HJUIK
 		auto BoundVertexArray::doubleAttribPointer(
 			std::size_t index, std::size_t size, std::size_t stride, std::size_t offset) const -> void
 		{
+            forceBind();
 			// `type` is always GL_DOUBLE according to specs
 			glVertexAttribLPointer(static_cast<GLuint>(index), static_cast<GLint>(size), GL_DOUBLE,
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
