@@ -3,11 +3,11 @@
 
 /*
     Class for state creation, registration and pooling
-    An ID represents a template object AND expiration time
+    An ID represents a template object
     ======================================================
-    Our data structure must be able to meet those requirements:
+    Our data structure must meet those requirements:
     1. Create a state pointer with registered ID
-    2. Retrieve a pointer created before
+    2. Retrieve a state not in use by its ID
     3. In 1, use a deactivated state if possible
     4. If a state is inactive for too long, destroy it
     ======================================================
@@ -17,17 +17,17 @@
     2.
         In order to accomplish 4, we need a timer for each object.
     However, updating time of every state inside the pool might
-    be inefficient. So we will instead use a global timeline
+    be inefficient. Instead we use a global time counter
     (`mTotalTime`). The idea is whenever a state become inactive,
-    we use its lifetime and `mTotalTime` to calculate it end-of-
-    life moment. Then in every update call, we simply discards
+    we use its delay time and `mTotalTime` to get the moment we
+    destroy it. Then in every update call, we simply discard
     those of which EOL time is less than `mTotalTime`
         This can be done by using a set to keep track of inactive
     states that sorts them by removal time (mTimeline)
     3.
         How do we check if it's possible to pool a state from
     inactive pool to use? Then we need to know for each ID, how
-    many states is still kept (have not met their EOL yet). If yes,
+    many states are still kept (have not met their EOL yet). Then,
     we take one out and make it actice. Here a mapping from ID to
     inactive states of that ID is used (`mInactive`). So each time
     we remove/add a state pointer to `mTimeline` or `mInactive`, we
@@ -49,6 +49,7 @@
 #include <unordered_set>
 #include <set>
 #include <memory>
+#include <functional>
 
 namespace HJUIK
 {
@@ -66,7 +67,7 @@ namespace HJUIK
 				Utilize::Time Duration; // The time the state lives in inactive mode
 				std::size_t HashID; // Used for sorting those with same `Removal`
 
-				Info(IState::ID identifier, Utilize::Time duration, std::unique_ptr<IState> state, std::size_t hashID)
+                Info(IState::ID identifier, Utilize::Time duration, std::unique_ptr<IState> state, std::size_t hashID)
                     : Identifier(std::move(identifier))
                     , State(std::move(state))
                     , Duration(duration)
