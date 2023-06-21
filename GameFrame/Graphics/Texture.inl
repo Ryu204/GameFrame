@@ -131,10 +131,13 @@ namespace HJUIK
 					if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
 						throw std::runtime_error("texture does not support mipmapping");
 					}
+
+					auto dims = dimensions;
 					for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
 						glTexImage1D(static_cast<GLenum>(Type), static_cast<GLint>(i),
-							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x), 0, GL_R,
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dims.x), 0, GL_R,
 							GL_UNSIGNED_BYTE, nullptr);
+						dims.x = std::max<std::size_t>(dims.x / 2, 1);
 					}
 				}
 			} else if constexpr (NUM_DIMENSIONS == 2) {
@@ -146,10 +149,14 @@ namespace HJUIK
 					if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
 						throw std::runtime_error("texture does not support mipmapping");
 					}
+
+					auto dims = dimensions;
 					for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
 						glTexImage2D(static_cast<GLenum>(Type), static_cast<GLint>(i),
-							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
-							static_cast<GLsizei>(dimensions.y), 0, GL_R, GL_UNSIGNED_BYTE, nullptr);
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dims.x),
+							static_cast<GLsizei>(dims.y), 0, GL_R, GL_UNSIGNED_BYTE, nullptr);
+						dims.x = std::max<std::size_t>(dims.x / 2, 1);
+						dims.y = std::max<std::size_t>(dims.y / 2, 1);
 					}
 				}
 			} else if constexpr (NUM_DIMENSIONS == 3) {
@@ -161,11 +168,16 @@ namespace HJUIK
 					if (allocInfo.MipmapLevels != 1 && !detail::TextureSupportsMipmapping<Type>::value) {
 						throw std::runtime_error("texture does not support mipmapping");
 					}
+
+					auto dims = dimensions;
 					for (std::size_t i = 0; i < allocInfo.MipmapLevels; ++i) {
 						glTexImage3D(static_cast<GLenum>(Type), static_cast<GLint>(i),
-							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dimensions.x),
-							static_cast<GLsizei>(dimensions.y), static_cast<GLsizei>(dimensions.z), 0, GL_R,
-							GL_UNSIGNED_BYTE, nullptr);
+							static_cast<GLenum>(allocInfo.InternalFormat), static_cast<GLsizei>(dims.x),
+							static_cast<GLsizei>(dims.y), static_cast<GLsizei>(dims.z), 0, GL_R, GL_UNSIGNED_BYTE,
+							nullptr);
+						dims.x = std::max<std::size_t>(dims.x / 2, 1);
+						dims.y = std::max<std::size_t>(dims.y / 2, 1);
+						dims.z = std::max<std::size_t>(dims.z / 2, 1);
 					}
 				}
 			}
