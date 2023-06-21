@@ -45,7 +45,7 @@ auto HJUIK::Graphics::load2DTexture(const Image2DLoader::RawData& data) -> Textu
 	boundTexture.allocate(allocInfo, dimensions);
 
 	TextureData<TextureType::E2D> textureData{};
-	textureData.Data	   = static_cast<const void*>(data.Value.data());
+	textureData.Data	   = static_cast<const void*>(data.Value.get());
 	textureData.Dimensions = dimensions;
 	textureData.Format	   = format;
 	textureData.TexelType  = TextureTexelType::UNSIGNED_BYTE;
