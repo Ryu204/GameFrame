@@ -20,4 +20,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(GameFrame ${GameFrame_SOURCES})
 
 # add_library(GameFrame ${GameFrame_SOURCES})
-target_link_libraries(GameFrame PRIVATE sfml-window glm::glm efsw)
+target_link_libraries(GameFrame PRIVATE sfml-window glm::glm efsw::efsw)
