@@ -21,5 +21,10 @@ namespace HJUIK
 		{
 			return mPath;
 		}
+
+		auto FileAsset::loadImage() -> Graphics::Image2DLoader::RawData
+		{
+			return Graphics::Image2DLoader::loadFromFile(mPath.string());
+		}
 	} // namespace Assets
 } // namespace HJUIK

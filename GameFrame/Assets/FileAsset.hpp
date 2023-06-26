@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "../Utilize/FileWatch.hpp"
+#include "../Graphics/ImageLoader.hpp"
 #include "Asset.hpp"
 
 namespace HJUIK
@@ -61,6 +62,8 @@ namespace HJUIK
 					std::throw_with_nested(std::runtime_error("couldn't read text from file."));
 				}
 			}
+
+            auto loadImage() -> Graphics::Image2DLoader::RawData;
 
 		private:
 			Path mPath;
