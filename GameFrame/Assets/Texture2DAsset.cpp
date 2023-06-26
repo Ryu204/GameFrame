@@ -11,7 +11,7 @@ namespace HJUIK
 			return std::move(Data);
 		}
 
-		auto detail::ImageData::registerUpdateHandler(std::function<void()> callback) -> void {}
+		auto detail::ImageData::registerUpdateHandler(const std::function<void()>& callback) -> void {}
 
 		auto detail::ImageFile::load() -> Graphics::Image2DLoader::RawData
 		{
@@ -29,12 +29,12 @@ namespace HJUIK
 			load();
 		}
 
-		Texture2DAsset::Texture2DAsset(std::shared_ptr<FileAsset> file) : mImage{detail::ImageFile{file}}
+		Texture2DAsset::Texture2DAsset(std::shared_ptr<FileAsset> file) : mImage{detail::ImageFile{std::move(file)}}
 		{
 			load();
 		}
 
-		Texture2DAsset::Texture2DAsset(Path path) : Texture2DAsset{std::make_shared<FileAsset>(path)} {}
+		Texture2DAsset::Texture2DAsset(Path path) : Texture2DAsset{std::make_shared<FileAsset>(std::move(path))} {}
 
 
 		auto Texture2DAsset::get() -> Texture2DAssetValue

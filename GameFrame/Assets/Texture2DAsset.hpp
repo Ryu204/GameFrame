@@ -19,7 +19,7 @@ namespace HJUIK
 				Graphics::Image2DLoader::RawData Data;
 
 				auto load() -> Graphics::Image2DLoader::RawData;
-				auto registerUpdateHandler(std::function<void()> callback) -> void;
+				auto registerUpdateHandler(const std::function<void()>& callback) -> void;
 			};
 
 			struct ImageFile {
