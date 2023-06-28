@@ -19,10 +19,13 @@ namespace HJUIK
     } // namespace Audio
 } // namespace HJUIK
 
+
+// NOLINTBEGIN(*-macro-usage)
 #ifndef NDEBUG
     #define alCheck(expr) do {expr; HJUIK::Audio::detail::alCheckLastErr(__FILE__, __LINE__, #expr);} while (false);
 #else
     #define alCheck(expr) {expr};
 #endif // NDEBUG
+// NOLINTEND(*-macro-usage)
 
 #endif
