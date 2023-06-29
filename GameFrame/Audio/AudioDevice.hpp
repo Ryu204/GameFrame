@@ -17,23 +17,31 @@ namespace HJUIK
         class AudioDevice
         {
         public:
+            AudioDevice(AudioDevice&&) = delete;
+            AudioDevice(const AudioDevice&) = delete;
+            auto operator = (const AudioDevice&) -> AudioDevice& = delete;
+            auto operator = (AudioDevice&&) -> AudioDevice& = delete;
             AudioDevice()
+                : mDevice(alcOpenDevice(nullptr))
             {
-                alCheck(mDevice = alcOpenDevice(nullptr));
-                alCheck(mContext = alcCreateContext(mDevice, nullptr));
-                alCheck(alcMakeContextCurrent(mContext));
+                if (mDevice == nullptr)
+                {
+                    throw std::runtime_error("Cannot open an OpenAL device");
+                }
+                alcCheck(mContext = alcCreateContext(mDevice, nullptr), mDevice);
+                alcCheck(alcMakeContextCurrent(mContext), mDevice);
             }
 
             ~AudioDevice()
             {
-                if (!mContext)
+                if (mContext != nullptr)
                 {
-                    alCheck(alcMakeContextCurrent(nullptr));
-                    alCheck(alcDestroyContext(mContext));
+                    alcCheck(alcMakeContextCurrent(nullptr), mDevice);
+                    alcCheck(alcDestroyContext(mContext), mDevice);
                 }
-                if (!mDevice)
+                if (mDevice != nullptr)
                 {
-                    alCheck(alcCloseDevice(mDevice));
+                    alcCheck(alcCloseDevice(mDevice), mDevice);
                 }
             }
 
