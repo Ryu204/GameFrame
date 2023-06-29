@@ -5,11 +5,31 @@
 #include <cstdint>
 #include <AL/al.h>
 #include "ILoader.hpp"
+#include "Error.hpp"
+#include "OpenALWrapper.hpp"
 
 namespace HJUIK
 {
     namespace Audio
     {
+        namespace detail
+        {
+            struct BufferTrait
+            {
+                using HandleType = ALuint;
+                static auto create() -> HandleType
+                {
+                    HandleType handle = 0;
+                    alCheck(alGenBuffers(1, &handle));
+                    return handle;
+                }
+                static auto destroy(HandleType handle) -> void
+                {
+                    alCheck(alDeleteBuffers(1, &handle));
+                }
+            };
+        } // namespace detail
+
         enum class BufferState : decltype(AL_UNUSED)
         {
             UNUSED = AL_UNUSED,
@@ -28,42 +48,28 @@ namespace HJUIK
             STEREO16 = AL_FORMAT_STEREO16,
         };
 
-        class SoundBuffer
+        class SoundBuffer : public OpenALWrapper<detail::BufferTrait>
         {
         public:
-            // Numerics information of the buffer
-            struct Info
-            {
-                BufferState State{BufferState::UNUSED};
-                BufferFormat Format{BufferFormat::MONO16};
-            };
             // Only the specified format will contain meaningful data
             // The other vector is left empty
             struct Data
             {
-                std::vector<std::uint8_t> V8Bit;
-                std::vector<std::uint16_t> V16Bit;
+                std::vector<std::uint8_t> V8Bit{};
+                std::vector<std::uint16_t> V16Bit{};
+
+                BufferState State{BufferState::UNUSED};
+                BufferFormat Format{BufferFormat::MONO16};
+                std::size_t SamplePerSecond{0};
             };
 
-            SoundBuffer();
-            ~SoundBuffer();
-
-            SoundBuffer(const SoundBuffer&) = delete;
-            SoundBuffer(SoundBuffer&&) = delete;
-            auto operator = (SoundBuffer&&) -> SoundBuffer& = delete;
-            auto operator = (const SoundBuffer&) -> SoundBuffer& = delete;
-
-            // Get numerics information of the buffer
-            auto getInfo() const -> Info;
-            // Get the actual sound data (internal use only)
-            auto getRawData() const -> const void*;
             // Get the vector sound data (internal use only)
-            auto getVectorData() -> Data&;
+            auto getData() -> Data&;
             // Buffer the data from a Loader
             auto bufferData(ILoader& loader) -> void;
         private:
-            unsigned int mID {0};
-            Info mInfo;
+            auto is8Bit() const -> bool;
+
             Data mData;
         };
     } // namespace Audio

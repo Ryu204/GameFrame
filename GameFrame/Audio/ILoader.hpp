@@ -22,8 +22,9 @@ namespace HJUIK
             auto operator = (const ILoader&) -> ILoader& = delete;
             auto operator = (ILoader&&) -> ILoader& = delete;
 
-            // Buffer the data loaded into `target`
-            // No need to be available until next load
+            // Copy the loaded data into `target`
+            // Do not actually buffer data to OpenAL (this is done inside SoundBuffer)
+            // The loader needs not to be in a valid state for next `buffer` call until next `load` operation
             virtual auto buffer(SoundBuffer& target) -> void = 0;
         };
     } // namespace Audio

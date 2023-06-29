@@ -5,31 +5,7 @@ namespace HJUIK
 {
     namespace Audio
     {
-        SoundBuffer::SoundBuffer()
-        {
-            alCheck(alGenBuffers(1, &mID));
-        }
-
-        SoundBuffer::~SoundBuffer()
-        {
-            alCheck(alDeleteBuffers(1, &mID));
-        }
-
-        auto SoundBuffer::getInfo() const -> Info
-        {
-            return mInfo;
-        }
-
-        auto SoundBuffer::getRawData() const -> const void*
-        {
-            if (mInfo.Format == BufferFormat::MONO8 || mInfo.Format == BufferFormat::STEREO8)
-            {
-                return static_cast<const void*>(mData.V8Bit.data());
-            }
-            return static_cast<const void*>(mData.V16Bit.data());
-        }
-
-        auto SoundBuffer::getVectorData() -> Data&
+        auto SoundBuffer::getData() -> Data&
         {
             return mData;
         }
@@ -37,6 +13,19 @@ namespace HJUIK
         auto SoundBuffer::bufferData(ILoader& loader) -> void
         {
             loader.buffer(*this);
+            // Conversion uint <-> int
+            auto identifier = static_cast<ALuint>(get());
+            auto format = static_cast<ALenum>(mData.Format);
+            const auto* data = is8Bit() ? static_cast<const ALvoid*>(mData.V8Bit.data()) : static_cast<const ALvoid*>(mData.V16Bit.data());
+            auto size = static_cast<ALsizei>(sizeof(data));
+            auto freq = static_cast<ALsizei>(mData.SamplePerSecond);
+
+            alCheck(alBufferData(identifier, format, data, size, freq));
+        }
+
+        auto SoundBuffer::is8Bit() const -> bool
+        {
+            return mData.Format == BufferFormat::MONO8 || mData.Format == BufferFormat::STEREO8;
         }
     } // namespace Audio
 } // namespace HJUIK

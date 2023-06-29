@@ -31,12 +31,12 @@ namespace HJUIK
 
             auto buffer(SoundBuffer& target) -> void override
             {
-                SoundBuffer::Info info;
-
+                auto& info = target.getData();
                 // State ==========================================================
                 info.State = BufferState::UNUSED;
                 // Format & Data ==================================================
                 int bitdepth = mInternalLoader.getBitDepth();
+                info.SamplePerSecond = mInternalLoader.getSampleRate();
                 // Make sure openAL can handle file format ========================
                 // NOLINTBEGIN(*-magic-numbers)
                 if (bitdepth != 8 && bitdepth != 16)
@@ -76,17 +76,14 @@ namespace HJUIK
                     }
                 }
                 // NOLINTEND(*-magic-numbers)
-                // Change the buffer
-                target.getInfo() = info;
-                // Data is already changed
             }
 
         private:
             auto mono8DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getVectorData().V16Bit.clear();
+                target.getData().V16Bit.clear();
 
-                auto& targetVector = target.getVectorData().V8Bit;
+                auto& targetVector = target.getData().V8Bit;
                 targetVector.clear();
 
                 const auto& data = mInternalLoader.samples;
@@ -103,9 +100,9 @@ namespace HJUIK
 
             auto mono16DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getVectorData().V8Bit.clear();
+                target.getData().V8Bit.clear();
 
-                auto& targetVector = target.getVectorData().V16Bit;
+                auto& targetVector = target.getData().V16Bit;
                 targetVector.clear();
 
                 const auto& data = mInternalLoader.samples;
@@ -121,9 +118,9 @@ namespace HJUIK
             }
             auto stereo8DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getVectorData().V16Bit.clear();
+                target.getData().V16Bit.clear();
 
-                auto& targetVector = target.getVectorData().V8Bit;
+                auto& targetVector = target.getData().V8Bit;
                 targetVector.clear();
 
                 const auto& data = mInternalLoader.samples;
@@ -144,9 +141,9 @@ namespace HJUIK
 
             auto stereo16DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getVectorData().V8Bit.clear();
+                target.getData().V8Bit.clear();
 
-                auto& targetVector = target.getVectorData().V16Bit;
+                auto& targetVector = target.getData().V16Bit;
                 targetVector.clear();
 
                 const auto& data = mInternalLoader.samples;
