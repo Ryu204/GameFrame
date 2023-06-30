@@ -15,7 +15,7 @@ namespace HJUIK
 
 		auto detail::ImageFile::load() -> Graphics::Image2DLoader::RawData
 		{
-			return File->loadImage();
+			return Graphics::Image2DLoader::loadFromFile(File->getPath().string());
 		}
 
 		auto detail::ImageFile::registerUpdateHandler(std::function<void()> callback) -> void

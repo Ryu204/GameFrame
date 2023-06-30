@@ -63,8 +63,6 @@ namespace HJUIK
 				}
 			}
 
-            auto loadImage() -> Graphics::Image2DLoader::RawData;
-
 		private:
 			Path mPath;
 			std::optional<Utilize::FileWatch> mFileWatcher;
