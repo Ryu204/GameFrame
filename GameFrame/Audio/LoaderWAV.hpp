@@ -81,68 +81,54 @@ namespace HJUIK
         private:
             auto mono8DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getData().V16Bit.clear();
-
                 auto& targetVector = target.getData().V8Bit;
                 targetVector.clear();
-
                 const auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 1, "Invalid call");
-
+                targetVector.reserve(data[0].size());
                 for (const auto& sample : data[0])
                 {
-                    // We need a mapping from [1, UINT16_MAX] -> [0, UINT8_MAX]
+                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        (sample - 1) * 1.0 * UINT8_MAX / (UINT16_MAX - 1)
+                        sample * 1.0 * UINT8_MAX / UINT16_MAX
                     ));
                 }
+                target.getData().V16Bit.clear();
             }
 
-            auto mono16DataBuffer(SoundBuffer& target) const -> void
+            auto mono16DataBuffer(SoundBuffer& target) -> void
             {
-                target.getData().V8Bit.clear();
-
-                auto& targetVector = target.getData().V16Bit;
-                targetVector.clear();
-
-                const auto& data = mInternalLoader.samples;
+                auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 1, "Invalid call");
-
-                for (const auto& sample : data[0])
-                {
-                    // We need a mapping from [1, UINT16_MAX] -> [0, UINT16_MAX]
-                    targetVector.push_back(static_cast<std::uint16_t>(
-                        (sample - 1) * 1.0 * UINT16_MAX / (UINT16_MAX - 1)
-                    ));
-                }
+                target.getData().V16Bit.swap(data[0]);
+                target.getData().V8Bit.clear();
             }
+
             auto stereo8DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getData().V16Bit.clear();
-
                 auto& targetVector = target.getData().V8Bit;
                 targetVector.clear();
 
                 const auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 2, "Invalid call");
+                targetVector.reserve(data[0].size() * 2);
 
                 for (int i = 0; i < data[0].size(); ++i)
                 {
-                    // We need a mapping from [1, UINT16_MAX] -> [0, UINT8_MAX]
+                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
                     // OpenAL specs says the data is interleaved (L,R,L,R,...)
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        (data[0][i] - 1) * 1.0 * UINT8_MAX / (UINT16_MAX - 1)
+                        data[0][i] * 1.0 * UINT8_MAX / UINT16_MAX
                     ));
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        (data[1][i] - 1) * 1.0 * UINT8_MAX / (UINT16_MAX - 1)
+                        data[1][i] * 1.0 * UINT8_MAX / UINT16_MAX
                     ));
                 }
+                target.getData().V16Bit.clear();
             }
 
             auto stereo16DataBuffer(SoundBuffer& target) const -> void
             {
-                target.getData().V8Bit.clear();
-
                 auto& targetVector = target.getData().V16Bit;
                 targetVector.clear();
 
@@ -151,17 +137,14 @@ namespace HJUIK
 
                 for (int i = 0; i < data[0].size(); ++i)
                 {
-                    // We need a mapping from [1, UINT16_MAX] -> [0, UINT16_MAX]
+                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT16_MAX]
                     // OpenAL specs says the data is interleaved (L,R,L,R,...)
-                    targetVector.push_back(static_cast<std::uint16_t>(
-                        (data[0][i] - 1) * 1.0 * UINT16_MAX / (UINT16_MAX - 1)
-                    ));
-                    targetVector.push_back(static_cast<std::uint16_t>(
-                        (data[1][i] - 1) * 1.0 * UINT16_MAX / (UINT16_MAX - 1)
-                    ));
+                    targetVector.push_back(data[0][i]);
+                    targetVector.push_back(data[1][i]);
                 }
+                target.getData().V8Bit.clear();
             }
-
+            
             AudioFile<std::uint16_t> mInternalLoader;
         };
     } // namespace Audio

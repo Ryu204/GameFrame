@@ -1,12 +1,18 @@
 #ifndef GAMEFRAME_AUDIO_OPENAL_WRAPPER_HPP
 #define GAMEFRAME_AUDIO_OPENAL_WRAPPER_HPP
 
+/*
+    Base class for objects created within a context
+*/
+
+#include "ContextBasedWrapper.hpp"
+
 namespace HJUIK
 {
     namespace Audio
 	{
         template <typename WrapperTrait>
-        class OpenALWrapper
+        class OpenALWrapper : public ContextBasedWrapper
         {
         public:
             using Handle						  = typename WrapperTrait::HandleType;
@@ -23,7 +29,7 @@ namespace HJUIK
             auto operator=(OpenALWrapper&&) -> OpenALWrapper& = delete;
             auto operator=(const OpenALWrapper&) -> OpenALWrapper& = delete;
 
-            virtual ~OpenALWrapper()
+            ~OpenALWrapper() override
             {
                 reset();
             }
