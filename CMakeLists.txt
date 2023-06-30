@@ -3,6 +3,7 @@ project(GameFrame C CXX)
 
 find_package(SFML COMPONENTS window REQUIRED)
 find_package(glm REQUIRED)
+find_package(efsw REQUIRED)
 
 file(GLOB_RECURSE
     GameFrame_SOURCES
@@ -19,4 +20,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(GameFrame ${GameFrame_SOURCES})
 
 # add_library(GameFrame ${GameFrame_SOURCES})
-target_link_libraries(GameFrame PRIVATE sfml-window glm::glm)
+target_link_libraries(GameFrame PRIVATE sfml-window glm::glm efsw::efsw)
