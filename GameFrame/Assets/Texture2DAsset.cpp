@@ -36,7 +36,7 @@ namespace HJUIK
 
 		Texture2DAsset::Texture2DAsset(Path path) : Texture2DAsset{std::make_shared<FileAsset>(std::move(path))} {}
 
-        Texture2DAsset::~Texture2DAsset() = default;
+		Texture2DAsset::~Texture2DAsset() = default;
 
 		auto Texture2DAsset::get() -> Texture2DAssetValue
 		{
@@ -47,7 +47,7 @@ namespace HJUIK
 					std::cout << "error while hot-reloading texture: " << Graphics::Image2DLoader::getErrLog() << '\n';
 				}
 
-                assetUpdated();
+				assetUpdated();
 				mInvalidated.store(false, std::memory_order_relaxed);
 			}
 			return Texture2DAssetValue{
