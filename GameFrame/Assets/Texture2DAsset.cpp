@@ -47,6 +47,7 @@ namespace HJUIK
 					std::cout << "error while hot-reloading texture: " << Graphics::Image2DLoader::getErrLog() << '\n';
 				}
 
+                assetUpdated();
 				mInvalidated.store(false, std::memory_order_relaxed);
 			}
 			return Texture2DAssetValue{
