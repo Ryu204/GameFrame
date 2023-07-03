@@ -1,9 +1,16 @@
 #ifndef GAMEFRAME_AUDIO_SOUND_SOURCE_HPP
 #define GAMEFRAME_AUDIO_SOUND_SOURCE_HPP
 
+/*
+    Represent a point/object emmiting sounds in a 3D space
+*/
+
+#include <cmath>
+
 #include "Utilize.hpp"
 #include "OpenALWrapper.hpp"
 #include "SoundBuffer.hpp"
+#include "../Utilize/GLMTypedef.hpp"
 
 namespace HJUIK
 {
@@ -38,68 +45,40 @@ namespace HJUIK
         {
         public:
             // Determine whether space information of source is relative to listener
-            auto setRelative(bool relativity = true) -> void
-            {
-                alCheck(alSourcei(get(), AL_SOURCE_RELATIVE, relativity));
-            };
-            auto getRelative() const -> bool
-            {
-                return alGet<ALint>(alGetSourcei, get(), AL_SOURCE_RELATIVE) == AL_TRUE;
-            }
-            auto setLoop(bool loop = true) -> void
-            {
-                alCheck(alSourcei(get(), AL_LOOPING, loop));
-            };
-            auto getLoop() const -> bool
-            {
-                return alGet<ALint>(alGetSourcei, get(), AL_LOOPING) == AL_TRUE;
-            }
-            auto setBuffer(const SoundBuffer& buffer) -> void
-            {
-                checkBuffer(buffer);
-                alCheck(alSourcei(get(), AL_BUFFER, buffer.get()));
-            }
-            auto queueBuffer(const SoundBuffer& buffer) -> void
-            {
-                checkBuffer(buffer);
-                const auto bufferName = buffer.get();
-                alSourceQueueBuffers(get(), 1, &bufferName); 
-            }
-            auto unqueueBuffer(const SoundBuffer& buffer) -> void
-            {
-                // No need to check buffers, their data is already copied
-                auto bufferName = buffer.get();
-                alSourceUnqueueBuffers(get(), 1, &bufferName); 
-            }
-            auto getState() const -> SourceState
-            {
-                return static_cast<SourceState>(alGet<ALint>(alGetSourcei, get(), AL_SOURCE_STATE));
-            }
+            auto setRelative(bool relativity = true) -> void;
+            auto getRelative() const -> bool;
+            // Set if the source is looped
+            auto setLoop(bool loop = true) -> void;
+            auto getLoop() const -> bool;
+            // Set the underlying buffer
+            // Latest set buffer will be play first when call `play()`
+            auto setBuffer(const SoundBuffer& buffer) -> void;
+            // Queue buffer to be played after current buffer on source
+            auto queueBuffer(const SoundBuffer& buffer) -> void;
+            auto unqueueBuffer(const SoundBuffer& buffer) -> void;
+            // This will not change the source position
+            // Used for stuffs like Doppler effect
+            auto setVelocity(const Vector3f velocity) -> void;
+            auto getVelocity() const -> Vector3f;
+            // This will not change the source velocity
+            // Used for spatialization
+            auto setPosition (const Vector3f position) -> void;
+            auto getPosition () const -> Vector3f;
+            // identity = 1.F
+            // double = +1 octave
+            // half = -1 octave
+            auto setPitch(float pitch) -> void;
+            auto getPitch() const -> float;
 
-            auto play() -> void
-            {
-                alCheck(alSourcePlay(get()));
-            }
-            auto pause() -> void
-            {
-                alCheck(alSourcePause(get()));
-            }
-            auto stop() -> void
-            {
-                alCheck(alSourceStop(get()));
-            }
-            auto rewind() -> void
-            {
-                alCheck(alSourceRewind(get()));
-            }
+            // State manipulations
+            auto getState() const -> SourceState;
+            auto play() -> void;
+            auto pause() -> void;
+            auto stop() -> void;
+            auto rewind() -> void;
         private:
-            static auto checkBuffer(const SoundBuffer& buffer) -> void
-            {
-                if (!buffer.isValid())
-                {
-                    throw std::runtime_error("Audio: An invalid buffer was set to a source");
-                }
-            }
+            // Check buffer's validity
+            static auto checkBuffer(const SoundBuffer& buffer) -> void;
         };
     } // namespace Audio
 } // namespace HJUIK
