@@ -123,6 +123,7 @@ namespace HJUIK
                 HJUIK_ASSERT(data.size() == 2, "Invalid call");
 
                 targetVector.clear();
+                targetVector.reserve(2 * data[0].size());
                 for (int i = 0; i < data[0].size(); ++i)
                 {
                     targetVector.push_back(data[0][i]);
