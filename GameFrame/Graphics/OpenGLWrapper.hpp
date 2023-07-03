@@ -71,7 +71,7 @@ namespace HJUIK
 		auto bind(BindArgs... args) const -> PossiblyBoundObjectType
 		{
 			static_assert(Cond == SUPPORT_BINDING);
-			const auto maybeBound = maybeBind();
+			auto maybeBound = maybeBind(std::forward<BindArgs>(args)...);
 			maybeBound.forceBind();
 			return std::move(maybeBound);
 		}
