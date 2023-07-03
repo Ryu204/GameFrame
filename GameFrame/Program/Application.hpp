@@ -37,8 +37,8 @@ namespace HJUIK
 		Graphics::Buffer mUBO;
         std::shared_ptr<Assets::ShaderProgramAsset> mProgram;
 
-        Graphics::BoundVertexArray mBoundVAO;
-        Graphics::BoundBuffer mBoundUBO;
+        Graphics::PossiblyBoundVertexArray mBoundVAO;
+        Graphics::PossiblyBoundBuffer mBoundUBO;
 	};
 } // namespace HJUIK
 
