@@ -53,7 +53,6 @@ namespace HJUIK
 			const std::array<Vertex, 4> vboContent{// NOLINTNEXTLINE(*-magic-numbers)
 				Vertex{{0.5F, 0.5F}}, {{-0.5F, 0.5F}}, {{0.5F, -0.5F}}, {{-0.5F, -0.5F}}};
 			boundVBO.allocate(Graphics::BufferUsage{}, vboContent);
-			boundVBO.forceBind();
 			mBoundVAO.floatAttribPointer(
 				0, 2, Graphics::VertexAttribFloatType::FLOAT, /*normalize*/ false, sizeof(Vertex), 0);
 			mBoundVAO.enableAttrib(0);
@@ -113,9 +112,7 @@ namespace HJUIK
 				mUBO.bindBase(Graphics::BufferTarget::UNIFORM, 0);
 			}
 		}
-		const auto programUseGuard = program->use();
-		programUseGuard.forceBind();
-		mBoundVAO.forceBind();
+		const auto programUseGuard = program->bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glContext.display();
 	}
