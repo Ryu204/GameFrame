@@ -58,18 +58,21 @@ namespace HJUIK
             auto unqueueBuffer(const SoundBuffer& buffer) -> void;
             // This will not change the source position
             // Used for stuffs like Doppler effect
-            auto setVelocity(const Vector3f velocity) -> void;
+            auto setVelocity(Vector3f velocity) -> void;
             auto getVelocity() const -> Vector3f;
             // This will not change the source velocity
             // Used for spatialization
-            auto setPosition (const Vector3f position) -> void;
+            auto setPosition (Vector3f position) -> void;
             auto getPosition () const -> Vector3f;
             // identity = 1.F
             // double = +1 octave
             // half = -1 octave
             auto setPitch(float pitch) -> void;
             auto getPitch() const -> float;
-
+            // Set limit of source volume
+            auto setGain(float min = 0.F, float max = 1.F) -> void;
+            auto getMinGain() const -> float;
+            auto getMaxGain() const -> float;
             // State manipulations
             auto getState() const -> SourceState;
             auto play() -> void;

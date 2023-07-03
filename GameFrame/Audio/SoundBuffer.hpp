@@ -54,7 +54,7 @@ namespace HJUIK
             struct Data
             {
                 std::vector<std::uint8_t> V8Bit{};
-                std::vector<std::uint16_t> V16Bit{};
+                std::vector<std::int16_t> V16Bit{};
 
                 BufferFormat Format{BufferFormat::MONO16};
                 std::size_t SamplePerSecond{0};

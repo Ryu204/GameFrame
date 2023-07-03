@@ -9,7 +9,7 @@ namespace HJUIK
 {
     namespace Audio
     {
-        auto SoundSource::setRelative(bool relativity = true) -> void
+        auto SoundSource::setRelative(bool relativity) -> void
         {
             alCheck(alSourcei(get(), AL_SOURCE_RELATIVE, relativity));
         }
@@ -19,7 +19,7 @@ namespace HJUIK
             return alGet<ALint>(alGetSourcei, get(), AL_SOURCE_RELATIVE) == AL_TRUE;
         }
 
-        auto SoundSource::setLoop(bool loop = true) -> void
+        auto SoundSource::setLoop(bool loop) -> void
         {
             alCheck(alSourcei(get(), AL_LOOPING, loop));
         }
@@ -50,7 +50,7 @@ namespace HJUIK
         }
 
         // This will not change the source position (:'>)
-        auto SoundSource::setVelocity(const Vector3f velocity) -> void
+        auto SoundSource::setVelocity(Vector3f velocity) -> void
         {
             alCheck(alSource3f(get(), AL_VELOCITY, velocity.x, velocity.y, velocity.z));
         }
@@ -63,7 +63,7 @@ namespace HJUIK
         }
 
         // This will not change the source velocity
-        auto SoundSource::setPosition (const Vector3f position) -> void
+        auto SoundSource::setPosition (Vector3f position) -> void
         {
             alCheck(alSource3f(get(), AL_VELOCITY, position.x, position.y, position.z));
         }
@@ -90,6 +90,22 @@ namespace HJUIK
         auto SoundSource::getPitch() const -> float
         {
             return alGet<ALfloat>(alGetSourcef, get(), AL_PITCH);
+        }
+
+        auto SoundSource::setGain(float min, float max) -> void
+        {
+            alCheck(alSourcef(get(), AL_MAX_GAIN, max));
+            alCheck(alSourcef(get(), AL_MIN_GAIN, min));
+        }
+
+        auto SoundSource::getMinGain() const -> float
+        {
+            return alGet<ALfloat>(alGetSourcef, get(), AL_MIN_GAIN);
+        }
+
+        auto SoundSource::getMaxGain() const -> float
+        {
+            return alGet<ALfloat>(alGetSourcef, get(), AL_MAX_GAIN);
         }
 
         auto SoundSource::getState() const -> SourceState

@@ -35,12 +35,12 @@ namespace HJUIK
                 // NOLINTBEGIN(*-magic-numbers)
                 if (bitdepth != 8 && bitdepth != 16)
                 {
-                    throw std::runtime_error("WAV file bit depth is not 8 or 16");
+                    throw std::runtime_error("WAV file bit depth is not 8 or 16: " + std::to_string(bitdepth));
                 }
                 int channelNum = mInternalLoader.getNumChannels();
                 if (channelNum != 1 && channelNum != 2)
                 {
-                    throw std::runtime_error("WAV file channel count is not 1 or 2");
+                    throw std::runtime_error("WAV file channel count is not 1 or 2" + std::to_string(channelNum));
                 }
                 // ================================================================
                 if (mInternalLoader.isMono())
@@ -87,7 +87,7 @@ namespace HJUIK
                 {
                     // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        sample * 1.0 * UINT8_MAX / UINT16_MAX
+                        (sample * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
                     ));
                 }
                 target.getData().V16Bit.clear();
@@ -115,10 +115,10 @@ namespace HJUIK
                     // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
                     // OpenAL specs says the data is interleaved (L,R,L,R,...)
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        data[0][i] * 1.0 * UINT8_MAX / UINT16_MAX
+                        (data[0][i] * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
                     ));
                     targetVector.push_back(static_cast<std::uint8_t>(
-                        data[1][i] * 1.0 * UINT8_MAX / UINT16_MAX
+                        (data[1][i] * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
                     ));
                 }
                 target.getData().V16Bit.clear();
@@ -142,7 +142,8 @@ namespace HJUIK
                 target.getData().V8Bit.clear();
             }
             
-            AudioFile<std::uint16_t> mInternalLoader;
+            AudioFile<std::int16_t> mInternalLoader;
+            const std::uint16_t mOffset{1 << 15};
         };
     } // namespace Audio
 } // namespace HJUIK
