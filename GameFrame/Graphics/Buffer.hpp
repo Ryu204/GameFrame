@@ -135,10 +135,10 @@ namespace HJUIK
 
 		class Buffer;
 
-		class BoundBuffer : public BoundOpenGLWrapper<detail::BufferTrait, BufferTarget>
+		class PossiblyBoundBuffer : public PossiblyBoundOpenGLWrapper<detail::BufferTrait, BufferTarget>
 		{
 		public:
-			using BoundOpenGLWrapper::BoundOpenGLWrapper;
+			using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper;
 
 			auto getTarget() const -> BufferTarget;
 
@@ -161,7 +161,7 @@ namespace HJUIK
 			auto memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void;
 			// TODO: add support for custom clearing
 			auto memClear(std::size_t offset = 0, std::size_t size = SIZE_MAX) const -> void;
-			auto memCopyFromBuffer(const BoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset,
+			auto memCopyFromBuffer(const PossiblyBoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset,
 				std::size_t size) const -> void;
 
 			template <typename Container>
@@ -182,7 +182,7 @@ namespace HJUIK
 			friend class Buffer;
 		};
 
-		class Buffer : public OpenGLWrapper<detail::BufferTrait, BoundBuffer>
+		class Buffer : public OpenGLWrapper<detail::BufferTrait, PossiblyBoundBuffer>
 		{
 		public:
 			using OpenGLWrapper::OpenGLWrapper;

@@ -66,7 +66,7 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto BoundTexture<Type>::getDimensions(std::size_t mipLevel) const -> VectorType
+		inline auto PossiblyBoundTexture<Type>::getDimensions(std::size_t mipLevel) const -> VectorType
 		{
 			VectorType dimensions;
 			if constexpr (NUM_DIMENSIONS >= 1) {
@@ -90,7 +90,7 @@ namespace HJUIK
 			if (GLAD_GL_VERSION_4_3 != 0) {
 				// only binds if this is not created with glCreate*
 				// i.e. DSA is not supported
-				std::optional<BoundTexture<Type>> guard;
+				std::optional<PossiblyBoundTexture<Type>> guard;
 				if (supportsDSA()) {
 					guard = this->bind();
 					guard.value().forceBind();
@@ -100,14 +100,14 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto Texture<Type>::bindActive(std::size_t slot) const -> BoundTexture<Type>
+		inline auto Texture<Type>::bindActive(std::size_t slot) const -> PossiblyBoundTexture<Type>
 		{
 			glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + slot));
 			return this->bind();
 		}
 
 		template <TextureType Type>
-		inline auto BoundTexture<Type>::allocate(
+		inline auto PossiblyBoundTexture<Type>::allocate(
 			const TextureAllocationInfo& allocInfo, const VectorType& dimensions) const -> void
 		{
 			if (supportsDSA() && allocInfo.Immutable) {
@@ -224,7 +224,7 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto BoundTexture<Type>::imageCopy(
+		inline auto PossiblyBoundTexture<Type>::imageCopy(
 			const VectorType& offset, const DataType& data, std::size_t MipLevel) const -> void
 		{
 			if constexpr (NUM_DIMENSIONS == 1) {
@@ -245,7 +245,7 @@ namespace HJUIK
 		}
 
 		template <TextureType Type>
-		inline auto BoundTexture<Type>::generateMipmap() const -> void
+		inline auto PossiblyBoundTexture<Type>::generateMipmap() const -> void
 		{
 			if (supportsDSA()) {
 				glGenerateTextureMipmap(this->getHandle());
@@ -278,8 +278,8 @@ namespace HJUIK
 
 		template <TextureType SrcType>
 		template <TextureType DestType>
-		inline auto BoundTexture<SrcType>::imageCopyToTexture(const BoundTexture<DestType>& dest,
-			const typename BoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
+		inline auto PossiblyBoundTexture<SrcType>::imageCopyToTexture(const PossiblyBoundTexture<DestType>& dest,
+			const typename PossiblyBoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
 			const VectorType& srcDimensions, std::size_t destMipLevel, std::size_t srcMipLevel) const -> void
 		{
 			auto [srcX, srcY, srcZ]	   = Texture<SrcType>::template padVectorTo3D<GLint>(srcOffset);
@@ -294,7 +294,7 @@ namespace HJUIK
 		// TODO: add buffer range checking
 		template <TextureType Type>
 		template <TextureType ThisType, typename>
-		inline auto BoundTexture<Type>::setStorageBuffer(
+		inline auto PossiblyBoundTexture<Type>::setStorageBuffer(
 			TextureInternalFormat format, GLuint bufferHandle, std::size_t offset, std::size_t size) const -> void
 		{
 			static_assert(Type == ThisType);

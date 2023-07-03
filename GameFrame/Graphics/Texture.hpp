@@ -182,12 +182,12 @@ namespace HJUIK
 		};
 
 		template <TextureType Type>
-		class BoundTexture : public BoundOpenGLWrapper<detail::TextureTrait<Type>>
+		class PossiblyBoundTexture : public PossiblyBoundOpenGLWrapper<detail::TextureTrait<Type>>
 		{
-			using Base = BoundOpenGLWrapper<detail::TextureTrait<Type>>;
+			using Base = PossiblyBoundOpenGLWrapper<detail::TextureTrait<Type>>;
 
 		public:
-			// using BoundOpenGLWrapper::BoundOpenGLWrapper does not work here
+			// using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper does not work here
 			using Base::Base;
 			using Base::operator=;
 			constexpr static std::size_t NUM_DIMENSIONS = detail::TEXTURE_DIMENSIONS<Type>;
@@ -206,8 +206,8 @@ namespace HJUIK
 
 			// copy image from this texture to another texture
 			template <TextureType DestType>
-			auto imageCopyToTexture(const BoundTexture<DestType>& dest,
-				const typename BoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
+			auto imageCopyToTexture(const PossiblyBoundTexture<DestType>& dest,
+				const typename PossiblyBoundTexture<DestType>::VectorType& destOffset, const VectorType& srcOffset,
 				const VectorType& srcDimensions, std::size_t destMipLevel = 0, std::size_t srcMipLevel = 0) const
 				-> void;
 
@@ -218,17 +218,17 @@ namespace HJUIK
 		};
 
 		template <TextureType Type>
-		class Texture : public OpenGLWrapper<detail::TextureTrait<Type>, BoundTexture<Type>>
+		class Texture : public OpenGLWrapper<detail::TextureTrait<Type>, PossiblyBoundTexture<Type>>
 		{
-			using Base = OpenGLWrapper<detail::TextureTrait<Type>, BoundTexture<Type>>;
+			using Base = OpenGLWrapper<detail::TextureTrait<Type>, PossiblyBoundTexture<Type>>;
 
 		public:
-			// using BoundOpenGLWrapper::BoundOpenGLWrapper does not work here
+			// using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper does not work here
 			using Base::Base;
 			using Base::operator=;
-			constexpr static std::size_t NUM_DIMENSIONS = BoundTexture<Type>::NUM_DIMENSIONS;
-			using VectorType							= typename BoundTexture<Type>::VectorType;
-			using DataType								= typename BoundTexture<Type>::DataType;
+			constexpr static std::size_t NUM_DIMENSIONS = PossiblyBoundTexture<Type>::NUM_DIMENSIONS;
+			using VectorType							= typename PossiblyBoundTexture<Type>::VectorType;
+			using DataType								= typename PossiblyBoundTexture<Type>::DataType;
 
 			// set a label for this Texture via `glObjectLabel`.
 			// this label may show up in debug callback or an external OpenGL
@@ -239,7 +239,7 @@ namespace HJUIK
 			// bind a texture to the texture slot `slot`
 			// since this calls glBindTexture, it returns a `BoundTexture`
 			// it's okay to discard this btw
-			auto bindActive(std::size_t slot) const -> BoundTexture<Type>;
+			auto bindActive(std::size_t slot) const -> PossiblyBoundTexture<Type>;
 
 			// TODO: add custom clear
 			// clear the texture to a default color of black transparent
@@ -254,7 +254,7 @@ namespace HJUIK
 		private:
 			template <typename T>
 			static auto padVectorTo3D(const VectorType& vector, T defaultValue = 0) -> std::array<T, 3>;
-			friend class BoundTexture<Type>;
+			friend class PossiblyBoundTexture<Type>;
 		};
 
 		// only aliasing the most frequently used texture types

@@ -97,7 +97,7 @@ namespace HJUIK
 			if (GLAD_GL_VERSION_4_3 != 0) {
                 // only binds if this is not created with glCreate*
                 // i.e. DSA is not supported
-				std::optional<BoundFramebuffer> guard;
+				std::optional<PossiblyBoundFramebuffer> guard;
 				if (supportsDSA()) {
 					guard = bind(tempTarget);
 					guard.value().forceBind();
@@ -106,7 +106,7 @@ namespace HJUIK
 			}
 		}
 
-		auto BoundFramebuffer::setRenderbufferAttachment(
+		auto PossiblyBoundFramebuffer::setRenderbufferAttachment(
 			FramebufferAttachment attachment, const Renderbuffer& renderbuffer) const -> void
 		{
 			if (supportsDSA()) {
@@ -119,12 +119,12 @@ namespace HJUIK
 				getTargetEnum(), framebufferAttachmentAsGLEnum(attachment), GL_RENDERBUFFER, renderbuffer.get());
 		}
 
-		auto BoundFramebuffer::getTarget() const -> FramebufferTarget
+		auto PossiblyBoundFramebuffer::getTarget() const -> FramebufferTarget
 		{
 			return std::get<0>(getArgs());
 		}
 
-		auto BoundFramebuffer::getTargetEnum() const -> GLenum
+		auto PossiblyBoundFramebuffer::getTargetEnum() const -> GLenum
 		{
 			return static_cast<GLenum>(getTarget());
 		}

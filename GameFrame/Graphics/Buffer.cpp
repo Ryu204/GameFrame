@@ -120,7 +120,7 @@ namespace HJUIK
 				return;
 			}
 
-			const BoundBuffer bound{get(), TEMP_BUFFER_TARGET};
+			const PossiblyBoundBuffer bound{get(), TEMP_BUFFER_TARGET};
 			const auto [glOffset, glSize] = bound.checkRange(offset, size);
 			glBindBufferRange(static_cast<GLenum>(target), index, get(), glOffset, glSize);
 		}
@@ -133,7 +133,7 @@ namespace HJUIK
 			if (GLAD_GL_VERSION_4_3 != 0) {
 				// only binds if this is not created with glCreate*
 				// i.e. DSA is not supported
-				std::optional<BoundBuffer> guard;
+				std::optional<PossiblyBoundBuffer> guard;
 				if (supportsDSA()) {
 					guard = bind(TEMP_BUFFER_TARGET);
 					guard.value().forceBind();
@@ -147,22 +147,22 @@ namespace HJUIK
 				glInvalidateBufferData(get());
 			}
 
-			const BoundBuffer bound		  = this->bind(TEMP_BUFFER_TARGET);
+			const PossiblyBoundBuffer bound		  = this->bind(TEMP_BUFFER_TARGET);
 			const auto [glOffset, glSize] = bound.checkRange(offset, size);
 			glInvalidateBufferSubData(get(), glOffset, glSize);
 		}
 
-		auto BoundBuffer::getTarget() const -> BufferTarget
+		auto PossiblyBoundBuffer::getTarget() const -> BufferTarget
 		{
 			return std::get<0>(getArgs());
 		}
 
-		auto BoundBuffer::getTargetEnum() const -> GLenum
+		auto PossiblyBoundBuffer::getTargetEnum() const -> GLenum
 		{
 			return static_cast<GLenum>(getTarget());
 		}
 
-		auto BoundBuffer::getSize() const -> std::size_t
+		auto PossiblyBoundBuffer::getSize() const -> std::size_t
 		{
 			if (supportsDSA()) {
 				return static_cast<std::size_t>(
@@ -174,7 +174,7 @@ namespace HJUIK
 				callGLGet<GLint64>(glGetBufferParameteri64v, getTargetEnum(), GL_BUFFER_SIZE));
 		}
 
-		auto BoundBuffer::allocate(const BufferUsage& usage, std::size_t size, const void* initialData) const -> void
+		auto PossiblyBoundBuffer::allocate(const BufferUsage& usage, std::size_t size, const void* initialData) const -> void
 		{
 			if (supportsDSA()) {
 				if (usage.Immutable && GLAD_GL_VERSION_4_4 != 0) {
@@ -196,7 +196,7 @@ namespace HJUIK
 				glBufferData(getTargetEnum(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferDataUsage());
 			}
 		}
-		auto BoundBuffer::map(const BufferMapAccess& access, std::size_t offset, std::size_t size) const -> void*
+		auto PossiblyBoundBuffer::map(const BufferMapAccess& access, std::size_t offset, std::size_t size) const -> void*
 		{
 			void* pointer = nullptr;
 			if (supportsDSA()) {
@@ -221,7 +221,7 @@ namespace HJUIK
 
 			return pointer;
 		}
-		auto BoundBuffer::unmap() const -> bool
+		auto PossiblyBoundBuffer::unmap() const -> bool
 		{
 			if (supportsDSA()) {
 				return glUnmapNamedBuffer(getHandle()) != GL_FALSE;
@@ -230,7 +230,7 @@ namespace HJUIK
 			forceBind();
 			return glUnmapBuffer(getTargetEnum()) != GL_FALSE;
 		}
-		auto BoundBuffer::flushMappedRange(std::size_t offset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::flushMappedRange(std::size_t offset, std::size_t size) const -> void
 		{
 			const auto [glOffset, glSize] = checkRange(offset, size);
 			if (supportsDSA()) {
@@ -242,7 +242,7 @@ namespace HJUIK
 			glFlushMappedBufferRange(getTargetEnum(), glOffset, glSize);
 		}
 
-		auto BoundBuffer::memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void
 		{
 			const auto [glOffset, glSize] = checkRange(destOffset, size);
 			if (supportsDSA()) {
@@ -254,7 +254,7 @@ namespace HJUIK
 			glBufferSubData(getTargetEnum(), glOffset, glSize, src);
 		}
 
-		auto BoundBuffer::memClear(std::size_t offset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memClear(std::size_t offset, std::size_t size) const -> void
 		{
 			if (offset == 0 && size == SIZE_MAX) {
 				if (supportsDSA()) {
@@ -277,8 +277,8 @@ namespace HJUIK
 			glClearBufferSubData(getTargetEnum(), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		}
 
-		auto BoundBuffer::memCopyFromBuffer(
-			const BoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memCopyFromBuffer(
+			const PossiblyBoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void
 		{
 			const auto [glSrcOffset, glSrcSize]	  = srcBuffer.checkRange(srcOffset, size);
 			const auto [glDestOffset, glDestSize] = checkRange(destOffset, size);
@@ -298,7 +298,7 @@ namespace HJUIK
 		}
 
 		// NOLINTNEXTLINE(*-member-functions-to-static)
-		auto BoundBuffer::checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
+		auto PossiblyBoundBuffer::checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
 		{
 			const auto bufferSize = getSize();
 			size				  = std::min(size, bufferSize);

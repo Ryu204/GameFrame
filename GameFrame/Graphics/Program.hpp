@@ -23,14 +23,14 @@ namespace HJUIK
 			};
 		} // namespace detail
 
-		class BoundProgram : public BoundOpenGLWrapper<detail::ProgramTrait>
+		class PossiblyBoundProgram : public PossiblyBoundOpenGLWrapper<detail::ProgramTrait>
 		{
 		public:
-			using BoundOpenGLWrapper::BoundOpenGLWrapper;
-			using BoundOpenGLWrapper::operator=;
+			using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper;
+			using PossiblyBoundOpenGLWrapper::operator=;
 		};
 
-		class Program : public OpenGLWrapper<detail::ProgramTrait, BoundProgram>
+		class Program : public OpenGLWrapper<detail::ProgramTrait, PossiblyBoundProgram>
 		{
 		public:
 			using OpenGLWrapper::OpenGLWrapper;

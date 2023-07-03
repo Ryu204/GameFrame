@@ -32,7 +32,7 @@ namespace HJUIK
 			if (GLAD_GL_VERSION_4_3 != 0) {
                 // only binds if this is not created with glCreate*
                 // i.e. DSA is not supported
-				std::optional<BoundVertexArray> guard;
+				std::optional<PossiblyBoundVertexArray> guard;
 				if (supportsDSA()) {
 					guard = bind();
 					guard.value().forceBind();
@@ -44,7 +44,7 @@ namespace HJUIK
 
 		// this is by design
 		// NOLINTBEGIN(*-member-functions-to-static)
-		auto BoundVertexArray::enableAttrib(std::size_t index) const -> void
+		auto PossiblyBoundVertexArray::enableAttrib(std::size_t index) const -> void
 		{
 			if (supportsDSA()) {
 				glEnableVertexArrayAttrib(getHandle(), static_cast<GLuint>(index));
@@ -54,7 +54,7 @@ namespace HJUIK
 			glEnableVertexAttribArray(static_cast<GLuint>(index));
 		}
 
-		auto BoundVertexArray::disableAttrib(std::size_t index) const -> void
+		auto PossiblyBoundVertexArray::disableAttrib(std::size_t index) const -> void
 		{
 			if (supportsDSA()) {
 				glDisableVertexArrayAttrib(getHandle(), static_cast<GLuint>(index));
@@ -66,7 +66,7 @@ namespace HJUIK
 
 		// maybe use the newer glVertexAttribFormat/glVertexAttribBinding API
 		// NOLINTBEGIN(*-reinterpret-cast, *-no-int-to-ptr, *-anonymous-namespace)
-		auto BoundVertexArray::intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
+		auto PossiblyBoundVertexArray::intAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
 			std::size_t stride, std::size_t offset) const -> void
 		{
 			forceBind();
@@ -74,7 +74,7 @@ namespace HJUIK
 				static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		auto BoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
+		auto PossiblyBoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribIntType type,
 			bool normalize, std::size_t stride, std::size_t offset) const -> void
 		{
 			forceBind();
@@ -82,7 +82,7 @@ namespace HJUIK
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		auto BoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type,
+		auto PossiblyBoundVertexArray::floatAttribPointer(std::size_t index, std::size_t size, VertexAttribFloatType type,
 			bool normalize, std::size_t stride, std::size_t offset) const -> void
 		{
 			forceBind();
@@ -90,7 +90,7 @@ namespace HJUIK
 				static_cast<GLboolean>(normalize), static_cast<GLsizei>(stride), reinterpret_cast<const void*>(offset));
 		}
 
-		auto BoundVertexArray::doubleAttribPointer(
+		auto PossiblyBoundVertexArray::doubleAttribPointer(
 			std::size_t index, std::size_t size, std::size_t stride, std::size_t offset) const -> void
 		{
 			forceBind();
