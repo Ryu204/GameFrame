@@ -78,19 +78,17 @@ namespace HJUIK
         private:
             auto mono8DataBuffer(SoundBuffer& target) const -> void
             {
+                target.getData().V16Bit.clear();
                 auto& targetVector = target.getData().V8Bit;
-                targetVector.clear();
                 const auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 1, "Invalid call");
+
+                targetVector.clear();
                 targetVector.reserve(data[0].size());
                 for (const auto& sample : data[0])
                 {
-                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
-                    targetVector.push_back(static_cast<std::uint8_t>(
-                        (sample * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
-                    ));
+                    targetVector.push_back(static_cast<std::uint8_t>(sample + INT8_MAX));
                 }
-                target.getData().V16Bit.clear();
             }
 
             auto mono16DataBuffer(SoundBuffer& target) -> void
@@ -103,47 +101,36 @@ namespace HJUIK
 
             auto stereo8DataBuffer(SoundBuffer& target) const -> void
             {
+                target.getData().V16Bit.clear();
                 auto& targetVector = target.getData().V8Bit;
-                targetVector.clear();
-
                 const auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 2, "Invalid call");
-                targetVector.reserve(data[0].size() * 2);
 
+                targetVector.clear();
+                targetVector.reserve(data[0].size() * 2);
                 for (int i = 0; i < data[0].size(); ++i)
                 {
-                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT8_MAX]
-                    // OpenAL specs says the data is interleaved (L,R,L,R,...)
-                    targetVector.push_back(static_cast<std::uint8_t>(
-                        (data[0][i] * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
-                    ));
-                    targetVector.push_back(static_cast<std::uint8_t>(
-                        (data[1][i] * 1.0 + mOffset) * UINT8_MAX / UINT16_MAX
-                    ));
+                    targetVector.push_back(static_cast<std::uint8_t>(data[0][i] + INT8_MAX));
+                    targetVector.push_back(static_cast<std::uint8_t>(data[1][i] + INT8_MAX));
                 }
-                target.getData().V16Bit.clear();
             }
 
             auto stereo16DataBuffer(SoundBuffer& target) const -> void
             {
+                target.getData().V8Bit.clear();
                 auto& targetVector = target.getData().V16Bit;
-                targetVector.clear();
-
                 const auto& data = mInternalLoader.samples;
                 HJUIK_ASSERT(data.size() == 2, "Invalid call");
 
+                targetVector.clear();
                 for (int i = 0; i < data[0].size(); ++i)
                 {
-                    // We need a mapping from [0, UINT16_MAX] -> [0, UINT16_MAX]
-                    // OpenAL specs says the data is interleaved (L,R,L,R,...)
                     targetVector.push_back(data[0][i]);
                     targetVector.push_back(data[1][i]);
                 }
-                target.getData().V8Bit.clear();
             }
             
             AudioFile<std::int16_t> mInternalLoader;
-            const std::uint16_t mOffset{1 << 15};
         };
     } // namespace Audio
 } // namespace HJUIK
