@@ -7,25 +7,6 @@
 #include "State/GameState.hpp"
 #include "State/PauseState.hpp"
 
-// ===============TEST=================
-// NOLINTBEGIN
-#include "../Audio/SoundSource.hpp"
-#include "../Audio/LoaderWAV.hpp"
-#include "../Audio/Listener.hpp"
-#include <cmath>
-namespace
-{
-	using ld = HJUIK::Audio::LoaderWAV;
-	using ss = HJUIK::Audio::SoundSource;
-	using sb = HJUIK::Audio::SoundBuffer;
-
-	ld loader;
-	sb buffer;
-	ss source;
-} // namespace
-// NOLINTEND
-//=============================================
-
 namespace HJUIK
 {
 	Application::Application() : mUpdateInterval(getUpdateInterval())
@@ -40,20 +21,6 @@ namespace HJUIK
 		// Currently our program will be in Wjbu mode
         // NOLINTNEXTLINE(*-magic-numbers)
         mWindow->getOpenGLContext().getBaseColor() = Graphics::Color{ 0xFFBCB3FF };
-
-		// NOLINTBEGIN
-		loader.loadFromFile("build/target.wav");
-		source.setLoop();
-		source.setRelative(false);
-		buffer.bufferData(loader);
-		source.setBuffer(buffer);
-		source.setRollOffFactor(0.04F);
-		source.setMaxDistance(100);
-		source.setReferenceDistance(1.F);
-		source.setPosition({0, 0, 0});
-		Audio::setAttenuationModel(Audio::AttenuationModel::INVERSE_CLAMPED);
-		source.play();
-		// NOLINTEND
 	}
 
 	auto Application::run() -> void
@@ -83,11 +50,6 @@ namespace HJUIK
 	auto Application::update(Time deltaTime) -> void
     {
 		mStateVector.update(deltaTime);
-
-		// NOLINTBEGIN
-		static Clock clock;
-		source.setPosition({10 * std::cos(clock.total().toSecond()), 10 * std::sin(clock.total().toSecond()), 0.F});
-		// NOLINTEND
 	}
 
 	auto Application::processInput() -> void
