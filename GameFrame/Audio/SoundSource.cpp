@@ -65,13 +65,13 @@ namespace HJUIK
         // This will not change the source velocity
         auto SoundSource::setPosition (Vector3f position) -> void
         {
-            alCheck(alSource3f(get(), AL_VELOCITY, position.x, position.y, position.z));
+            alCheck(alSource3f(get(), AL_POSITION, position.x, position.y, position.z));
         }
 
         auto SoundSource::getPosition () const -> Vector3f
         {
             Vector3f position{};
-            alCheck(alGetSource3f(get(), AL_VELOCITY, &position.x, &position.y, &position.z));
+            alCheck(alGetSource3f(get(), AL_POSITION, &position.x, &position.y, &position.z));
             return position;
         }
 
@@ -106,6 +106,36 @@ namespace HJUIK
         auto SoundSource::getMaxGain() const -> float
         {
             return alGet<ALfloat>(alGetSourcef, get(), AL_MAX_GAIN);
+        }
+
+        auto SoundSource::setReferenceDistance(float distance) -> void
+        {
+            alCheck(alSourcef(get(), AL_REFERENCE_DISTANCE, distance));
+        }
+
+        auto SoundSource::getReferenceDistance() const -> float
+        {
+            return alGet<ALfloat>(alGetSourcef, get(), AL_REFERENCE_DISTANCE);
+        }
+
+        auto SoundSource::setRollOffFactor(float factor) -> void
+        {
+            alCheck(alSourcef(get(), AL_ROLLOFF_FACTOR, factor));
+        }
+
+        auto SoundSource::getRollOffFactor() const -> float
+        {
+            return alGet<ALfloat>(alGetSourcef, get(), AL_ROLLOFF_FACTOR);
+        }
+
+        auto SoundSource::setMaxDistance(float distance) -> void
+        {
+            alCheck(alSourcef(get(), AL_MAX_DISTANCE, distance));
+        }
+
+        auto SoundSource::getMaxDistance() const -> float
+        {
+            return alGet<ALfloat>(alGetSourcef, get(), AL_MAX_DISTANCE);
         }
 
         auto SoundSource::getState() const -> SourceState

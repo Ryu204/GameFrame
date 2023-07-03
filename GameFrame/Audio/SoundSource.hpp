@@ -73,6 +73,13 @@ namespace HJUIK
             auto setGain(float min = 0.F, float max = 1.F) -> void;
             auto getMinGain() const -> float;
             auto getMaxGain() const -> float;
+            // Set spatialization properties
+            auto setReferenceDistance(float distance) -> void;
+            auto getReferenceDistance() const -> float;
+            auto setRollOffFactor(float factor) -> void;
+            auto getRollOffFactor() const -> float; // Pass 0 to disable attenuation
+            auto setMaxDistance(float distance) -> void;
+            auto getMaxDistance() const -> float;            
             // State manipulations
             auto getState() const -> SourceState;
             auto play() -> void;
