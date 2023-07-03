@@ -8,7 +8,7 @@
 #include <memory>
 #include <AL/al.h>
 #include <AL/alc.h>
-#include "Error.hpp"
+#include "Utilize.hpp"
 
 namespace HJUIK
 {

@@ -1,8 +1,9 @@
-#ifndef GAMEFRAME_AUDIO_ERROR_HPP
-#define GAMEFRAME_AUDIO_ERROR_HPP
+#ifndef GAMEFRAME_AUDIO_UTILIZE_HPP
+#define GAMEFRAME_AUDIO_UTILIZE_HPP
 
 #include "../Utilize/CallAssert.hpp"
 #include <AL/al.h>
+#include <utility>
 #include <AL/alc.h>
 
 /*
@@ -18,9 +19,6 @@ namespace HJUIK
             auto alCheckLastErr(const char* file, unsigned int line, const char* expr) -> void;
             auto alcCheckLastErr(const char* file, unsigned int line, const char* expr, ALCdevice* device) -> void;
         } // namespace detail
-    } // namespace Audio
-} // namespace HJUIK
-
 
 // NOLINTBEGIN(*-macro-usage)
 #ifndef NDEBUG
@@ -34,7 +32,22 @@ namespace HJUIK
 #else
     #define alcCheck(expr, devicePtr) {expr};
 #endif // NDEBUG
-
 // NOLINTEND(*-macro-usage)
+
+        template <typename Value, typename Func, typename... Args>
+        auto alGet(Func&& alGetFunc, Args&&... args) -> Value
+        {
+            auto val = static_cast<Value>(0);
+            alCheck(std::forward<Func>(alGetFunc)(std::forward<Args>(args)..., &val));
+            return val;
+        }
+
+        template <typename Value, typename Func, typename... Args>
+        auto alGen(Func&& alGenFunc, Args&&... args) -> Value
+        {
+            return alGet<Value>(std::forward<Func>(alGenFunc), std::forward<Args>(args)..., 1);
+        }
+    } // namespace Audio
+} // namespace HJUIK
 
 #endif

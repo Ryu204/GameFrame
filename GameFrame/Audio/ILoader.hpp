@@ -5,6 +5,7 @@
     Base class for sound loader
 */
 
+#include <iostream>
 #include <string>
 
 namespace HJUIK
@@ -25,7 +26,8 @@ namespace HJUIK
             // Copy the loaded data into `target`
             // Do not actually buffer data to OpenAL (this is done inside SoundBuffer)
             // The loader needs not to be in a valid state for next `buffer` call until next `load` operation
-            virtual auto buffer(SoundBuffer& target) -> void = 0;
+            // Return true if buffering succeeded
+            virtual auto buffer(SoundBuffer&/*target*/) -> bool = 0;
         };
     } // namespace Audio
 } // namespace HJUIK

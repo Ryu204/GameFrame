@@ -1,19 +1,17 @@
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include "../Utilize/ResourceHolder.hpp"
 #include "Application.hpp"
 #include "../Audio/SoundBuffer.hpp"
+#include "../Audio/SoundSource.hpp"
 #include "../Audio/LoaderWAV.hpp"
 
 auto main() -> int
 {
 	try
     {
-		HJUIK::Audio::LoaderWAV loader;
-		loader.loadFromFile("build/Sound.wav");
-		HJUIK::Audio::SoundBuffer buffer;
-		buffer.bufferData(loader);
-		
 		HJUIK::Application app1;
 		app1.run();
 		return 0;

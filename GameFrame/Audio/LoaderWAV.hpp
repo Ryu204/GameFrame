@@ -18,22 +18,16 @@ namespace HJUIK
             // If the load fails, throw an exception
             auto loadFromFile(const char* filename) -> void
             {
-#ifndef NDEBUG // if in DEBUG mode
-                mInternalLoader.shouldLogErrorsToConsole(/*logErrors=*/true);
-#else
                 mInternalLoader.shouldLogErrorsToConsole(/*logErrors=*/false);
-#endif // NDEBUG
                 if (!mInternalLoader.load(std::string(filename)))
                 {
                     throw std::runtime_error("Cannot load WAV file in " + std::string(filename));
                 }
             }
 
-            auto buffer(SoundBuffer& target) -> void override
+            auto buffer(SoundBuffer& target) -> bool override
             {
                 auto& info = target.getData();
-                // State ==========================================================
-                info.State = BufferState::UNUSED;
                 // Format & Data ==================================================
                 int bitdepth = mInternalLoader.getBitDepth();
                 info.SamplePerSecond = mInternalLoader.getSampleRate();
@@ -76,6 +70,9 @@ namespace HJUIK
                     }
                 }
                 // NOLINTEND(*-magic-numbers)
+                // free memory
+                mInternalLoader.samples.clear();
+                return true;
             }
 
         private:

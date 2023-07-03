@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <AL/al.h>
 #include "ILoader.hpp"
-#include "Error.hpp"
+#include "Utilize.hpp"
 #include "OpenALWrapper.hpp"
 
 namespace HJUIK
@@ -19,9 +19,7 @@ namespace HJUIK
                 using HandleType = ALuint;
                 static auto create() -> HandleType
                 {
-                    HandleType handle = 0;
-                    alCheck(alGenBuffers(1, &handle));
-                    return handle;
+                    return alGen<HandleType>(alGenBuffers);
                 }
                 static auto destroy(HandleType handle) -> void
                 {
@@ -58,19 +56,21 @@ namespace HJUIK
                 std::vector<std::uint8_t> V8Bit{};
                 std::vector<std::uint16_t> V16Bit{};
 
-                BufferState State{BufferState::UNUSED};
                 BufferFormat Format{BufferFormat::MONO16};
                 std::size_t SamplePerSecond{0};
             };
 
             // Get the vector sound data (internal use only)
+            // Does not gurantee right data of the OpenAL's buffer
             auto getData() -> Data&;
             // Buffer the data from a Loader
             auto bufferData(ILoader& loader) -> void;
+            auto isValid() const -> bool;
         private:
             auto is8Bit() const -> bool;
 
-            Data mData;
+            Data mData{};
+            bool mIsValid{false};
         };
     } // namespace Audio
 } // namespace HJUIK
