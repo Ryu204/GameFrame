@@ -9,13 +9,13 @@
 namespace HJUIK
 {
 	// API based on std::unique_ptr
-	template <typename WrapperTrait, typename BoundObjectType = void>
+	template <typename WrapperTrait, typename PossiblyBoundObjectType = void>
 	class OpenGLWrapper
 	{
 	public:
 		using Handle						  = typename WrapperTrait::HandleType;
 		static constexpr Handle NULL_HANDLE	  = static_cast<Handle>(0);
-		static constexpr bool SUPPORT_BINDING = !std::is_same_v<BoundObjectType, void>;
+		static constexpr bool SUPPORT_BINDING = !std::is_same_v<PossiblyBoundObjectType, void>;
 
 		// Create an OpenGL object
 		OpenGLWrapper() : mHandle{WrapperTrait::create()} {}
@@ -68,10 +68,19 @@ namespace HJUIK
 		}
 
 		template <typename... BindArgs, bool Cond = SUPPORT_BINDING, typename = std::enable_if_t<Cond>>
-		auto bind(BindArgs... args) const -> BoundObjectType
+		auto bind(BindArgs... args) const -> PossiblyBoundObjectType
 		{
 			static_assert(Cond == SUPPORT_BINDING);
-			return BoundObjectType{get(), args...};
+			const auto maybeBound = maybeBind();
+			maybeBound.forceBind();
+			return std::move(maybeBound);
+		}
+
+		template <typename... BindArgs, bool Cond = SUPPORT_BINDING, typename = std::enable_if_t<Cond>>
+		auto maybeBind(BindArgs... args) const -> PossiblyBoundObjectType
+		{
+			static_assert(Cond == SUPPORT_BINDING);
+			return PossiblyBoundObjectType{get(), args...};
 		}
 
 		template <typename... BindArgs, bool Cond = SUPPORT_BINDING, typename = std::enable_if_t<Cond>>
@@ -101,25 +110,24 @@ namespace HJUIK
 		return callGLGet<ReturnType>(std::forward<Func>(glGenFunc), std::forward<Args>(args)..., 1);
 	}
 
-	// TODO: Rename this to MaybeBoundOpenGLWrapper or something,
-	// because it does not necessarily mean bound
 	template <typename WrapperTrait, typename... Args>
-	class BoundOpenGLWrapper
+	class PossiblyBoundOpenGLWrapper
 	{
 	public:
 		using HandleType = typename WrapperTrait::HandleType;
 
-		explicit BoundOpenGLWrapper(HandleType handle, Args... args) : mHandle{handle}, mArgs{args...}, mCurrentBound{}
+		explicit PossiblyBoundOpenGLWrapper(HandleType handle, Args... args)
+			: mHandle{handle}, mArgs{args...}, mCurrentBound{}
 		{
 		}
 
-		BoundOpenGLWrapper(const BoundOpenGLWrapper&)					 = delete;
-		auto operator=(const BoundOpenGLWrapper&) -> BoundOpenGLWrapper& = delete;
+		PossiblyBoundOpenGLWrapper(const PossiblyBoundOpenGLWrapper&)					   = delete;
+		auto operator=(const PossiblyBoundOpenGLWrapper&) -> PossiblyBoundOpenGLWrapper& = delete;
 
-		BoundOpenGLWrapper(BoundOpenGLWrapper&&) noexcept					 = default;
-		auto operator=(BoundOpenGLWrapper&&) noexcept -> BoundOpenGLWrapper& = default;
+		PossiblyBoundOpenGLWrapper(PossiblyBoundOpenGLWrapper&&) noexcept					   = default;
+		auto operator=(PossiblyBoundOpenGLWrapper&&) noexcept -> PossiblyBoundOpenGLWrapper& = default;
 
-		~BoundOpenGLWrapper()
+		~PossiblyBoundOpenGLWrapper()
 		{
 			if (mBound) {
 				forceUnbind();

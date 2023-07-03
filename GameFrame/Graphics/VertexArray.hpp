@@ -40,10 +40,10 @@ namespace HJUIK
 			UNSIGNED_INT_10F_11F_11F_REV = GL_UNSIGNED_INT_10F_11F_11F_REV
 		};
 
-		class BoundVertexArray : public BoundOpenGLWrapper<detail::VertexArrayTrait>
+		class PossiblyBoundVertexArray : public PossiblyBoundOpenGLWrapper<detail::VertexArrayTrait>
 		{
 		public:
-			using BoundOpenGLWrapper::BoundOpenGLWrapper;
+			using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper;
 
 			// wraps glEnableVertexAttribArray/glDisableVertexAttribArray
 			auto enableAttrib(std::size_t index) const -> void;
@@ -61,7 +61,7 @@ namespace HJUIK
 				-> void;
 		};
 
-		class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait, BoundVertexArray>
+		class VertexArray : public OpenGLWrapper<detail::VertexArrayTrait, PossiblyBoundVertexArray>
 		{
 		public:
 			// inherits base constructors and assigments
