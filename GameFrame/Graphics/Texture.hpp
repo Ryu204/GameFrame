@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "../Utilize/GLMTypedef.hpp"
+#include "ImageLoader.hpp"
 #include "OpenGLWrapper.hpp"
 namespace HJUIK
 {
@@ -150,7 +151,7 @@ namespace HJUIK
 		template <TextureType Type>
 		struct TextureData {
 			const void* Data;
-			glm::vec<detail::TEXTURE_DIMENSIONS<Type>, size_t> Dimensions;
+			glm::vec<detail::TEXTURE_DIMENSIONS<Type>, std::size_t> Dimensions;
 			TextureFormat Format;
 			TextureTexelType TexelType;
 		};
@@ -191,7 +192,7 @@ namespace HJUIK
 			using Base::Base;
 			using Base::operator=;
 			constexpr static std::size_t NUM_DIMENSIONS = detail::TEXTURE_DIMENSIONS<Type>;
-			using VectorType							= glm::vec<NUM_DIMENSIONS, size_t>;
+			using VectorType							= glm::vec<NUM_DIMENSIONS, std::size_t>;
 			using DataType								= TextureData<Type>;
 
 			// get the texture dimensions
@@ -261,6 +262,8 @@ namespace HJUIK
 		using Texture2D		 = Texture<TextureType::E2D>;
 		using Texture2DArray = Texture<TextureType::E2D_ARRAY>;
 		using TextureCubeMap = Texture<TextureType::CUBE_MAP>;
+
+		auto load2DTexture(const Image2DLoader::RawData& data) -> Texture2D;
 	} // namespace Graphics
 } // namespace HJUIK
 

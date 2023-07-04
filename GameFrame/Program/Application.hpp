@@ -9,6 +9,7 @@
 
 #include "../Utilize.hpp"
 #include "../Window.hpp"
+#include "FSM/Vector.hpp"
 
 namespace HJUIK
 {
@@ -24,10 +25,13 @@ namespace HJUIK
 		auto processInput() -> void;
 		auto render() -> void;
 		auto initEventCallback() -> void;
+		auto initStateMachine() -> void;
 
 		std::unique_ptr<IWindow> mWindow;
 		EventManager mEventManager;
 		const Time mUpdateInterval;
+
+		FSM::StateVector mStateVector;
 	};
 } // namespace HJUIK
 

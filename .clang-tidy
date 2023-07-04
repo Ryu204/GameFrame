@@ -17,7 +17,8 @@ Checks: "*,\
   -modernize-use-nodiscard,\
   -cppcoreguidelines-pro-bounds-constant-array-index,\
   -cppcoreguidelines-avoid-const-or-ref-data-members,\
-  -portability-simd-intrinsics"
+  -portability-simd-intrinsics,\
+  -*-named-parameter"
 WarningsAsErrors: '*'
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'
@@ -76,5 +77,10 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.ScopedEnumConstantCase
     value: UPPER_CASE
+# Variable names
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: ^(id)$
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: ^(id)$
 ...
 
