@@ -79,7 +79,16 @@ namespace HJUIK
             auto setRollOffFactor(float factor) -> void;
             auto getRollOffFactor() const -> float; // Pass 0 to disable attenuation
             auto setMaxDistance(float distance) -> void;
-            auto getMaxDistance() const -> float;            
+            auto getMaxDistance() const -> float;
+            // Directional sound - cone
+            auto setDirection(Vector3f direction) -> void;
+            auto getDirection() const -> Vector3f;
+            auto setInnerAngle(float angle) -> void;
+            auto getInnerAngle() const -> float;
+            auto setOuterAngle(float angle) -> void;
+            auto getOuterAngle() const -> float;
+            auto setOuterGain(float gain) -> void;
+            auto getOuterGain() const -> float;
             // State manipulations
             auto getState() const -> SourceState;
             auto play() -> void;

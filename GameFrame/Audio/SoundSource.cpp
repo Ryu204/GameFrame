@@ -138,6 +138,48 @@ namespace HJUIK
             return alGet<ALfloat>(alGetSourcef, get(), AL_MAX_DISTANCE);
         }
 
+        auto SoundSource::setDirection(Vector3f direction) -> void
+        {
+            alCheck(alSource3f(get(), AL_DIRECTION, direction.x, direction.y, direction.z));
+        }
+            
+        auto SoundSource::getDirection() const -> Vector3f
+        {
+            Vector3f direction{};
+            alCheck(alGetSource3f(get(), AL_POSITION, &direction.x, &direction.y, &direction.z));
+            return direction;
+        }
+
+        auto SoundSource::setInnerAngle(float angle) -> void
+        {
+            alCheck(alSourcef(get(), AL_CONE_INNER_ANGLE, angle));
+        }
+
+        auto SoundSource::getInnerAngle() const -> float
+        {
+            return alGet<float>(alGetSourcef, get(), AL_CONE_INNER_ANGLE);
+        }
+
+        auto SoundSource::setOuterAngle(float angle) -> void
+        {
+            alCheck(alSourcef(get(), AL_CONE_OUTER_ANGLE, angle));
+        }
+
+        auto SoundSource::getOuterAngle() const -> float
+        {
+            return alGet<float>(alGetSourcef, get(), AL_CONE_OUTER_ANGLE);
+        }
+
+        auto SoundSource::setOuterGain(float gain) -> void
+        {
+            alCheck(alSourcef(get(), AL_CONE_OUTER_GAIN, gain));
+        }
+
+        auto SoundSource::getOuterGain() const -> float
+        {
+            return alGet<float>(alGetSourcef, get(), AL_CONE_OUTER_GAIN);
+        }
+
         auto SoundSource::getState() const -> SourceState
         {
             return static_cast<SourceState>(alGet<ALint>(alGetSourcei, get(), AL_SOURCE_STATE));
