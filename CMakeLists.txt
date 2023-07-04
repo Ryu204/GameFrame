@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(SFML COMPONENTS window REQUIRED)
 find_package(glm REQUIRED)
-find_package(FFMPEG COMPONENTS avcodec avutil avformat REQUIRED)
+find_package(FFMPEG COMPONENTS avcodec avutil avformat swresample REQUIRED)
 
 file(GLOB_RECURSE
     GameFrame_SOURCES
