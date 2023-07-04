@@ -8,7 +8,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v3
     - name: Install clang-tidy & dependencies
-      run: sudo apt update && sudo apt install clang-tidy libglm-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libxcursor-dev
+      run: sudo apt update && sudo apt install clang-tidy libglm-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libxcursor-dev libavcodec-dev libavutil-dev
     - name: Create SFML directory
       run: mkdir -p build/sfml
     - name: Checkout SFML 2.6.x branch

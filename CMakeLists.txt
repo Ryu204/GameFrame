@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 project(GameFrame C CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(SFML COMPONENTS window REQUIRED)
 find_package(glm REQUIRED)
+find_package(FFMPEG COMPONENTS avcodec avutil REQUIRED)
 
 file(GLOB_RECURSE
     GameFrame_SOURCES
@@ -19,4 +22,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(GameFrame ${GameFrame_SOURCES})
 
 # add_library(GameFrame ${GameFrame_SOURCES})
-target_link_libraries(GameFrame PRIVATE sfml-window glm::glm openal)
+target_link_libraries(GameFrame PRIVATE sfml-window glm::glm openal FFMPEG::avcodec FFMPEG::avutil)
