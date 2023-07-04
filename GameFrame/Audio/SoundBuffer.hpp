@@ -49,27 +49,16 @@ namespace HJUIK
         class SoundBuffer : public OpenALWrapper<detail::BufferTrait>
         {
         public:
-            // Only the specified format will contain meaningful data
-            // The other vector is left empty
-            struct Data
-            {
-                std::vector<std::uint8_t> V8Bit{};
-                std::vector<std::int16_t> V16Bit{};
-
-                BufferFormat Format{BufferFormat::MONO16};
-                std::size_t SamplePerSecond{0};
-            };
-
-            // Get the vector sound data (internal use only)
-            // Does not gurantee right data of the OpenAL's buffer
-            auto getData() -> Data&;
-            // Buffer the data from a Loader
-            auto bufferData(ILoader& loader) -> void;
+            // Fetch the data to actual OpenAL's implementation
+            // This function should be used by ILoader
+            auto uploadData(const void* data, BufferFormat format, int sizeInBytes, int sampleRate) -> void;
             auto isValid() const -> bool;
-        private:
+            // These functions are meaningful only when `isValid()==true`
             auto is8Bit() const -> bool;
-
-            Data mData{};
+            auto isMono() const -> bool;
+        
+        private:
+            BufferFormat mFormat{BufferFormat::STEREO16};
             bool mIsValid{false};
         };
     } // namespace Audio
