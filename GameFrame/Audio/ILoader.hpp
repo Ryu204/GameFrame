@@ -27,11 +27,21 @@ namespace HJUIK
 			// Do not actually buffer data to OpenAL (this is done inside SoundBuffer)
 			// The loader needs not to be in a valid state for next `buffer` call until next `load` operation
 			// Return true if buffering succeeded
-			virtual auto buffer(SoundBuffer& /*target*/) -> bool = 0;
+			virtual auto buffer(SoundBuffer& /*target*/, size_t /*maxSamples*/) -> bool = 0;
 
-			virtual auto channels() -> size_t = 0;
+			virtual auto channels() -> size_t	= 0;
 			virtual auto sampleRate() -> size_t = 0;
-			virtual auto seek(size_t sampleIndex) -> void = 0;
+
+			// implement one of these two methods
+			virtual auto seek(size_t sampleIndex) -> void
+			{
+				seekSecond(static_cast<float>(sampleIndex) / sampleRate());
+			}
+
+			virtual auto seekSecond(float second) -> void
+			{
+				seek(static_cast<size_t>(sampleRate() * second));
+			}
 		};
 	} // namespace Audio
 } // namespace HJUIK

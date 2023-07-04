@@ -25,7 +25,7 @@ namespace HJUIK
 				}
 			}
 
-			auto buffer(SoundBuffer& target) -> bool override
+			auto buffer(SoundBuffer& target, size_t maxSamples) -> bool override
 			{
 				auto& info = target.getData();
 				// Format & Data ==================================================

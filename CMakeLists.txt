@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(SFML COMPONENTS window REQUIRED)
 find_package(glm REQUIRED)
-find_package(FFMPEG COMPONENTS avcodec avutil REQUIRED)
+find_package(FFMPEG COMPONENTS avcodec avutil avformat REQUIRED)
 
 file(GLOB_RECURSE
     GameFrame_SOURCES
@@ -22,4 +22,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 add_executable(GameFrame ${GameFrame_SOURCES})
 
 # add_library(GameFrame ${GameFrame_SOURCES})
-target_link_libraries(GameFrame PRIVATE sfml-window glm::glm openal FFMPEG::avcodec FFMPEG::avutil)
+target_link_libraries(GameFrame PRIVATE sfml-window glm::glm openal FFMPEG::avcodec FFMPEG::avutil FFMPEG::avformat)
