@@ -19,7 +19,7 @@ namespace HJUIK
         // Derived class require that at least one device is available at its creation
         ContextBasedWrapper::ContextBasedWrapper()
         {
-            std::lock_guard lock(GLOBAL_MUTEX);
+            const std::lock_guard lock(GLOBAL_MUTEX);
             // If no device is created yet
             if (COUNT == 0)
             {
@@ -27,11 +27,11 @@ namespace HJUIK
             }
             COUNT++;
         }
-        
+
         ContextBasedWrapper::~ContextBasedWrapper()
         {
 
-            std::lock_guard lock(GLOBAL_MUTEX);
+            const std::lock_guard lock(GLOBAL_MUTEX);
             COUNT--;
             if (COUNT == 0)
             {

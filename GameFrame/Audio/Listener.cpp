@@ -87,10 +87,10 @@ namespace HJUIK
             // NOLINTBEGIN(*-magic-numbers)
             float arr[6];
             alCheck(alGetListenerfv(AL_ORIENTATION, static_cast<float*>(arr)));
-            Vector3f zAxis{arr[0], arr[1], arr[2]};
-            Vector3f yAxis{arr[3], arr[4], arr[5]};
+            const Vector3f zAxis{arr[0], arr[1], arr[2]};
+            const Vector3f yAxis{arr[3], arr[4], arr[5]};
             // NOLINTEND(*-magic-numbers)
-            Vector3f xAxis = glm::cross(yAxis, zAxis);
+            const Vector3f xAxis = glm::cross(yAxis, zAxis);
             return {xAxis, yAxis, zAxis};
         }
         // NOLINTEND(*-avoid-c-arrays)

@@ -10,7 +10,7 @@ namespace HJUIK
         {
             auto alCheckLastErr(const char* file, unsigned int line, const char* expr) -> void
             {
-                ALenum errorCode = alGetError();
+                const auto errorCode = alGetError();
 
                 if (errorCode != AL_NO_ERROR)
                 {
@@ -45,15 +45,15 @@ namespace HJUIK
                     }
 
                     throw std::runtime_error(
-                        "OpenAL: " + error + " - " + description + "\nIn file " 
-                        + std::string(file) + ", line " + std::to_string(line) + ". Details:\n" 
+                        "OpenAL: " + error + " - " + description + "\nIn file "
+                        + std::string(file) + ", line " + std::to_string(line) + ". Details:\n"
                         + std::string(expr));
                 }
             }
 
             auto alcCheckLastErr(const char* file, unsigned int line, const char* expr, ALCdevice* device) -> void
             {
-                ALCenum errorCode = alcGetError(device);
+                const auto errorCode = alcGetError(device);
 
                 if (errorCode != ALC_NO_ERROR)
                 {
@@ -88,8 +88,8 @@ namespace HJUIK
                     }
 
                     throw std::runtime_error(
-                        "OpenAL: " + error + " - " + description + "\nIn file " 
-                        + std::string(file) + ", line " + std::to_string(line) + ". Details:\n" 
+                        "OpenAL: " + error + " - " + description + "\nIn file "
+                        + std::string(file) + ", line " + std::to_string(line) + ". Details:\n"
                         + std::string(expr));
                 }
             }
