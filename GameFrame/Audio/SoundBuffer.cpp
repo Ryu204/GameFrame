@@ -5,36 +5,29 @@ namespace HJUIK
 {
     namespace Audio
     {
-        auto SoundBuffer::getData() -> Data&
+        auto SoundBuffer::uploadData(const void* data, BufferFormat format, int sizeInBytes, int sampleRate) -> void
         {
-            return mData;
-        }
-
-        auto SoundBuffer::bufferData(ILoader& loader) -> void
-        {
-            // If the loader fails to buffer this instance
-            if (!loader.buffer(*this))
-            {
-                mIsValid = false;
-                return;
-            }
-            // Conversion uint <-> int
-            auto identifier = static_cast<ALuint>(get());
-            auto format = static_cast<ALenum>(mData.Format);
-            const auto* data = is8Bit() ? static_cast<const ALvoid*>(mData.V8Bit.data()) : static_cast<const ALvoid*>(mData.V16Bit.data());
+            auto alID = static_cast<ALuint>(get());
+            auto alFormat = static_cast<ALenum>(format);
             // `size` is the size of the vector in byte (aka 8 bit interger) 
-            auto size = static_cast<ALsizei>(is8Bit() ? mData.V8Bit.size() : 2 * mData.V16Bit.size());
-            auto freq = static_cast<ALsizei>(mData.SamplePerSecond);
+            auto alSize = static_cast<ALsizei>(sizeInBytes);
+            auto alFreq = static_cast<ALsizei>(sampleRate);
 
-            alCheck(alBufferData(identifier, format, data, size, freq));
+            alCheck(alBufferData(alID, alFormat, data, alSize, alFreq));
             mIsValid = true;
-            // Free the memory
-            mData = {};
+            mFormat = format;
         }
 
         auto SoundBuffer::is8Bit() const -> bool
         {
-            return mData.Format == BufferFormat::MONO8 || mData.Format == BufferFormat::STEREO8;
+            HJUIK_ASSERT(isValid(), "Buffer is not valid yet");
+            return mFormat == BufferFormat::MONO8 || mFormat == BufferFormat::STEREO8;
+        }
+
+        auto SoundBuffer::isMono() const -> bool
+        {
+            HJUIK_ASSERT(isValid(), "Buffer is not valid yet");
+            return mFormat == BufferFormat::MONO8 || mFormat == BufferFormat::MONO16;
         }
 
         auto SoundBuffer::isValid() const -> bool
