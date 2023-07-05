@@ -12,8 +12,8 @@ namespace HJUIK
 		template <TextureType Type>
 		auto detail::TextureTrait<Type>::create() -> GLuint
 		{
-			return Utilize::throwIfZero(
-				supportsDSA() ? callGLGen<GLuint>(glCreateTextures, Type) : callGLGen<GLuint>(glGenTextures),
+			return Utilize::throwIfZero(supportsDSA() ? callGLGen<GLuint>(glCreateTextures, static_cast<GLenum>(Type))
+													  : callGLGen<GLuint>(glGenTextures),
 				"unable to create texture");
 		}
 

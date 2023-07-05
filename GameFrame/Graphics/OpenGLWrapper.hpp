@@ -1,6 +1,7 @@
 #ifndef GAMEFRAME_GRAPHICS_OPENGL_WRAPPER_HPP
 #define GAMEFRAME_GRAPHICS_OPENGL_WRAPPER_HPP
 
+#include "deps/glad/glad.h"
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -121,10 +122,10 @@ namespace HJUIK
 		{
 		}
 
-		PossiblyBoundOpenGLWrapper(const PossiblyBoundOpenGLWrapper&)					   = delete;
+		PossiblyBoundOpenGLWrapper(const PossiblyBoundOpenGLWrapper&)					 = delete;
 		auto operator=(const PossiblyBoundOpenGLWrapper&) -> PossiblyBoundOpenGLWrapper& = delete;
 
-		PossiblyBoundOpenGLWrapper(PossiblyBoundOpenGLWrapper&&) noexcept					   = default;
+		PossiblyBoundOpenGLWrapper(PossiblyBoundOpenGLWrapper&&) noexcept					 = default;
 		auto operator=(PossiblyBoundOpenGLWrapper&&) noexcept -> PossiblyBoundOpenGLWrapper& = default;
 
 		~PossiblyBoundOpenGLWrapper()
