@@ -55,7 +55,11 @@ namespace HJUIK
             auto setBuffer(const SoundBuffer& buffer) -> void;
             // Queue buffer to be played after current buffer on source
             auto queueBuffer(const SoundBuffer& buffer) -> void;
-            auto unqueueBuffer(const SoundBuffer& buffer) -> void;
+            auto unqueueBuffer() -> void;
+            // Get number of buffers already played
+            auto getProcessedBufferCount() const -> std::size_t;
+            // Get total number of buffers currently queued in this source (include played ones)
+            auto getQueuedBufferCount() const -> std::size_t;
             // This will not change the source position
             // Used for stuffs like Doppler effect
             auto setVelocity(Vector3f velocity) -> void;

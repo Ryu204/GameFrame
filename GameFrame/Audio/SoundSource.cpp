@@ -39,14 +39,23 @@ namespace HJUIK
         {
             checkBuffer(buffer);
             const auto bufferName = buffer.get();
-            alSourceQueueBuffers(get(), 1, &bufferName); 
+            alCheck(alSourceQueueBuffers(get(), 1, &bufferName)); 
         }
 
-        auto SoundSource::unqueueBuffer(const SoundBuffer& buffer) -> void
+        auto SoundSource::unqueueBuffer() -> void
         {
-            // No need to check buffers, their data is already copied
-            auto bufferName = buffer.get();
-            alSourceUnqueueBuffers(get(), 1, &bufferName); 
+            ALuint bufferName = 0;
+            alCheck(alSourceUnqueueBuffers(get(), 1, &bufferName)); 
+        }
+
+        auto SoundSource::getProcessedBufferCount() const -> std::size_t
+        {
+            return static_cast<std::size_t>(alGet<ALsizei>(alGetSourcei, get(), AL_BUFFERS_PROCESSED));
+        }
+
+        auto SoundSource::getQueuedBufferCount() const -> std::size_t
+        {
+            return static_cast<std::size_t>(alGet<ALsizei>(alGetSourcei, get(), AL_BUFFERS_QUEUED));
         }
 
         // This will not change the source position (:'>)
