@@ -27,7 +27,7 @@ namespace HJUIK
 				}
 			}
 
-			auto buffer(SoundBuffer& target, size_t maxSamples) -> std::size_t override
+			auto buffer(SoundBuffer& target, std::size_t maxSamples) -> std::size_t override
 			{
 				// Format & Data ==================================================
 				int bitdepth = mInternalLoader.getBitDepth();
@@ -66,17 +66,17 @@ namespace HJUIK
 				return numSamplesPerChannel * mInternalLoader.getNumChannels();
 			}
 
-			auto channels() -> size_t override
+			auto channels() -> std::size_t override
 			{
-				return static_cast<size_t>(mInternalLoader.getNumChannels());
+				return static_cast<std::size_t>(mInternalLoader.getNumChannels());
 			}
 
-			auto sampleRate() -> size_t override
+			auto sampleRate() -> std::size_t override
 			{
-				return static_cast<size_t>(mInternalLoader.getSampleRate());
+				return static_cast<std::size_t>(mInternalLoader.getSampleRate());
 			}
 
-			auto seek(size_t sampleIndex) -> void override
+			auto seek(std::size_t sampleIndex) -> void override
 			{
 				mSampleOffset = sampleIndex;
 			}
@@ -91,9 +91,9 @@ namespace HJUIK
 					mInternalLoader.getSampleRate());
 			}
 
-			auto mono8DataBuffer(SoundBuffer& target, size_t numSamplesPerChannel) const -> void
+			auto mono8DataBuffer(SoundBuffer& target, std::size_t numSamplesPerChannel) const -> void
 			{
-				std::vector<uint8_t> targetData{};
+				std::vector<std::uint8_t> targetData{};
 				HJUIK_ASSERT(mInternalLoader.samples.size() == 1, "Invalid call");
 				const auto& data = mInternalLoader.samples[0];
 				targetData.reserve(data.size());
@@ -135,7 +135,7 @@ namespace HJUIK
 			}
 
 			AudioFile<std::int16_t> mInternalLoader;
-			size_t mSampleOffset = 0;
+			std::size_t mSampleOffset = 0;
 		};
 	} // namespace Audio
 } // namespace HJUIK

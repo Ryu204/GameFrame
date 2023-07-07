@@ -32,20 +32,20 @@ namespace HJUIK
             // space left on the buffer to put another sample (e.g. `maxSamples` is odd
             // but this loader have stereo format, i.e. 2 channels, pretty extreme case
             // but it could happen).
-			virtual auto buffer(SoundBuffer& /*target*/, size_t /*maxSamples*/) -> std::size_t = 0;
+			virtual auto buffer(SoundBuffer& /*target*/, std::size_t /*maxSamples*/) -> std::size_t = 0;
 
-			virtual auto channels() -> size_t	= 0;
-			virtual auto sampleRate() -> size_t = 0;
+			virtual auto channels() -> std::size_t	= 0;
+			virtual auto sampleRate() -> std::size_t = 0;
 
 			// implement one of these two methods
-			virtual auto seek(size_t sampleIndex) -> void
+			virtual auto seek(std::size_t sampleIndex) -> void
 			{
 				seekSecond(static_cast<float>(sampleIndex) / static_cast<float>(sampleRate()));
 			}
 
 			virtual auto seekSecond(float second) -> void
 			{
-				seek(static_cast<size_t>(static_cast<float>(sampleRate()) * second));
+				seek(static_cast<std::size_t>(static_cast<float>(sampleRate()) * second));
 			}
 		};
 	} // namespace Audio

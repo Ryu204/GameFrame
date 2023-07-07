@@ -65,9 +65,9 @@ namespace HJUIK
 			std::recursive_mutex mMutex;
 			std::array<std::unique_ptr<SoundBuffer>, NUM_BUFFERS> mBuffers;
 
-			auto stream(SoundBuffer& buffer) -> size_t
+			auto stream(SoundBuffer& buffer) -> std::size_t
 			{
-				size_t numSamples = 0;
+				std::size_t numSamples = 0;
 
 				while (numSamples < SAMPLES_PER_BUFFER) {
 				}

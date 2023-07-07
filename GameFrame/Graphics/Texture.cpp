@@ -38,7 +38,7 @@ auto HJUIK::Graphics::load2DTexture(const Image2DLoader::RawData& data) -> Textu
 
 	Texture2D texture;
 	auto boundTexture	  = texture.bind();
-	const auto dimensions = glm::vec<2, size_t>{data.Dimensions.x, data.Dimensions.y};
+	const auto dimensions = glm::vec<2, std::size_t>{data.Dimensions.x, data.Dimensions.y};
 
 	TextureAllocationInfo allocInfo{};
 	allocInfo.InternalFormat = internalFormat;
@@ -50,7 +50,7 @@ auto HJUIK::Graphics::load2DTexture(const Image2DLoader::RawData& data) -> Textu
 	textureData.Format	   = format;
 	textureData.TexelType  = TextureTexelType::UNSIGNED_BYTE;
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-	boundTexture.imageCopy(glm::vec<2, size_t>{0, 0}, textureData);
+	boundTexture.imageCopy(glm::vec<2, std::size_t>{0, 0}, textureData);
 	glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask.data());
 
 	return std::move(texture);
