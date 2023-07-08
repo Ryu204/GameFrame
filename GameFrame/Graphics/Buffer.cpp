@@ -1,6 +1,9 @@
 #include "Buffer.hpp"
 
+#include <optional>
 #include <stdexcept>
+
+#include "../Utilize/CallAssert.hpp"
 
 namespace HJUIK
 {
@@ -8,7 +11,9 @@ namespace HJUIK
 	{
 		auto detail::BufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenBuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateBuffers) : callGLGen<GLuint>(glGenBuffers),
+				"unable to create buffer");
 		}
 
 		auto detail::BufferTrait::destroy(GLuint handle) -> void
@@ -115,7 +120,7 @@ namespace HJUIK
 				return;
 			}
 
-			const BoundBuffer bound{get(), TEMP_BUFFER_TARGET};
+			const PossiblyBoundBuffer bound{get(), TEMP_BUFFER_TARGET};
 			const auto [glOffset, glSize] = bound.checkRange(offset, size);
 			glBindBufferRange(static_cast<GLenum>(target), index, get(), glOffset, glSize);
 		}
@@ -126,7 +131,13 @@ namespace HJUIK
 		auto Buffer::setLabel(const char* name) const -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const BoundBuffer guard = this->bind(TEMP_BUFFER_TARGET);
+				// only binds if this is not created with glCreate*
+				// i.e. DSA is not supported
+				std::optional<PossiblyBoundBuffer> guard;
+				if (supportsDSA()) {
+					guard = bind(TEMP_BUFFER_TARGET);
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_BUFFER, get(), -1, name);
 			}
 		}
@@ -136,28 +147,48 @@ namespace HJUIK
 				glInvalidateBufferData(get());
 			}
 
-			const BoundBuffer bound		  = this->bind(TEMP_BUFFER_TARGET);
+			const PossiblyBoundBuffer bound		  = this->bind(TEMP_BUFFER_TARGET);
 			const auto [glOffset, glSize] = bound.checkRange(offset, size);
 			glInvalidateBufferSubData(get(), glOffset, glSize);
 		}
 
-		auto BoundBuffer::getTarget() const -> BufferTarget
+		auto PossiblyBoundBuffer::getTarget() const -> BufferTarget
 		{
 			return std::get<0>(getArgs());
 		}
 
-		auto BoundBuffer::getTargetEnum() const -> GLenum
+		auto PossiblyBoundBuffer::getTargetEnum() const -> GLenum
 		{
 			return static_cast<GLenum>(getTarget());
 		}
 
-		auto BoundBuffer::getSize() const -> std::size_t
+		auto PossiblyBoundBuffer::getSize() const -> std::size_t
 		{
-			return getSize(getTarget());
+			if (supportsDSA()) {
+				return static_cast<std::size_t>(
+					callGLGet<GLint64>(glGetNamedBufferParameteri64v, getHandle(), GL_BUFFER_SIZE));
+			}
+
+			forceBind();
+			return static_cast<std::size_t>(
+				callGLGet<GLint64>(glGetBufferParameteri64v, getTargetEnum(), GL_BUFFER_SIZE));
 		}
 
-		auto BoundBuffer::allocate(const BufferUsage& usage, std::size_t size, const void* initialData) const -> void
+		auto PossiblyBoundBuffer::allocate(const BufferUsage& usage, std::size_t size, const void* initialData) const -> void
 		{
+			if (supportsDSA()) {
+				if (usage.Immutable && GLAD_GL_VERSION_4_4 != 0) {
+					glNamedBufferStorage(
+						getHandle(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferStorageFlags());
+				} else {
+					glNamedBufferData(
+						getHandle(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferDataUsage());
+				}
+
+				return;
+			}
+
+			forceBind();
 			if (usage.Immutable && GLAD_GL_VERSION_4_4 != 0) {
 				glBufferStorage(
 					getTargetEnum(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferStorageFlags());
@@ -165,14 +196,23 @@ namespace HJUIK
 				glBufferData(getTargetEnum(), static_cast<GLsizeiptr>(size), initialData, usage.asBufferDataUsage());
 			}
 		}
-		auto BoundBuffer::map(const BufferMapAccess& access, std::size_t offset, std::size_t size) const -> void*
+		auto PossiblyBoundBuffer::map(const BufferMapAccess& access, std::size_t offset, std::size_t size) const -> void*
 		{
 			void* pointer = nullptr;
-			if (offset == 0 && size == SIZE_MAX && !access.isAdvancedAccess()) {
-				pointer = glMapBuffer(getTargetEnum(), access.asEnum());
+			if (supportsDSA()) {
+				if (offset == 0 && size == SIZE_MAX && !access.isAdvancedAccess()) {
+					pointer = glMapNamedBuffer(getTargetEnum(), access.asEnum());
+				} else {
+					const auto [glOffset, glSize] = checkRange(offset, size);
+					pointer = glMapNamedBufferRange(getTargetEnum(), glOffset, glSize, access.asBitfield());
+				}
 			} else {
-				const auto [glOffset, glSize] = checkRange(offset, size);
-				pointer = glMapBufferRange(getTargetEnum(), glOffset, glSize, access.asBitfield());
+				if (offset == 0 && size == SIZE_MAX && !access.isAdvancedAccess()) {
+					pointer = glMapBuffer(getTargetEnum(), access.asEnum());
+				} else {
+					const auto [glOffset, glSize] = checkRange(offset, size);
+					pointer = glMapBufferRange(getTargetEnum(), glOffset, glSize, access.asBitfield());
+				}
 			}
 
 			if (pointer == nullptr) {
@@ -181,61 +221,91 @@ namespace HJUIK
 
 			return pointer;
 		}
-		auto BoundBuffer::unmap() const -> bool
+		auto PossiblyBoundBuffer::unmap() const -> bool
 		{
+			if (supportsDSA()) {
+				return glUnmapNamedBuffer(getHandle()) != GL_FALSE;
+			}
+
+			forceBind();
 			return glUnmapBuffer(getTargetEnum()) != GL_FALSE;
 		}
-		auto BoundBuffer::flushMappedRange(std::size_t offset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::flushMappedRange(std::size_t offset, std::size_t size) const -> void
 		{
 			const auto [glOffset, glSize] = checkRange(offset, size);
+			if (supportsDSA()) {
+				glFlushMappedNamedBufferRange(getHandle(), glOffset, glSize);
+				return;
+			}
+
+			forceBind();
 			glFlushMappedBufferRange(getTargetEnum(), glOffset, glSize);
 		}
 
-		auto BoundBuffer::memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memCopy(std::size_t destOffset, const void* src, std::size_t size) const -> void
 		{
 			const auto [glOffset, glSize] = checkRange(destOffset, size);
+			if (supportsDSA()) {
+				glNamedBufferSubData(getHandle(), glOffset, glSize, src);
+				return;
+			}
+
+			forceBind();
 			glBufferSubData(getTargetEnum(), glOffset, glSize, src);
 		}
 
-		auto BoundBuffer::memClear(std::size_t offset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memClear(std::size_t offset, std::size_t size) const -> void
 		{
 			if (offset == 0 && size == SIZE_MAX) {
+				if (supportsDSA()) {
+					glClearNamedBufferData(getHandle(), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+					return;
+				}
+
+				forceBind();
 				glClearBufferData(getTargetEnum(), GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				return;
 			}
 
 			const auto [glOffset, glSize] = checkRange(offset, size);
+			if (supportsDSA()) {
+				glClearNamedBufferSubData(getHandle(), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				return;
+			}
+
+			forceBind();
 			glClearBufferSubData(getTargetEnum(), glOffset, glSize, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		}
 
-		auto BoundBuffer::memCopyFromBuffer(
-			BufferTarget srcTarget, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void
+		auto PossiblyBoundBuffer::memCopyFromBuffer(
+			const PossiblyBoundBuffer& srcBuffer, std::size_t destOffset, std::size_t srcOffset, std::size_t size) const -> void
 		{
-			const auto [glSrcOffset, glSrcSize]	  = checkRange(srcOffset, size, srcTarget);
+			const auto [glSrcOffset, glSrcSize]	  = srcBuffer.checkRange(srcOffset, size);
 			const auto [glDestOffset, glDestSize] = checkRange(destOffset, size);
 			if (glSrcSize != glDestSize) {
 				throw std::runtime_error("buffer size mismatch");
 			}
 
-			glCopyBufferSubData(static_cast<GLenum>(srcTarget), getTargetEnum(), glSrcOffset, glDestOffset, glDestSize);
-		}
+			if (supportsDSA()) {
+				glCopyNamedBufferSubData(srcBuffer.getHandle(), getHandle(), glSrcOffset, glDestOffset, glDestSize);
+				return;
+			}
 
-		auto BoundBuffer::getSize(BufferTarget target) -> std::size_t
-		{
-			return static_cast<std::size_t>(
-				callGLGet<GLint64>(glGetBufferParameteri64v, static_cast<GLenum>(target), GL_BUFFER_SIZE));
+			HJUIK_ASSERT(srcBuffer.getTarget() != getTarget(), "could not copy between buffers of the same target");
+			srcBuffer.forceBind();
+			forceBind();
+			glCopyBufferSubData(srcBuffer.getTargetEnum(), getTargetEnum(), glSrcOffset, glDestOffset, glDestSize);
 		}
 
 		// NOLINTNEXTLINE(*-member-functions-to-static)
-		auto BoundBuffer::checkRange(std::size_t offset, std::size_t size, std::optional<BufferTarget> target) const
-			-> std::tuple<GLintptr, GLsizeiptr>
+		auto PossiblyBoundBuffer::checkRange(std::size_t offset, std::size_t size) const -> std::tuple<GLintptr, GLsizeiptr>
 		{
-			const auto bufTarget  = target.value_or(getTarget());
-			size				  = std::min(size, getSize(bufTarget));
-			const auto bufferSize = getSize(bufTarget);
+			const auto bufferSize = getSize();
+			size				  = std::min(size, bufferSize);
 			if (offset >= bufferSize) {
 				throw std::runtime_error("offset out of bounds");
 			}
-			return {static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(std::min(bufferSize - offset, size))};
+			return {static_cast<GLintptr>(offset), static_cast<GLsizeiptr>(std::min(size - offset, size))};
 		}
 	} // namespace Graphics
 } // namespace HJUIK

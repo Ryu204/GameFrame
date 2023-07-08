@@ -75,11 +75,11 @@ namespace HJUIK
 			return std::visit([](const auto& attachment) { return static_cast<GLenum>(attachment); }, attachment);
 		}
 
-		class BoundRenderbuffer : public BoundOpenGLWrapper<detail::RenderbufferTrait>
+		class BoundRenderbuffer : public PossiblyBoundOpenGLWrapper<detail::RenderbufferTrait>
 		{
 		public:
-			using BoundOpenGLWrapper::BoundOpenGLWrapper;
-			using BoundOpenGLWrapper::operator=;
+			using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper;
+			using PossiblyBoundOpenGLWrapper::operator=;
 
 			auto allocStorage(TextureInternalFormat internalFormat, std::size_t width, std::size_t height,
 				std::ptrdiff_t samples = -1) const -> void;
@@ -99,17 +99,23 @@ namespace HJUIK
 			auto setLabel(const char* name) const -> void;
 		};
 
-		class BoundFramebuffer : public BoundOpenGLWrapper<detail::FramebufferTrait, FramebufferTarget>
+		class PossiblyBoundFramebuffer : public PossiblyBoundOpenGLWrapper<detail::FramebufferTrait, FramebufferTarget>
 		{
 		public:
-			using BoundOpenGLWrapper::BoundOpenGLWrapper;
-			using BoundOpenGLWrapper::operator=;
+			using PossiblyBoundOpenGLWrapper::PossiblyBoundOpenGLWrapper;
+			using PossiblyBoundOpenGLWrapper::operator=;
 
 			// TODO: add support for more niche uses of this
 			template <TextureType Type>
 			auto setTextureAttachment(
 				FramebufferAttachment attachment, const Texture<Type>& texture, std::size_t mipLevel = 0) const -> void
 			{
+				if (supportsDSA()) {
+					glNamedFramebufferTexture(getHandle(), framebufferAttachmentAsGLEnum(attachment), texture.get(),
+						static_cast<GLint>(mipLevel));
+				}
+
+				forceBind();
 				glFramebufferTexture(getTargetEnum(), framebufferAttachmentAsGLEnum(attachment), texture.get(),
 					static_cast<GLint>(mipLevel));
 			}
@@ -123,7 +129,7 @@ namespace HJUIK
 			auto getTargetEnum() const -> GLenum;
 		};
 
-		class Framebuffer : public OpenGLWrapper<detail::FramebufferTrait, BoundFramebuffer>
+		class Framebuffer : public OpenGLWrapper<detail::FramebufferTrait, PossiblyBoundFramebuffer>
 		{
 		public:
 			// inherits base constructors and assigments

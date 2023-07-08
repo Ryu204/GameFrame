@@ -1,12 +1,16 @@
 #include "Framebuffer.hpp"
 
+#include <optional>
+
 namespace HJUIK
 {
 	namespace Graphics
 	{
 		auto detail::FramebufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenFramebuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateFramebuffers) : callGLGen<GLuint>(glGenFramebuffers),
+				"unable to create framebuffer");
 		}
 
 		auto detail::FramebufferTrait::destroy(GLuint handle) -> void
@@ -28,7 +32,9 @@ namespace HJUIK
 
 		auto detail::RenderbufferTrait::create() -> GLuint
 		{
-			return callGLGen<GLuint>(glGenRenderbuffers);
+			return Utilize::throwIfZero(
+				supportsDSA() ? callGLGen<GLuint>(glCreateRenderbuffers) : callGLGen<GLuint>(glGenRenderbuffers),
+				"unable to create renderbuffer");
 		}
 
 		auto detail::RenderbufferTrait::destroy(GLuint handle) -> void
@@ -49,7 +55,13 @@ namespace HJUIK
 		auto Renderbuffer::setLabel(const char* name) const -> void
 		{
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const auto guard = bind();
+                // only binds if this is not created with glCreate*
+                // i.e. DSA is not supported
+				std::optional<BoundRenderbuffer> guard;
+				if (supportsDSA()) {
+					guard = bind();
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_RENDERBUFFER, get(), -1, name);
 			}
 		}
@@ -59,9 +71,21 @@ namespace HJUIK
 			std::size_t height, std::ptrdiff_t samples) const -> void
 		{
 			if (samples >= 0) {
+				if (supportsDSA()) {
+					glNamedRenderbufferStorageMultisample(getHandle(), static_cast<GLsizei>(samples),
+						static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+				}
+
+				forceBind();
 				glRenderbufferStorageMultisample(GL_RENDERBUFFER, static_cast<GLsizei>(samples),
 					static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 			} else {
+				if (supportsDSA()) {
+					glNamedRenderbufferStorage(getHandle(), static_cast<GLenum>(internalFormat),
+						static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+				}
+
+				forceBind();
 				glRenderbufferStorage(GL_RENDERBUFFER, static_cast<GLenum>(internalFormat), static_cast<GLsizei>(width),
 					static_cast<GLsizei>(height));
 			}
@@ -71,24 +95,36 @@ namespace HJUIK
 		{
 			static constexpr auto tempTarget = FramebufferTarget::READ;
 			if (GLAD_GL_VERSION_4_3 != 0) {
-				const auto guard = bind(tempTarget);
+                // only binds if this is not created with glCreate*
+                // i.e. DSA is not supported
+				std::optional<PossiblyBoundFramebuffer> guard;
+				if (supportsDSA()) {
+					guard = bind(tempTarget);
+					guard.value().forceBind();
+				}
 				glObjectLabel(GL_VERTEX_ARRAY, get(), -1, name);
 			}
 		}
 
-		auto BoundFramebuffer::setRenderbufferAttachment(
+		auto PossiblyBoundFramebuffer::setRenderbufferAttachment(
 			FramebufferAttachment attachment, const Renderbuffer& renderbuffer) const -> void
 		{
+			if (supportsDSA()) {
+				glNamedFramebufferRenderbuffer(
+					getHandle(), framebufferAttachmentAsGLEnum(attachment), GL_RENDERBUFFER, renderbuffer.get());
+			}
+
+			forceBind();
 			glFramebufferRenderbuffer(
 				getTargetEnum(), framebufferAttachmentAsGLEnum(attachment), GL_RENDERBUFFER, renderbuffer.get());
 		}
 
-		auto BoundFramebuffer::getTarget() const -> FramebufferTarget
+		auto PossiblyBoundFramebuffer::getTarget() const -> FramebufferTarget
 		{
 			return std::get<0>(getArgs());
 		}
 
-		auto BoundFramebuffer::getTargetEnum() const -> GLenum
+		auto PossiblyBoundFramebuffer::getTargetEnum() const -> GLenum
 		{
 			return static_cast<GLenum>(getTarget());
 		}
