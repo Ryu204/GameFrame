@@ -18,14 +18,15 @@ namespace HJUIK
 				{
 					avCheck(avformat_find_stream_info(mFormatCtx.get(), nullptr));
 					const AVCodec* codec = nullptr;
-					StreamIndex = avCheck(av_find_best_stream(mFormatCtx.get(), AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0));
+					mStreamIndex =
+						avCheck(av_find_best_stream(mFormatCtx.get(), AVMEDIA_TYPE_AUDIO, -1, -1, &codec, 0));
 					avCheck(avcodec_parameters_to_context(mCodecCtx.get(), stream().codecpar));
 					avCheck(avcodec_open2(mCodecCtx.get(), codec, nullptr));
 				}
 
 				auto stream() -> AVStream&
 				{
-					return *mFormatCtx->streams[StreamIndex];
+					return *mFormatCtx->streams[mStreamIndex];
 				}
 
 				auto getCodecParams() -> const AVCodecParameters&
@@ -76,15 +77,17 @@ namespace HJUIK
 					return false;
 				}
 
-				auto sendPacket() -> PacketRefGuard
+				auto sendPacket() -> void
 				{
 					avCheck(av_read_frame(mFormatCtx.get(), mPacket.get()));
 					// basically a RAII guard for av_packet_unref
 					// this must be valid while frames are decoding from this packet
 					// (it will be reset if last frame of the packet is decoded)
-					PacketRefGuard guard{mPacket.get()};
-					avCheck(avcodec_send_packet(mCodecCtx.get(), mPacket.get()));
-					mPacketGuard = std::move(guard);
+					do {
+						mPacketGuard.reset();
+						avCheck(avcodec_send_packet(mCodecCtx.get(), mPacket.get()));
+						mPacketGuard.emplace(mPacket.get());
+					} while (mPacket->stream_index != mStreamIndex);
 				}
 
 			private:
@@ -92,7 +95,7 @@ namespace HJUIK
 				CodecContext mCodecCtx;
 				Packet mPacket;
 				Frame mFrame;
-				int StreamIndex;
+				int mStreamIndex;
 
 				std::optional<PacketRefGuard> mPacketGuard = std::nullopt;
 			};
