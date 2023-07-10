@@ -5,6 +5,7 @@
 	Base class for objects created within a context
 */
 
+#include <optional>
 #include <utility>
 
 #include "ContextBasedWrapper.hpp"
@@ -17,14 +18,13 @@ namespace HJUIK
 		class OpenALWrapper : public ContextBasedWrapper
 		{
 		public:
-			using Handle						= typename WrapperTrait::HandleType;
-			static constexpr Handle NULL_HANDLE = static_cast<Handle>(0);
+			using Handle = typename WrapperTrait::HandleType;
 
 			// Create an OpenAL object
 			OpenALWrapper() : mHandle{WrapperTrait::create()} {}
 
 			explicit OpenALWrapper(Handle handle) : mHandle{handle} {}
-			explicit OpenALWrapper(std::nullptr_t) : mHandle{NULL_HANDLE} {}
+			explicit OpenALWrapper(std::nullptr_t) : mHandle{std::nullopt} {}
 
 			OpenALWrapper(OpenALWrapper&& other) noexcept : mHandle{other.release()} {}
 			OpenALWrapper(const OpenALWrapper&) = delete;
@@ -49,24 +49,29 @@ namespace HJUIK
 
 			auto reset() -> void
 			{
-				if (mHandle != NULL_HANDLE) {
-					WrapperTrait::destroy(mHandle);
-					mHandle = NULL_HANDLE;
+				if (mHandle.has_value()) {
+					WrapperTrait::destroy(mHandle.value());
+					mHandle.reset();
 				}
 			}
 
-			auto release() -> Handle
+			auto release() -> std::optional<Handle>
 			{
-				return std::exchange(mHandle, NULL_HANDLE);
+				return std::exchange(mHandle, std::nullopt);
 			}
 
 			auto get() const -> Handle
 			{
-				return mHandle;
+                // NOLINTNEXTLINE(*-unchecked-optional-access)
+				return mHandle.value();
 			}
 
+            auto isValid() const -> bool {
+                return mHandle.has_value();
+            }
+
 		private:
-			Handle mHandle;
+			std::optional<Handle> mHandle;
 		};
 	} // namespace Audio
 } // namespace HJUIK
